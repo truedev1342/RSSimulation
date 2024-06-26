@@ -40,6 +40,7 @@ namespace RSSimulation
         private int _rsNum = 0;
         private int _necessaryTime = 0;
         private int _elapsed = 0;
+        private int _total = 0;
         private bool _started = false;
 
         private PointF _stPoint = PointF.Empty;
@@ -49,6 +50,12 @@ namespace RSSimulation
 
         private RoofSupport[] _rsData = new RoofSupport[202];
         private Dozer _dozer = new Dozer();
+        private float _tempDx = 0.0f;
+        private float _tempDy = 0.0f;
+        private int _timerInterval = 1000;
+        
+        private List<int> _available = new List<int>();
+        private List<int> _unavailable = new List<int>();
 
         public MainForm()
         {
@@ -216,12 +223,24 @@ namespace RSSimulation
             float c = distancePoints(_stPoint, _enPoint);
             float alpha = (float)(Math.Acos((_enPoint.X - _stPoint.X) / c) * 180 / Math.PI);
 
+            float dy = (float)((_enPoint.X - _stPoint.X) * 5 / c);
+            float dx = (float)((_enPoint.Y - _stPoint.Y) * 5 / c);
+            float positionX = _basePoint.X - dx;
+            float positionY = _basePoint.Y + dy;
+            dx = (float)((_enPoint.X - _stPoint.X) / c);
+            dy = (float)((_enPoint.Y - _stPoint.Y) / c);
+            positionX = positionX - dx;
+            positionY = positionY - dy;
+            _dozer.setAngle(90 - alpha);
+            _dozer.setCenter(new PointF(positionX, positionY));
+
+
             for (int i = 0; i < _rsNum; i++)
             {
-                float dy = (float)((_enPoint.X - _stPoint.X) * 7.5 / c);
-                float dx = (float)((_enPoint.Y - _stPoint.Y) * 7.5 / c);
-                float positionX = _basePoint.X - dx;
-                float positionY = _basePoint.Y + dy;
+                dy = (float)((_enPoint.X - _stPoint.X) * 7.5 / c);
+                dx = (float)((_enPoint.Y - _stPoint.Y) * 7.5 / c);
+                positionX = _basePoint.X - dx;
+                positionY = _basePoint.Y + dy;
                 dx = (float)((_enPoint.X - _stPoint.X) * (1 + i * 2) / c);
                 dy = (float)((_enPoint.Y - _stPoint.Y) * (1 + i * 2) / c);
                 positionX = positionX - dx;
@@ -229,10 +248,8 @@ namespace RSSimulation
 
                 _rsData[_rsNum - i].setNum(_rsNum - i);
                 _rsData[_rsNum - i].setCenter(new PointF(positionX, positionY));
-                _rsData[_rsNum - i].setAngle(alpha);
+                _rsData[_rsNum - i].setAngle(90 - alpha);
             }
-            _dozer.setAngle(alpha);
-            _dozer.setCenter(_basePoint);
         }
 
 
@@ -309,11 +326,11 @@ namespace RSSimulation
                         // Add more entity types as needed and handle their drawing and colors
                 }
             }
-            for (int i = 0; i < _rsNum; i ++)
+            _dozer.draw(g);
+            for (int i = 1; i <= _rsNum; i ++)
             {
                 _rsData[i].draw(g);
             }
-            _dozer.draw(g);
 
             /*foreach (var line in _dxfDocument.Entities.Lines)
             {
@@ -351,22 +368,67 @@ namespace RSSimulation
 
         private void processSimulation()
         {
+            int idx = _rsNum - _elapsed / (_total / 3);
+            int perTime = _elapsed % (_total / 3);
+            if (perTime == 0) perTime = _total / 3;
+            int subTime = _total / 9;
+            if (perTime <= subTime) // rotating...
+            {
+                float _angle = 90 / subTime ;
+                _dozer.rotate(-_angle);
+                _rsData[idx].rotate(-_angle);
+                float x1 = (float)(_dozer.getCenter().X + 2.5 * Math.Cos(_dozer.getAngle() * Math.PI / 180));
+                float y1 = (float)(_dozer.getCenter().Y + 2.5 * Math.Sin(_dozer.getAngle() * Math.PI / 180));
+                _rsData[idx].setCenter(new PointF(x1, y1));
+                if (perTime == subTime) // rotated
+                {
+                    float c = distancePoints(_stPoint, _enPoint);
+                    float alpha = (float)(Math.Acos((_enPoint.X - _stPoint.X) / c) * 180 / Math.PI);
+                    float dy = (float)((_enPoint.X - _stPoint.X) * (1 + (_rsNum - idx) * 2) / c);
+                    float dx = (float)((_enPoint.Y - _stPoint.Y) * (1 + (_rsNum - idx) * 2) / c);
+                    float positionXX = _basePoint.X - dx;
+                    float positionYY = _basePoint.Y + dy;
+                    dx = (float)((_enPoint.X - _stPoint.X) * 2.5 / c);
+                    dy = (float)((_enPoint.Y - _stPoint.Y) * 2.5 / c);
+                    positionXX = positionXX - dx;
+                    positionYY = positionYY - dy;
 
+                    _tempDx = (positionXX - _rsData[idx].getCenter().X) / subTime;
+                    _tempDy = (positionYY - _rsData[idx].getCenter().Y) / subTime;
+                }
+            }
+            else if (perTime <= 2 * subTime) // moving...
+            {
+                _rsData[idx].move(_tempDx, _tempDy);
+                _dozer.move(_tempDx, _tempDy);
+                if (perTime == 2 * subTime)
+                {
+                    _dozer.setAngle(_rsData[idx - 1].getAngle());
+                    float x1 = _rsData[idx - 1].getCenter().X - (float)(2.5 * Math.Cos(_rsData[idx - 1].getAngle() * Math.PI / 180));
+                    float y1 = _rsData[idx - 1].getCenter().Y - (float)(2.5 * Math.Sin(_rsData[idx - 1].getAngle() * Math.PI / 180));
+                    _tempDx = (x1 - _dozer.getCenter().X) / subTime;
+                    _tempDy = (y1 - _dozer.getCenter().Y) / subTime;
+                }
+            }
+            else if (perTime <= 3 * subTime)
+            {
+                _dozer.move(_tempDx, _tempDy);
+            }
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (_elapsed >= _necessaryTime * 3600)
+            if (_elapsed >= _total)
             {
                 timer1.Enabled = false;
                 StopSimulationBtn.Enabled = false;
-                StartSimulationBtn.Enabled = false;
+                StartSimulationBtn.Enabled = true;
                 return;
             }
-            _elapsed += _scale;
-            _curTime = _curTime + TimeSpan.FromSeconds(_scale);
+            _elapsed++;
+            _curTime = _curTime + TimeSpan.FromSeconds(_scale * _timerInterval / 1000);
             SimulationTimeSB.Text = _curTime.ToString();
-            ElapsedTimeSB.Text = convertSecToTimeStr(_elapsed);
+            ElapsedTimeSB.Text = convertSecToTimeStr(_elapsed * _timerInterval);
             processSimulation();
             DrawArea.Invalidate();
         }
@@ -442,6 +504,12 @@ namespace RSSimulation
 
                 if (_rsNum > 0 && _rsNum < 150)
                 {
+                    _available.Clear();
+                    _unavailable.Clear();
+                    for (int i = 1; i <= _rsNum; i ++)
+                    {
+                        _available.Add(i);
+                    }
                     EFramePosBtn.Enabled = true;
                     EFramePosBtn.Checked = false;
                 }
@@ -455,7 +523,14 @@ namespace RSSimulation
         }
         private void onSalvageSequenceSMenu(object sender, EventArgs e)
         {
-
+            SalvageForm svfrm = new SalvageForm();
+            svfrm._available = _available;
+            svfrm._unavailable = _unavailable;
+            if (svfrm.ShowDialog() == DialogResult.OK)
+            {
+                _available = svfrm._available;
+                _unavailable = svfrm._unavailable;
+            }
         }
         private void onViewHelpSMenu(object sender, EventArgs e)
         {
@@ -500,6 +575,12 @@ namespace RSSimulation
             _curTime = _startTime;
             StartSimulationBtn.Enabled = false;
             StopSimulationBtn.Enabled = true;
+            InitializeRSandDozer();
+            float _temp = (float)(_necessaryTime * 3600 / _scale / 9);
+            int _intTemp = (int)_temp;
+            _total = _intTemp * 9;
+            _timerInterval = (int)(_temp * 1000 / _intTemp);
+            timer1.Interval = _timerInterval;
             timer1.Enabled = true;
         }
         private void onStopSimulationBtn(object sender, EventArgs e)

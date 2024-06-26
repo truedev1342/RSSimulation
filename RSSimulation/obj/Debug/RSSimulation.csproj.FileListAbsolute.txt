@@ -40,3 +40,4 @@ E:\Tonny\git_repos\RSSimulation\RSSimulation\obj\Debug\RSSimulation.csproj.CoreC
 E:\Tonny\git_repos\RSSimulation\RSSimulation\obj\Debug\RSSimula.72441294.Up2Date
 E:\Tonny\git_repos\RSSimulation\RSSimulation\obj\Debug\RSSimulation.exe
 E:\Tonny\git_repos\RSSimulation\RSSimulation\obj\Debug\RSSimulation.pdb
+E:\Tonny\git_repos\RSSimulation\RSSimulation\obj\Debug\RSSimulation.SalvageForm.resources

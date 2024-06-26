@@ -33,6 +33,16 @@ namespace RSSimulation
             angle = _angle;
         }
 
+        public void rotate(float _angle)
+        {
+            angle += _angle;
+        }
+
+        public void move(float _dx, float _dy)
+        {
+            center = new PointF(center.X + _dx, center.Y + _dy);
+        }
+
         public void draw(Graphics g)
         {
 

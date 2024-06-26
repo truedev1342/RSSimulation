@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,6 +42,16 @@ namespace RSSimulation
             angle = _angle;
         }
 
+        public void rotate(float _angle)
+        {
+            angle += _angle;
+        }
+
+        public void move(float _dx, float _dy) 
+        {
+            center = new PointF(center.X + _dx, center.Y + _dy);
+        }
+
         public void draw(Graphics g)
         {
             // Set the scale factor for the image
@@ -65,6 +76,41 @@ namespace RSSimulation
 
             // Restore the graphics object state
             g.Restore(state);
+
+            drawText(g);
+        }
+
+        private void drawText(Graphics g)
+        {
+            string fontName = "Arial"; // Default font
+            FontStyle fontStyle = FontStyle.Regular;
+            using (Font font = new Font(
+               new FontFamily($"{fontName}"),
+               (float)0.8,
+               FontStyle.Regular,
+               GraphicsUnit.Pixel))
+            using (Brush brush = new SolidBrush(Color.White))
+            {
+                StringAlignment alignment = StringAlignment.Center;
+                PointF position = center;
+
+                // Save the current state of the graphics object
+                GraphicsState state = g.Save();
+
+                // Translate to the position where you want to draw the text
+                g.TranslateTransform(position.X, position.Y);
+
+                // Rotate the coordinate system 180 degrees (vertically invert)
+
+                g.RotateTransform(angle - 90);
+                g.TranslateTransform((float)-1, (float)2.5);
+                g.ScaleTransform(1, -1);
+                // Draw the text at the origin of the rotated coordinate system
+                g.DrawString("#" + num.ToString(), font, brush, 0, 0);
+
+                // Restore the graphics object to its original state
+                g.Restore(state);
+            }
         }
     }
 }

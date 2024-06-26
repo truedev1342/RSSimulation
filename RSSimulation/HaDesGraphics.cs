@@ -265,15 +265,15 @@ namespace RSSimulation
         public static Point GetDxfPos(Point currentPos, BoundingBox initialRect, PointF offsetPos, ZoomFactor zoomFactor)
         {
             Point cnvPos = new Point();
-            cnvPos.X = (int)(initialRect.MinX + (currentPos.X + offsetPos.X) / zoomFactor.Value);
-            cnvPos.Y = (int)(initialRect.MaxY - (currentPos.Y + offsetPos.Y) / zoomFactor.Value);
+            cnvPos.X = (int)(initialRect.MinX + offsetPos.X + currentPos.X / zoomFactor.Value);
+            cnvPos.Y = (int)(initialRect.MaxY - offsetPos.Y - currentPos.Y / zoomFactor.Value);
             return cnvPos;
         }
-        public static PointF GetDxfPosF(Point currentPos, BoundingBox initialRect, Point offsetPos, ZoomFactor zoomFactor)
+        public static PointF GetDxfPosF(Point currentPos, BoundingBox initialRect, PointF offsetPos, ZoomFactor zoomFactor)
         {
             PointF cnvPos = new PointF();
-            cnvPos.X = (float)(initialRect.MinX + (currentPos.X + offsetPos.X) / zoomFactor.Value);
-            cnvPos.Y = (float)(initialRect.MaxY - (currentPos.Y + offsetPos.Y) / zoomFactor.Value);
+            cnvPos.X = (float)(initialRect.MinX + offsetPos.X + currentPos.X / zoomFactor.Value);
+            cnvPos.Y = (float)(initialRect.MaxY - offsetPos.Y - currentPos.Y / zoomFactor.Value);
             return cnvPos;
         }
         public static void UpdateOffsetPos(ref PointF offsetPos, PictureBox DrawArea, SizeF DrawAreaSize, Point delta)

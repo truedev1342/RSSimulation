@@ -101,9 +101,7 @@ namespace RSSimulation
                 if (EFramePosBtn.Checked == true)
                 {
                     //DrawArea.Cursor = Cursors.Default;
-                    eFramePoint = HaDesGraphics.GetDxfPos(e.Location, initialRect, offsetPos, zoomFactor);
-                    eFramePoint.X = (float)(initialRect.MinX  + (e.Location.X + offsetPos.X) / zoomFactor.Value);
-                    eFramePoint.Y = (float)(initialRect.MaxY - e.Location.Y / zoomFactor.Value);
+                    eFramePoint = HaDesGraphics.GetDxfPosF(e.Location, initialRect, offsetPos, zoomFactor);
                     EFramePosBtn.Checked = false;
                     _elapsed = 0;
                     _curTime = _startTime;
@@ -351,6 +349,11 @@ namespace RSSimulation
             return result;
         }
 
+        private void processSimulation()
+        {
+
+        }
+
         private void timer1_Tick(object sender, EventArgs e)
         {
             if (_elapsed >= _necessaryTime * 3600)
@@ -364,6 +367,7 @@ namespace RSSimulation
             _curTime = _curTime + TimeSpan.FromSeconds(_scale);
             SimulationTimeSB.Text = _curTime.ToString();
             ElapsedTimeSB.Text = convertSecToTimeStr(_elapsed);
+            processSimulation();
             DrawArea.Invalidate();
         }
         /// Menubar Event Process Start

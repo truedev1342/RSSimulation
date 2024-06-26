@@ -19,3 +19,24 @@ E:\Tonny\work\0619\New folder\RSSimulation5.0\RSSimulation\obj\Debug\RSSimulatio
 E:\Tonny\work\0619\New folder\RSSimulation5.0\RSSimulation\obj\Debug\RSSimula.72441294.Up2Date
 E:\Tonny\work\0619\New folder\RSSimulation5.0\RSSimulation\obj\Debug\RSSimulation.exe
 E:\Tonny\work\0619\New folder\RSSimulation5.0\RSSimulation\obj\Debug\RSSimulation.pdb
+E:\Tonny\git_repos\RSSimulation\RSSimulation\bin\Debug\RSSimulation.exe.config
+E:\Tonny\git_repos\RSSimulation\RSSimulation\bin\Debug\RSSimulation.exe
+E:\Tonny\git_repos\RSSimulation\RSSimulation\bin\Debug\RSSimulation.pdb
+E:\Tonny\git_repos\RSSimulation\RSSimulation\bin\Debug\DotNetZip.dll
+E:\Tonny\git_repos\RSSimulation\RSSimulation\bin\Debug\netDxf.dll
+E:\Tonny\git_repos\RSSimulation\RSSimulation\bin\Debug\Newtonsoft.Json.dll
+E:\Tonny\git_repos\RSSimulation\RSSimulation\bin\Debug\System.ValueTuple.dll
+E:\Tonny\git_repos\RSSimulation\RSSimulation\bin\Debug\DotNetZip.pdb
+E:\Tonny\git_repos\RSSimulation\RSSimulation\bin\Debug\DotNetZip.xml
+E:\Tonny\git_repos\RSSimulation\RSSimulation\bin\Debug\netDxf.xml
+E:\Tonny\git_repos\RSSimulation\RSSimulation\bin\Debug\Newtonsoft.Json.xml
+E:\Tonny\git_repos\RSSimulation\RSSimulation\bin\Debug\System.ValueTuple.xml
+E:\Tonny\git_repos\RSSimulation\RSSimulation\obj\Debug\RSSimulation.csproj.AssemblyReference.cache
+E:\Tonny\git_repos\RSSimulation\RSSimulation\obj\Debug\RSSimulation.MainForm.resources
+E:\Tonny\git_repos\RSSimulation\RSSimulation\obj\Debug\RSSimulation.Properties.Resources.resources
+E:\Tonny\git_repos\RSSimulation\RSSimulation\obj\Debug\RSSimulation.SettingsForm.resources
+E:\Tonny\git_repos\RSSimulation\RSSimulation\obj\Debug\RSSimulation.csproj.GenerateResource.cache
+E:\Tonny\git_repos\RSSimulation\RSSimulation\obj\Debug\RSSimulation.csproj.CoreCompileInputs.cache
+E:\Tonny\git_repos\RSSimulation\RSSimulation\obj\Debug\RSSimula.72441294.Up2Date
+E:\Tonny\git_repos\RSSimulation\RSSimulation\obj\Debug\RSSimulation.exe
+E:\Tonny\git_repos\RSSimulation\RSSimulation\obj\Debug\RSSimulation.pdb

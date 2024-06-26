@@ -115,6 +115,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Main.ico" />
+    <None Include="res\btn_storageB.png" />
+    <None Include="res\btn_storageA.png" />
+    <None Include="res\btn_stop.png" />
+    <None Include="res\btn_start.png" />
+    <None Include="res\btn_routeB.png" />
+    <None Include="res\btn_routeA.png" />
+    <None Include="res\btn_open.png" />
+    <None Include="res\btn_new.png" />
+    <None Include="res\btn_location.png" />
     <None Include="res\storageA.png" />
     <None Include="res\routeB.png" />
     <None Include="res\routeA.png" />

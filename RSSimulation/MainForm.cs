@@ -22,47 +22,6 @@ using Point = System.Drawing.Point;
 
 namespace RSSimulation
 {
-    public class Command
-    {
-        public int _stTime; // command start time.
-        public int _enTime; // command end time.
-        public int _type;   // command type 0: rotate, 1: move.
-        public int _rotDir; // rotation direction 1: clockwise, -1: anti-clockwise
-        public PointF _stPos;  // start position when move
-        public PointF _enPos;  // end position when move
-        public float _stAngle; // start angle when rotate
-        public float _enAngle; // end angle when rotate
-        public bool _loadedRS;         // rs loaded
-        public int _rsNum;
-
-        public Command()
-        {
-            _stTime = 0;
-            _enTime = 0;
-            _type = 0;
-            _rotDir = -1;
-            _stPos = PointF.Empty;
-            _enPos = PointF.Empty;
-            _stAngle = 0;
-            _enAngle = 0;
-            _loadedRS = false;
-            _rsNum = 0;
-        }
-        public Command(int _stt, int _ent, int _tp, int _rd, PointF _stp, PointF _enp, float _sta, float _ena, bool _lrs, int _rsn)
-        {
-            _stTime = _stt;
-            _enTime = _ent;
-            _type = _tp;
-            _rotDir = _rd;
-            _stPos = _stp;
-            _enPos = _enp;
-            _stAngle = _sta;
-            _enAngle = _ena;
-            _loadedRS = _lrs;
-            _rsNum = _rsn;
-        }
-    }
-
     public partial class MainForm : Form
     {
         private string filePath = "2013.dxf";
@@ -736,6 +695,47 @@ namespace RSSimulation
         public DoubleBufferedPanel()
         {
             this.DoubleBuffered = true;
+        }
+    }
+
+    public class Command
+    {
+        public int _stTime; // command start time.
+        public int _enTime; // command end time.
+        public int _type;   // command type 0: rotate, 1: move.
+        public int _rotDir; // rotation direction 1: clockwise, -1: anti-clockwise
+        public PointF _stPos;  // start position when move
+        public PointF _enPos;  // end position when move
+        public float _stAngle; // start angle when rotate
+        public float _enAngle; // end angle when rotate
+        public bool _loadedRS;         // rs loaded
+        public int _rsNum;
+
+        public Command()
+        {
+            _stTime = 0;
+            _enTime = 0;
+            _type = 0;
+            _rotDir = -1;
+            _stPos = PointF.Empty;
+            _enPos = PointF.Empty;
+            _stAngle = 0;
+            _enAngle = 0;
+            _loadedRS = false;
+            _rsNum = 0;
+        }
+        public Command(int _stt, int _ent, int _tp, int _rd, PointF _stp, PointF _enp, float _sta, float _ena, bool _lrs, int _rsn)
+        {
+            _stTime = _stt;
+            _enTime = _ent;
+            _type = _tp;
+            _rotDir = _rd;
+            _stPos = _stp;
+            _enPos = _enp;
+            _stAngle = _sta;
+            _enAngle = _ena;
+            _loadedRS = _lrs;
+            _rsNum = _rsn;
         }
     }
 }

@@ -113,6 +113,16 @@ namespace RSSimulation.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap btn_routeD {
+            get {
+                object obj = ResourceManager.GetObject("btn_routeD", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap btn_start {
             get {
                 object obj = ResourceManager.GetObject("btn_start", resourceCulture);

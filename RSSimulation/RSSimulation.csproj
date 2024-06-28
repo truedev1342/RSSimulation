@@ -66,7 +66,9 @@
     <Compile Include="HaDesDxf.cs" />
     <Compile Include="HaDesGraphics.cs" />
     <Compile Include="HaDesMath.cs" />
-    <Compile Include="MainForm.cs" />
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
@@ -123,6 +125,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Main.ico" />
+    <None Include="res\btn_routeD.png" />
     <None Include="res\btn_storageB.png" />
     <None Include="res\btn_storageA.png" />
     <None Include="res\btn_stop.png" />

@@ -73,6 +73,7 @@
             this.EFramePosBtn = new System.Windows.Forms.ToolStripButton();
             this.SetRouteABtn = new System.Windows.Forms.ToolStripButton();
             this.SetRouteBBtn = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.StartSimulationBtn = new System.Windows.Forms.ToolStripButton();
             this.StopSimulationBtn = new System.Windows.Forms.ToolStripButton();
@@ -367,13 +368,14 @@
             this.EFramePosBtn,
             this.SetRouteABtn,
             this.SetRouteBBtn,
+            this.toolStripButton1,
             this.toolStripSeparator5,
             this.StartSimulationBtn,
             this.StopSimulationBtn,
             this.toolStripSeparator2});
             this.toolBar.Location = new System.Drawing.Point(3, 0);
             this.toolBar.Name = "toolBar";
-            this.toolBar.Size = new System.Drawing.Size(243, 25);
+            this.toolBar.Size = new System.Drawing.Size(266, 25);
             this.toolBar.TabIndex = 5;
             this.toolBar.Text = "toolStrip1";
             // 
@@ -464,6 +466,15 @@
             this.SetRouteBBtn.ToolTipText = "Set Route to B Storage";
             this.SetRouteBBtn.Click += new System.EventHandler(this.onSetRouteBBtn);
             // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton1.Image = global::RSSimulation.Properties.Resources.btn_routeD;
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton1.Text = "toolStripButton1";
+            // 
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
@@ -551,7 +562,7 @@
             this.Controls.Add(this.toolStripContainer1);
             this.Controls.Add(this.StatusBar);
             this.Controls.Add(this.MainMenu);
-            this.Icon = ((System.Drawing.Icon)(Properties.Resources.Main));
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.MainMenu;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -629,6 +640,7 @@
         private System.Windows.Forms.ToolStripMenuItem MoveRightsMenu;
         private System.Windows.Forms.ToolStripMenuItem MoveUpSMenu;
         private System.Windows.Forms.ToolStripMenuItem MoveDownSMenu;
+        private System.Windows.Forms.ToolStripButton toolStripButton1;
     }
 }
 

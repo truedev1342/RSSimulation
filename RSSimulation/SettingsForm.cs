@@ -12,38 +12,35 @@ namespace RSSimulation
 {
     public partial class SettingsForm : Form
     {
-        public int _rsNum {  get; set; }
-        public int _necessaryTime { get; set; }
-        public int _scale { get; set; }
-        public DateTime _startTime { get; set; }
+        public int RSCounts {  get; set; }
+        public int EFrameBuiltTime { get; set; }
+        public int SimulationSpeed { get; set; }
+        public DateTime SimulationTime { get; set; }
         public SettingsForm()
         {
             InitializeComponent();
         }
-
-        private void btnOK_Click(object sender, EventArgs e)
+        private void SettingsForm_Load(object sender, EventArgs e)
         {
-            this._rsNum = (int)inputRSNum.Value;
-            this._necessaryTime = (int)inputNecessaryTime.Value;
-            this._scale = (int)inputScale.Value;
-            this._startTime = inputStartTime.Value;
+            EFrameTimeTxt.Value = this.EFrameBuiltTime;
+            SimulationSpeedTxt.Value = this.SimulationSpeed;
+            RSCountsTxt.Value = this.RSCounts;
+            SimulationTimeTxt.Value = this.SimulationTime;
+        }
+        private void onOKBtn(object sender, EventArgs e)
+        {
+            this.RSCounts = (int)RSCountsTxt.Value;
+            this.EFrameBuiltTime = (int)EFrameTimeTxt.Value;
+            this.SimulationSpeed = (int)SimulationSpeedTxt.Value;
+            this.SimulationTime = SimulationTimeTxt.Value;
 
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
-
-        private void btnCancel_Click(object sender, EventArgs e)
+        private void onCancelBtn(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.Cancel;
             this.Close();
-        }
-
-        private void SettingsForm_Load(object sender, EventArgs e)
-        {
-            inputNecessaryTime.Value = this._necessaryTime;
-            inputScale.Value = this._scale;
-            inputRSNum.Value = this._rsNum;
-            inputStartTime.Value = this._startTime;
-        }
+        }        
     }
 }

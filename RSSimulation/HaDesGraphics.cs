@@ -19,7 +19,6 @@ namespace RSSimulation
         {
             double minX = double.MaxValue, minY = double.MaxValue;
             double maxX = double.MinValue, maxY = double.MinValue;
-
             foreach (var line in entities.Lines)
             {
                 minX = Math.Min(minX, Math.Min(line.StartPoint.X, line.EndPoint.X));
@@ -27,13 +26,22 @@ namespace RSSimulation
                 maxX = Math.Max(maxX, Math.Max(line.StartPoint.X, line.EndPoint.X));
                 maxY = Math.Max(maxY, Math.Max(line.StartPoint.Y, line.EndPoint.Y));
             }
-
             return new Tuple<Vector3, Vector3>(new Vector3(minX, minY, 0), new Vector3(maxX, maxY, 0));
+        }
+        public static void DrawLine(Graphics g, netDxf.Entities.Line line)
+        {
+            using (Pen pen = new Pen(HaDesGraphics.ToColor(line.Layer.Color), 0.01f))
+            {
+                //if (line.Layer.Linetype.Description != "Solid line")
+                {
+                    //pen.DashStyle = DashStyle.Dash;
+                }
+                g.DrawLine(pen, HaDesGraphics.ToPointF(line.StartPoint), HaDesGraphics.ToPointF(line.EndPoint));
+            }
         }
         public static void DrawText(Graphics g, netDxf.Entities.Text text)
         {
             string fontName = "Arial"; // Default font
-            FontStyle fontStyle = FontStyle.Regular;
             if (text.Style != null && !string.IsNullOrEmpty(text.Style.FontFamilyName))
             {
                 fontName = text.Style.FontFamilyName;
@@ -166,7 +174,7 @@ namespace RSSimulation
         }
         public static void DrawPolyline(Graphics g, netDxf.Entities.Polyline2D polyline)
         {
-            using (Pen pen = new Pen(ToColor(polyline.Layer.Color), 1))
+            using (Pen pen = new Pen(ToColor(polyline.Layer.Color), 0.01f))
             {
                 for (int i = 0; i < polyline.Vertexes.Count - 1; i++)
                 {
@@ -180,7 +188,7 @@ namespace RSSimulation
         }
         public static void DrawPolyline(Graphics g, netDxf.Entities.Polyline3D polyline)
         {
-            using (Pen pen = new Pen(ToColor(polyline.Layer.Color), 1))
+            using (Pen pen = new Pen(ToColor(polyline.Layer.Color), 0.01f))
             {
                 for (int i = 0; i < polyline.Vertexes.Count - 1; i++)
                 {
@@ -197,7 +205,7 @@ namespace RSSimulation
             //Brush hatchBrush = Brushes.Gray; // Example hatch brush color
             HatchBrush hatchBrush = new HatchBrush(System.Drawing.Drawing2D.HatchStyle.Cross, ToColor(hatch.Color), ToColor(hatch.Color));
 
-            using (Pen boundaryPen = new Pen(ToColor(hatch.Color), 1))
+            using (Pen boundaryPen = new Pen(ToColor(hatch.Color), 0.01f))
                 foreach (var boundaryPath in hatch.BoundaryPaths)
                 {
                     GraphicsPath hatchPath = new GraphicsPath();
@@ -276,18 +284,18 @@ namespace RSSimulation
             cnvPos.Y = (float)(initialRect.MaxY - offsetPos.Y - currentPos.Y / zoomFactor.Value);
             return cnvPos;
         }
-        public static void UpdateOffsetPos(ref PointF offsetPos, PictureBox DrawArea, SizeF DrawAreaSize, Point delta)
+        public static void UpdateOffsetPos(ref PointF offsetPos, PictureBox DrawArea, SizeF DrawAreaSize, Point delta, float zoomValue)
         {
             // Adjust horizontal scroll
-            float newX = offsetPos.X - delta.X;
+            float newX = offsetPos.X - delta.X / zoomValue;
+            newX = Math.Min((DrawAreaSize.Width - DrawArea.Width) / zoomValue, newX); // Ensure not more than maximum
             newX = Math.Max(0, newX); // Ensure not less than 0
-            newX = Math.Min(DrawAreaSize.Width - DrawArea.Width, newX); // Ensure not more than maximum
             offsetPos.X = newX;
 
             // Adjust vertical scroll
-            float newY = offsetPos.Y - delta.Y;
+            float newY = offsetPos.Y - delta.Y / zoomValue;
+            newY = Math.Min((DrawAreaSize.Height - DrawArea.Height) / zoomValue, newY); // Ensure not more than maximum
             newY = Math.Max(0, newY); // Ensure not less than 0
-            newY = Math.Min(DrawAreaSize.Height - DrawArea.Height, newY); // Ensure not more than maximum
             offsetPos.Y = newY;
         }
     }

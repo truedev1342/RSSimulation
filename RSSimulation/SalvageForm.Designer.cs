@@ -34,6 +34,11 @@
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnMoveRight = new System.Windows.Forms.Button();
             this.btnMoveLeft = new System.Windows.Forms.Button();
+            this.RSCountsTxt = new System.Windows.Forms.NumericUpDown();
+            this.label3 = new System.Windows.Forms.Label();
+            this.btnMoveUp = new System.Windows.Forms.Button();
+            this.btnMoveDown = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(this.RSCountsTxt)).BeginInit();
             this.SuspendLayout();
             // 
             // listBoxAvailable
@@ -88,7 +93,7 @@
             // 
             // btnMoveLeft
             // 
-            this.btnMoveLeft.Location = new System.Drawing.Point(246, 315);
+            this.btnMoveLeft.Location = new System.Drawing.Point(246, 244);
             this.btnMoveLeft.Name = "btnMoveLeft";
             this.btnMoveLeft.Size = new System.Drawing.Size(42, 23);
             this.btnMoveLeft.TabIndex = 1;
@@ -96,12 +101,59 @@
             this.btnMoveLeft.UseVisualStyleBackColor = true;
             this.btnMoveLeft.Click += new System.EventHandler(this.btnMoveLeft_Click);
             // 
+            // RSCountsTxt
+            // 
+            this.RSCountsTxt.Location = new System.Drawing.Point(284, 21);
+            this.RSCountsTxt.Maximum = new decimal(new int[] {
+            149,
+            0,
+            0,
+            0});
+            this.RSCountsTxt.Name = "RSCountsTxt";
+            this.RSCountsTxt.Size = new System.Drawing.Size(141, 22);
+            this.RSCountsTxt.TabIndex = 5;
+            this.RSCountsTxt.ValueChanged += new System.EventHandler(this.RSCountsTxt_ValueChanged);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(122, 24);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(136, 16);
+            this.label3.TabIndex = 4;
+            this.label3.Text = "Roof Support Counts :";
+            // 
+            // btnMoveUp
+            // 
+            this.btnMoveUp.Location = new System.Drawing.Point(246, 288);
+            this.btnMoveUp.Name = "btnMoveUp";
+            this.btnMoveUp.Size = new System.Drawing.Size(42, 23);
+            this.btnMoveUp.TabIndex = 1;
+            this.btnMoveUp.Text = "˄";
+            this.btnMoveUp.UseVisualStyleBackColor = true;
+            this.btnMoveUp.Click += new System.EventHandler(this.btnMoveUp_Click);
+            // 
+            // btnMoveDown
+            // 
+            this.btnMoveDown.Location = new System.Drawing.Point(246, 330);
+            this.btnMoveDown.Name = "btnMoveDown";
+            this.btnMoveDown.Size = new System.Drawing.Size(42, 23);
+            this.btnMoveDown.TabIndex = 1;
+            this.btnMoveDown.Text = "˅";
+            this.btnMoveDown.UseVisualStyleBackColor = true;
+            this.btnMoveDown.Click += new System.EventHandler(this.btnMoveDown_Click);
+            // 
             // SalvageForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(544, 589);
+            this.Controls.Add(this.RSCountsTxt);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.btnCancel);
+            this.Controls.Add(this.btnMoveDown);
+            this.Controls.Add(this.btnMoveUp);
             this.Controls.Add(this.btnMoveLeft);
             this.Controls.Add(this.btnMoveRight);
             this.Controls.Add(this.btnOK);
@@ -116,7 +168,9 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Salvage";
             this.Load += new System.EventHandler(this.SalvageForm_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.RSCountsTxt)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -128,5 +182,9 @@
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnMoveRight;
         private System.Windows.Forms.Button btnMoveLeft;
+        private System.Windows.Forms.NumericUpDown RSCountsTxt;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button btnMoveUp;
+        private System.Windows.Forms.Button btnMoveDown;
     }
 }

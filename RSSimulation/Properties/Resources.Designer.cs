@@ -183,16 +183,6 @@ namespace RSSimulation.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap mix {
-            get {
-                object obj = ResourceManager.GetObject("mix", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap RS {
             get {
                 object obj = ResourceManager.GetObject("RS", resourceCulture);

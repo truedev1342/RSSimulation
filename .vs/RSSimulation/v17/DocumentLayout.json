@@ -3,36 +3,36 @@
   "WorkspaceRootPath": "E:\\Tonny\\git_repos\\RSSimulation\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|e:\\tonny\\git_repos\\rssimulation\\rssimulation\\salvageform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|solutionrelative:rssimulation\\salvageform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|e:\\tonny\\git_repos\\rssimulation\\rssimulation\\salvageform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|solutionrelative:rssimulation\\salvageform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|e:\\tonny\\git_repos\\rssimulation\\rssimulation\\settingsform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|solutionrelative:rssimulation\\settingsform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|e:\\tonny\\git_repos\\rssimulation\\rssimulation\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|E:\\Tonny\\git_repos\\RSSimulation\\rssimulation\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|solutionrelative:rssimulation\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|E:\\Tonny\\git_repos\\RSSimulation\\rssimulation\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|solutionrelative:rssimulation\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+      "AbsoluteMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|e:\\tonny\\git_repos\\rssimulation\\rssimulation\\mainform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|solutionrelative:rssimulation\\mainform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|E:\\Tonny\\git_repos\\RSSimulation\\rssimulation\\salvageform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|solutionrelative:rssimulation\\salvageform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|E:\\Tonny\\git_repos\\RSSimulation\\rssimulation\\properties\\resources.resx||{FF4D6ACA-9352-4A5F-821E-F4D6EBDCAB11}",
+      "RelativeMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|solutionrelative:rssimulation\\properties\\resources.resx||{FF4D6ACA-9352-4A5F-821E-F4D6EBDCAB11}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|E:\\Tonny\\git_repos\\RSSimulation\\rssimulation\\salvageform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|solutionrelative:rssimulation\\salvageform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|E:\\Tonny\\git_repos\\RSSimulation\\rssimulation\\roofsupport.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|solutionrelative:rssimulation\\roofsupport.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|e:\\tonny\\git_repos\\rssimulation\\rssimulation\\dozer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|E:\\Tonny\\git_repos\\RSSimulation\\rssimulation\\dozer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|solutionrelative:rssimulation\\dozer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|E:\\Tonny\\git_repos\\RSSimulation\\rssimulation\\properties\\resources.resx||{FF4D6ACA-9352-4A5F-821E-F4D6EBDCAB11}",
-      "RelativeMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|solutionrelative:rssimulation\\properties\\resources.resx||{FF4D6ACA-9352-4A5F-821E-F4D6EBDCAB11}"
+      "AbsoluteMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|E:\\Tonny\\git_repos\\RSSimulation\\rssimulation\\settingsform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{75C6971F-6D40-4D71-B3F0-858768D622D6}|RSSimulation\\RSSimulation.csproj|solutionrelative:rssimulation\\settingsform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     }
   ],
   "DocumentGroupContainers": [
@@ -46,13 +46,13 @@
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 4,
               "Title": "SalvageForm.cs",
               "DocumentMoniker": "E:\\Tonny\\git_repos\\RSSimulation\\RSSimulation\\SalvageForm.cs",
               "RelativeDocumentMoniker": "RSSimulation\\SalvageForm.cs",
               "ToolTip": "E:\\Tonny\\git_repos\\RSSimulation\\RSSimulation\\SalvageForm.cs",
               "RelativeToolTip": "RSSimulation\\SalvageForm.cs",
-              "ViewState": "AQIAACkAAAAAAAAAAAAwwEQAAAAwAAAA",
+              "ViewState": "AQIAAEsAAAAAAAAAAAAmwFsAAAAjAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-06-26T22:50:03.23Z",
               "EditorCaption": ""
@@ -60,19 +60,6 @@
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "SettingsForm.cs",
-              "DocumentMoniker": "E:\\Tonny\\git_repos\\RSSimulation\\RSSimulation\\SettingsForm.cs",
-              "RelativeDocumentMoniker": "RSSimulation\\SettingsForm.cs",
-              "ToolTip": "E:\\Tonny\\git_repos\\RSSimulation\\RSSimulation\\SettingsForm.cs",
-              "RelativeToolTip": "RSSimulation\\SettingsForm.cs",
-              "ViewState": "AQIAABQAAAAAAAAAAAAvwA8AAAATAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-26T22:49:42.303Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
               "Title": "SalvageForm.cs [Design]",
               "DocumentMoniker": "E:\\Tonny\\git_repos\\RSSimulation\\RSSimulation\\SalvageForm.cs",
               "RelativeDocumentMoniker": "RSSimulation\\SalvageForm.cs",
@@ -84,32 +71,44 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 0,
               "Title": "MainForm.cs",
               "DocumentMoniker": "E:\\Tonny\\git_repos\\RSSimulation\\RSSimulation\\MainForm.cs",
               "RelativeDocumentMoniker": "RSSimulation\\MainForm.cs",
               "ToolTip": "E:\\Tonny\\git_repos\\RSSimulation\\RSSimulation\\MainForm.cs",
               "RelativeToolTip": "RSSimulation\\MainForm.cs",
-              "ViewState": "AQIAAPsBAAAAAAAAAAAIwBECAAANAAAA",
+              "ViewState": "AQIAAHABAAAAAAAAAAAuwIYBAAAiAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-06-26T16:45:05.378Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "MainForm.cs [Design]",
-              "DocumentMoniker": "E:\\Tonny\\git_repos\\RSSimulation\\RSSimulation\\MainForm.cs",
-              "RelativeDocumentMoniker": "RSSimulation\\MainForm.cs",
-              "ToolTip": "E:\\Tonny\\git_repos\\RSSimulation\\RSSimulation\\MainForm.cs [Design]",
-              "RelativeToolTip": "RSSimulation\\MainForm.cs [Design]",
+              "DocumentIndex": 7,
+              "Title": "SettingsForm.cs [Design]",
+              "DocumentMoniker": "E:\\Tonny\\git_repos\\RSSimulation\\RSSimulation\\SettingsForm.cs",
+              "RelativeDocumentMoniker": "RSSimulation\\SettingsForm.cs",
+              "ToolTip": "E:\\Tonny\\git_repos\\RSSimulation\\RSSimulation\\SettingsForm.cs [Design]",
+              "RelativeToolTip": "RSSimulation\\SettingsForm.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-26T16:22:57.428Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2024-06-28T13:25:39.074Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 1,
+              "Title": "MainForm.Designer.cs",
+              "DocumentMoniker": "E:\\Tonny\\git_repos\\RSSimulation\\RSSimulation\\MainForm.Designer.cs",
+              "RelativeDocumentMoniker": "RSSimulation\\MainForm.Designer.cs",
+              "ToolTip": "E:\\Tonny\\git_repos\\RSSimulation\\RSSimulation\\MainForm.Designer.cs",
+              "RelativeToolTip": "RSSimulation\\MainForm.Designer.cs",
+              "ViewState": "AQIAABwCAAAAAAAAAADgvycCAAAuAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-28T17:42:53.44Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "Resources.resx",
               "DocumentMoniker": "E:\\Tonny\\git_repos\\RSSimulation\\RSSimulation\\Properties\\Resources.resx",
               "RelativeDocumentMoniker": "RSSimulation\\Properties\\Resources.resx",
@@ -127,10 +126,9 @@
               "RelativeDocumentMoniker": "RSSimulation\\RoofSupport.cs",
               "ToolTip": "E:\\Tonny\\git_repos\\RSSimulation\\RSSimulation\\RoofSupport.cs",
               "RelativeToolTip": "RSSimulation\\RoofSupport.cs",
-              "ViewState": "AQIAAFQAAAAAAAAAAAAcwHIAAAAFAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAADMAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-26T16:20:28.551Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-26T16:20:28.551Z"
             },
             {
               "$type": "Document",
@@ -142,8 +140,7 @@
               "RelativeToolTip": "RSSimulation\\Dozer.cs",
               "ViewState": "AQIAABwAAAAAAAAAAAAcwCsAAAAJAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-26T18:21:06.978Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-26T18:21:06.978Z"
             }
           ]
         }

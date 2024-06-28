@@ -1,5 +1,6 @@
 ﻿using netDxf;
 using netDxf.Entities;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static netDxf.Entities.HatchBoundaryPath;
 using Point = System.Drawing.Point;
 
 namespace RSSimulation
@@ -47,6 +49,16 @@ namespace RSSimulation
             Max = max;
         }
     }
+    struct LinePos
+    {
+        public PointF StartPos;
+        public PointF EndPos;
+        public LinePos(PointF startPos, PointF endPos)
+        {
+            StartPos = startPos;
+            EndPos = endPos;
+        }
+    }
     internal class HaDesMath
     {
         public static SizeF UpdateDrawAreaSize(BoundingBox boundingBox, ZoomFactor zoomFactor)
@@ -60,7 +72,7 @@ namespace RSSimulation
             //drawArea.Size = new Size(width, height);
             //drawArea.Location = new Point(0, 0);
         }
-        public static BoundingBox GetBoundingBox(DxfDocument dxf)
+        public static BoundingBox GetBoundingBox(DxfDocument dxf, ref LinePos initRSPos)
         {
             BoundingBox boundingBox = new BoundingBox(double.MaxValue, double.MaxValue, double.MinValue, double.MinValue);
 
@@ -71,6 +83,11 @@ namespace RSSimulation
                     switch (entity)
                     {
                         case netDxf.Entities.Line line:
+                            if (line.Handle as string == "10526")
+                            {
+                                initRSPos.StartPos = HaDesGraphics.ToPointF(line.StartPoint);
+                                initRSPos.EndPos = HaDesGraphics.ToPointF(line.EndPoint);
+                            }
                             UpdateBoundingBox(ref boundingBox, line.StartPoint);
                             UpdateBoundingBox(ref boundingBox, line.EndPoint);
                             break;
@@ -115,8 +132,8 @@ namespace RSSimulation
             float scaledWidth = panelWidth / zoomFactor;
             float scaledHeight = panelHeight / zoomFactor;
 
-            float startX = (float)(boundingBox.MinX + offsetPos.X / zoomFactor);
-            float startY = (float)(boundingBox.MaxY - offsetPos.Y / zoomFactor) - scaledHeight;
+            float startX = (float)(boundingBox.MinX + offsetPos.X);
+            float startY = (float)(boundingBox.MaxY - offsetPos.Y) - scaledHeight;
 
             // Calculate the visible rectangle in the panel's coordinate system
             RectangleF visibleRect = new RectangleF(
@@ -244,6 +261,53 @@ namespace RSSimulation
 
             // Create a rectangle from the min and max bounds
             return new RectangleF(minX, minY, maxX - minX, maxY - minY);
+        }
+        public static float CalcDistancePoints(PointF firstPos, PointF secondPos)
+        {
+            return (float)Math.Sqrt((firstPos.X - secondPos.X) * (firstPos.X - secondPos.X) +
+                (firstPos.Y - secondPos.Y) * (firstPos.Y - secondPos.Y));
+        }
+        public static PointF CalcBasePoint(LinePos linePos, PointF eFramePos)
+        {
+            PointF start = linePos.StartPos;
+            PointF end = linePos.EndPos;
+
+            // Vector from start to end
+            PointF lineVec = new PointF(end.X - start.X, end.Y - start.Y);
+            // Vector from start to point
+            PointF pointVec = new PointF(eFramePos.X - start.X, eFramePos.Y - start.Y);
+
+            // Calculate the dot product of lineVec and pointVec
+            float dotProduct = pointVec.X * lineVec.X + pointVec.Y * lineVec.Y;
+            // Calculate the squared length of the lineVec
+            float lineLengthSq = lineVec.X * lineVec.X + lineVec.Y * lineVec.Y;
+
+            // Projection scale factor
+            float scale = dotProduct / lineLengthSq;
+
+            // Calculate the base point coordinates
+            PointF basePoint = new PointF(
+                start.X + scale * lineVec.X,
+                start.Y + scale * lineVec.Y
+            );
+
+            return basePoint;
+        }
+        public static string ConvertSecToTimeStr(int sec)
+        {
+            string result = "";
+            int h = sec / 3600;
+            if (h < 10) result += "0";
+            result += h.ToString();
+            result += ":";
+            int m = (sec % 3600) / 60;
+            if (m < 10) result += "0";
+            result += m.ToString();
+            result += ":";
+            int s = sec % 60;
+            if (s < 10) result += "0";
+            result += s.ToString();
+            return result;
         }
     }
 }

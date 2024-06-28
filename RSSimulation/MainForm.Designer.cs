@@ -40,6 +40,11 @@
             this.ZoomInSMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.ZoomOutSMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.ZoomFitSMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            this.MoveLeftSMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.MoveRightsMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.MoveUpSMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.MoveDownSMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.SimulationPropertiesSMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.SalvageSequenceSMenu = new System.Windows.Forms.ToolStripMenuItem();
@@ -145,7 +150,12 @@
             this.EditMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ZoomInSMenu,
             this.ZoomOutSMenu,
-            this.ZoomFitSMenu});
+            this.ZoomFitSMenu,
+            this.toolStripSeparator6,
+            this.MoveLeftSMenu,
+            this.MoveRightsMenu,
+            this.MoveUpSMenu,
+            this.MoveDownSMenu});
             this.EditMenu.Name = "EditMenu";
             this.EditMenu.Size = new System.Drawing.Size(39, 20);
             this.EditMenu.Text = "&Edit";
@@ -153,23 +163,63 @@
             // ZoomInSMenu
             // 
             this.ZoomInSMenu.Name = "ZoomInSMenu";
-            this.ZoomInSMenu.Size = new System.Drawing.Size(129, 22);
+            this.ZoomInSMenu.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.PageUp)));
+            this.ZoomInSMenu.Size = new System.Drawing.Size(203, 22);
             this.ZoomInSMenu.Text = "Zoom In";
             this.ZoomInSMenu.Click += new System.EventHandler(this.onZoomInSMenu);
             // 
             // ZoomOutSMenu
             // 
             this.ZoomOutSMenu.Name = "ZoomOutSMenu";
-            this.ZoomOutSMenu.Size = new System.Drawing.Size(129, 22);
+            this.ZoomOutSMenu.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Next)));
+            this.ZoomOutSMenu.Size = new System.Drawing.Size(203, 22);
             this.ZoomOutSMenu.Text = "Zoom Out";
             this.ZoomOutSMenu.Click += new System.EventHandler(this.onZoomOutSMenu);
             // 
             // ZoomFitSMenu
             // 
             this.ZoomFitSMenu.Name = "ZoomFitSMenu";
-            this.ZoomFitSMenu.Size = new System.Drawing.Size(129, 22);
+            this.ZoomFitSMenu.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Home)));
+            this.ZoomFitSMenu.Size = new System.Drawing.Size(203, 22);
             this.ZoomFitSMenu.Text = "Zoom Fit";
             this.ZoomFitSMenu.Click += new System.EventHandler(this.onZoomFitSMenu);
+            // 
+            // toolStripSeparator6
+            // 
+            this.toolStripSeparator6.Name = "toolStripSeparator6";
+            this.toolStripSeparator6.Size = new System.Drawing.Size(200, 6);
+            // 
+            // MoveLeftSMenu
+            // 
+            this.MoveLeftSMenu.Name = "MoveLeftSMenu";
+            this.MoveLeftSMenu.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Left)));
+            this.MoveLeftSMenu.Size = new System.Drawing.Size(203, 22);
+            this.MoveLeftSMenu.Text = "Move Left";
+            this.MoveLeftSMenu.Click += new System.EventHandler(this.onMoveLeftSMenu);
+            // 
+            // MoveRightsMenu
+            // 
+            this.MoveRightsMenu.Name = "MoveRightsMenu";
+            this.MoveRightsMenu.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Right)));
+            this.MoveRightsMenu.Size = new System.Drawing.Size(203, 22);
+            this.MoveRightsMenu.Text = "Move Right";
+            this.MoveRightsMenu.Click += new System.EventHandler(this.onMoveRightsMenu);
+            // 
+            // MoveUpSMenu
+            // 
+            this.MoveUpSMenu.Name = "MoveUpSMenu";
+            this.MoveUpSMenu.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Up)));
+            this.MoveUpSMenu.Size = new System.Drawing.Size(203, 22);
+            this.MoveUpSMenu.Text = "Move Up";
+            this.MoveUpSMenu.Click += new System.EventHandler(this.onMoveUpSMenu);
+            // 
+            // MoveDownSMenu
+            // 
+            this.MoveDownSMenu.Name = "MoveDownSMenu";
+            this.MoveDownSMenu.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Down)));
+            this.MoveDownSMenu.Size = new System.Drawing.Size(203, 22);
+            this.MoveDownSMenu.Text = "Move Down";
+            this.MoveDownSMenu.Click += new System.EventHandler(this.onMoveDownSMenu);
             // 
             // ToolMenu
             // 
@@ -323,7 +373,7 @@
             this.toolStripSeparator2});
             this.toolBar.Location = new System.Drawing.Point(3, 0);
             this.toolBar.Name = "toolBar";
-            this.toolBar.Size = new System.Drawing.Size(274, 25);
+            this.toolBar.Size = new System.Drawing.Size(243, 25);
             this.toolBar.TabIndex = 5;
             this.toolBar.Text = "toolStrip1";
             // 
@@ -334,7 +384,7 @@
             this.NewBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.NewBtn.Name = "NewBtn";
             this.NewBtn.Size = new System.Drawing.Size(23, 22);
-            this.NewBtn.Text = "toolStripButton1";
+            this.NewBtn.Text = "New Simulation";
             this.NewBtn.ToolTipText = "New Simulation";
             this.NewBtn.Click += new System.EventHandler(this.onNewSMenu);
             // 
@@ -345,7 +395,7 @@
             this.OpenBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.OpenBtn.Name = "OpenBtn";
             this.OpenBtn.Size = new System.Drawing.Size(23, 22);
-            this.OpenBtn.Text = "toolStripButton1";
+            this.OpenBtn.Text = "Open Dxf File";
             this.OpenBtn.ToolTipText = "Open Dxf File";
             this.OpenBtn.Click += new System.EventHandler(this.onOpenSMenu);
             // 
@@ -361,7 +411,7 @@
             this.SetALocationBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.SetALocationBtn.Name = "SetALocationBtn";
             this.SetALocationBtn.Size = new System.Drawing.Size(23, 22);
-            this.SetALocationBtn.Text = "toolStripButton1";
+            this.SetALocationBtn.Text = "Set A Storage Location";
             this.SetALocationBtn.ToolTipText = "Set A Storage Location";
             this.SetALocationBtn.Click += new System.EventHandler(this.onSetALocationBtn);
             // 
@@ -372,7 +422,7 @@
             this.SetBLocationBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.SetBLocationBtn.Name = "SetBLocationBtn";
             this.SetBLocationBtn.Size = new System.Drawing.Size(23, 22);
-            this.SetBLocationBtn.Text = "toolStripButton1";
+            this.SetBLocationBtn.Text = "Set B Storage Location";
             this.SetBLocationBtn.ToolTipText = "Set B Storage Location";
             this.SetBLocationBtn.Click += new System.EventHandler(this.onEFramePosBtn);
             // 
@@ -388,7 +438,7 @@
             this.EFramePosBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.EFramePosBtn.Name = "EFramePosBtn";
             this.EFramePosBtn.Size = new System.Drawing.Size(23, 22);
-            this.EFramePosBtn.Text = "toolStripButton2";
+            this.EFramePosBtn.Text = "Set E-Frame Position";
             this.EFramePosBtn.ToolTipText = "Set E-Frame Position";
             this.EFramePosBtn.Click += new System.EventHandler(this.onEFramePosBtn);
             // 
@@ -399,7 +449,7 @@
             this.SetRouteABtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.SetRouteABtn.Name = "SetRouteABtn";
             this.SetRouteABtn.Size = new System.Drawing.Size(23, 22);
-            this.SetRouteABtn.Text = "toolStripButton1";
+            this.SetRouteABtn.Text = "Set Route to A Storage";
             this.SetRouteABtn.ToolTipText = "Set Route to A Storage";
             this.SetRouteABtn.Click += new System.EventHandler(this.onSetRouteABtn);
             // 
@@ -410,7 +460,7 @@
             this.SetRouteBBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.SetRouteBBtn.Name = "SetRouteBBtn";
             this.SetRouteBBtn.Size = new System.Drawing.Size(23, 22);
-            this.SetRouteBBtn.Text = "toolStripButton1";
+            this.SetRouteBBtn.Text = "Set Route to B Storage";
             this.SetRouteBBtn.ToolTipText = "Set Route to B Storage";
             this.SetRouteBBtn.Click += new System.EventHandler(this.onSetRouteBBtn);
             // 
@@ -426,8 +476,8 @@
             this.StartSimulationBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.StartSimulationBtn.Name = "StartSimulationBtn";
             this.StartSimulationBtn.Size = new System.Drawing.Size(23, 22);
-            this.StartSimulationBtn.Text = "toolStripButton1";
-            this.StartSimulationBtn.ToolTipText = "Start simulation";
+            this.StartSimulationBtn.Text = "Start Simulation";
+            this.StartSimulationBtn.ToolTipText = "Start Simulation";
             this.StartSimulationBtn.Click += new System.EventHandler(this.onStartSimulationBtn);
             // 
             // StopSimulationBtn
@@ -437,8 +487,8 @@
             this.StopSimulationBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.StopSimulationBtn.Name = "StopSimulationBtn";
             this.StopSimulationBtn.Size = new System.Drawing.Size(23, 22);
-            this.StopSimulationBtn.Text = "toolStripButton1";
-            this.StopSimulationBtn.ToolTipText = "Stop simulation";
+            this.StopSimulationBtn.Text = "Stop Simulation";
+            this.StopSimulationBtn.ToolTipText = "Stop Simulation";
             this.StopSimulationBtn.Click += new System.EventHandler(this.onStopSimulationBtn);
             // 
             // toolStripSeparator2
@@ -501,7 +551,7 @@
             this.Controls.Add(this.toolStripContainer1);
             this.Controls.Add(this.StatusBar);
             this.Controls.Add(this.MainMenu);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Icon = ((System.Drawing.Icon)(Properties.Resources.Main));
             this.MainMenuStrip = this.MainMenu;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -574,6 +624,11 @@
         private System.Windows.Forms.ToolStripButton SetRouteBBtn;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.ToolStripMenuItem SalvageSequenceSMenu;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
+        private System.Windows.Forms.ToolStripMenuItem MoveLeftSMenu;
+        private System.Windows.Forms.ToolStripMenuItem MoveRightsMenu;
+        private System.Windows.Forms.ToolStripMenuItem MoveUpSMenu;
+        private System.Windows.Forms.ToolStripMenuItem MoveDownSMenu;
     }
 }
 

@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static netDxf.Entities.HatchBoundaryPath;
+using static System.Net.Mime.MediaTypeNames;
 using Point = System.Drawing.Point;
 
 namespace RSSimulation
@@ -68,12 +69,14 @@ namespace RSSimulation
     {
         public string text;
         public Vector3 position;
+        public double rotation;
         public Brush brush;
         public Font font;
-        public TextData(string text, Vector3 position, Brush brush, Font font)
+        public TextData(string text, Vector3 position, double rotation, Brush brush, Font font)
         {
             this.text = text;
             this.position = position;
+            this.rotation = rotation;
             this.brush = brush;
             this.font = font;
         }
@@ -113,9 +116,14 @@ namespace RSSimulation
 
             initRect = new BoundingBox();
         }
-        public LinePos getPrimaryLinePos()
+        public bool getPrimaryLinePos(ref LinePos linePos)
         {
-            return new LinePos(ToPointF(primaryLine.startPos), ToPointF(primaryLine.endPos));
+            if(primaryLine != null)
+            {
+                linePos = new LinePos(ToPointF(primaryLine.startPos), ToPointF(primaryLine.endPos));
+                return true;
+            }
+            return false;
         }
         public void setPrimaryLin(LineData line)
         {
@@ -189,8 +197,8 @@ namespace RSSimulation
                             foreach (var vertex in polyline3D.Vertexes)
                                 UpdateBoundingBox(ref boundingBox, vertex);
                             break;
-                        case Text text:
-                            TextData textData = new TextData(text.Value, text.Position,
+                        case netDxf.Entities.Text text:
+                            TextData textData = new TextData(text.Value, text.Position, text.Rotation,
                                 new SolidBrush(ToColor(text.Layer.Color)),
                                 new Font(
                                    new FontFamily($"Arial"),
@@ -198,6 +206,16 @@ namespace RSSimulation
                                    FontStyle.Regular,
                                    GraphicsUnit.Pixel));
                             Add(textData);
+                            break;
+                        case netDxf.Entities.MText mtext:
+                            TextData mtextData = new TextData(ExtractString(mtext.Value), mtext.Position, mtext.Rotation,
+                                new SolidBrush(Color.FromArgb(55, 55, 55)),
+                                new Font(
+                                   new FontFamily($"Arial"),
+                                   (float)mtext.Height,
+                                   FontStyle.Regular,
+                                   GraphicsUnit.Pixel));
+                            Add(mtextData);
                             break;
                         case Hatch hatch:
                             hatchs.Add(hatch);
@@ -207,6 +225,29 @@ namespace RSSimulation
                 }
             }
             return boundingBox;
+        }
+        private string ExtractString(string input)
+        {
+            // Find the position of the semicolon
+            int semicolonIndex = input.IndexOf(';');
+
+            // If the semicolon is found, extract the number
+            if (semicolonIndex != -1)
+            {
+                // Extract the substring after the semicolon
+                string numberPart = input.Substring(semicolonIndex + 1);
+
+                // Remove the closing brace if it exists
+                if (numberPart.EndsWith("}"))
+                {
+                    numberPart = numberPart.TrimEnd('}');
+                }
+
+                return numberPart;
+            }
+
+            // If the semicolon is not found, return an empty string or handle accordingly
+            return input;
         }
         private static void UpdateBoundingBox(ref BoundingBox boundingBox, Vector2 point, double radius = 0)
         {
@@ -288,6 +329,10 @@ namespace RSSimulation
                     HatchPathData hatchPathData = new HatchPathData(hatchPath, hatchBrush, pen);
                     hatchPaths.Add(hatchPathData);
                 }
+            }
+            foreach (TextData text in texts)
+            {
+                text.position = updatePos(text.position, initRect);                
             }
         }
         public Vector3 updatePos(Vector3 pos, BoundingBox initRect)
@@ -374,11 +419,12 @@ namespace RSSimulation
             offsetPos.Y = newY;
         }
         public void DrawDxf(Graphics g)
-        {
-            DrawHatch(g);
+        {            
             DrawLine(g);
-            DrawPolyline2D(g);
             DrawPolyline3D(g);
+            DrawHatch(g);
+            DrawPolyline2D(g);
+            DrawText(g);
         }
         private void DrawLine(Graphics g)
         {
@@ -422,6 +468,24 @@ namespace RSSimulation
             {
                 g.FillPath(hatchPathData.hatchBrush, hatchPathData.hatchPath);
                 g.DrawPath(hatchPathData.pen, hatchPathData.hatchPath);
+            }                
+        }
+        private void DrawText(Graphics g)
+        {
+            foreach (TextData text in texts)
+            {
+                PointF position = ToPointF(text.position);
+                GraphicsState state = g.Save();
+
+                // Translate to the position where you want to draw the text
+                g.TranslateTransform(position.X, position.Y);
+
+                // Rotate the coordinate system 180 degrees (vertically invert)
+
+                g.RotateTransform((float)-text.rotation);
+                //g.TranslateTransform(0, (float)text.font.Height / 2);
+                g.DrawString(text.text, text.font, text.brush, 0, 0);
+                g.Restore(state);
             }                
         }
     }

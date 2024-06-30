@@ -19,9 +19,27 @@ namespace RSSimulation
         private bool _isLoading = false;
         public SalvageForm()
         {
+            List<int> _available = new List<int>();
+            List<int> _unavailable = new List<int>();
             InitializeComponent();
         }
+        private void SalvageForm_Load(object sender, EventArgs e)
+        {
+            _isLoading = true;
+            RSCountsTxt.Value = RSCounts;
+            listBoxAvailable.Items.Clear();
+            listBoxUnavailable.Items.Clear();
+            for (int i = 0; i < _available.Count; i++)
+            {
+                listBoxAvailable.Items.Add("Roof Support #" + _available[i].ToString());
+            }
 
+            for (int i = 0; i < _unavailable.Count; i++)
+            {
+                listBoxUnavailable.Items.Add("Roof Support #" + _unavailable[i].ToString());
+            }
+            _isLoading = false;
+        }
         private void btnMoveRight_Click(object sender, EventArgs e)
         {
             if (listBoxAvailable.SelectedIndex < 0) return;
@@ -46,10 +64,10 @@ namespace RSSimulation
             }
             listBoxAvailable.Items.Add(value);
         }
-
         private void btnOK_Click(object sender, EventArgs e)
         {
             _available.Clear();
+            _unavailable.Clear();
             for (int i = 0; i < listBoxAvailable.Items.Count; i ++)
             {
                 _available.Add(int.Parse(listBoxAvailable.Items[i].ToString().Substring(14)));
@@ -68,25 +86,6 @@ namespace RSSimulation
             this.DialogResult = DialogResult.Cancel;
             this.Close();
         }
-
-        private void SalvageForm_Load(object sender, EventArgs e)
-        {
-            _isLoading = true;
-            RSCountsTxt.Value = RSCounts;
-            listBoxAvailable.Items.Clear();
-            listBoxUnavailable.Items.Clear();
-            for (int i = 0; i < _available.Count; i ++)
-            {
-                listBoxAvailable.Items.Add("Roof Support #" + _available[i].ToString());
-            }
-
-            for (int i = 0; i < _unavailable.Count; i++)
-            {
-                listBoxUnavailable.Items.Add("Roof Support #" + _unavailable[i].ToString());
-            }
-            _isLoading = false;
-        }
-
         private void RSCountsTxt_ValueChanged(object sender, EventArgs e)
         {
             if (_isLoading) return;

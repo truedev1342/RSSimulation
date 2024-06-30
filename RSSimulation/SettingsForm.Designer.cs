@@ -48,6 +48,8 @@
             this.LCCSpeedTxt = new System.Windows.Forms.NumericUpDown();
             this.label9 = new System.Windows.Forms.Label();
             this.LCCDropTimeTxt = new System.Windows.Forms.NumericUpDown();
+            this.label10 = new System.Windows.Forms.Label();
+            this.LCCCountsTxt = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.SimulationSpeedTxt)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.RSCountsTxt)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.EFrameTimeTxt)).BeginInit();
@@ -56,6 +58,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.LCCLoadingTimeTxt)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.LCCSpeedTxt)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.LCCDropTimeTxt)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.LCCCountsTxt)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -94,9 +97,9 @@
             this.label4.Location = new System.Drawing.Point(24, 126);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(127, 16);
+            this.label4.Size = new System.Drawing.Size(145, 16);
             this.label4.TabIndex = 0;
-            this.label4.Text = "E-Frame Built Time :";
+            this.label4.Text = "E-Frame Built Time(H) :";
             // 
             // SimulationTimeTxt
             // 
@@ -105,7 +108,7 @@
             this.SimulationTimeTxt.Location = new System.Drawing.Point(167, 24);
             this.SimulationTimeTxt.Name = "SimulationTimeTxt";
             this.SimulationTimeTxt.Size = new System.Drawing.Size(160, 22);
-            this.SimulationTimeTxt.TabIndex = 1;
+            this.SimulationTimeTxt.TabIndex = 10;
             // 
             // SimulationSpeedTxt
             // 
@@ -117,7 +120,7 @@
             0});
             this.SimulationSpeedTxt.Name = "SimulationSpeedTxt";
             this.SimulationSpeedTxt.Size = new System.Drawing.Size(141, 22);
-            this.SimulationSpeedTxt.TabIndex = 2;
+            this.SimulationSpeedTxt.TabIndex = 1;
             // 
             // RSCountsTxt
             // 
@@ -129,7 +132,7 @@
             0});
             this.RSCountsTxt.Name = "RSCountsTxt";
             this.RSCountsTxt.Size = new System.Drawing.Size(141, 22);
-            this.RSCountsTxt.TabIndex = 3;
+            this.RSCountsTxt.TabIndex = 2;
             // 
             // EFrameTimeTxt
             // 
@@ -141,24 +144,24 @@
             0});
             this.EFrameTimeTxt.Name = "EFrameTimeTxt";
             this.EFrameTimeTxt.Size = new System.Drawing.Size(141, 22);
-            this.EFrameTimeTxt.TabIndex = 4;
+            this.EFrameTimeTxt.TabIndex = 3;
             // 
             // OKBtn
             // 
-            this.OKBtn.Location = new System.Drawing.Point(150, 331);
+            this.OKBtn.Location = new System.Drawing.Point(150, 359);
             this.OKBtn.Name = "OKBtn";
             this.OKBtn.Size = new System.Drawing.Size(75, 23);
-            this.OKBtn.TabIndex = 10;
+            this.OKBtn.TabIndex = 11;
             this.OKBtn.Text = "OK";
             this.OKBtn.UseVisualStyleBackColor = true;
             this.OKBtn.Click += new System.EventHandler(this.onOKBtn);
             // 
             // CancelBtn
             // 
-            this.CancelBtn.Location = new System.Drawing.Point(252, 331);
+            this.CancelBtn.Location = new System.Drawing.Point(252, 359);
             this.CancelBtn.Name = "CancelBtn";
             this.CancelBtn.Size = new System.Drawing.Size(75, 23);
-            this.CancelBtn.TabIndex = 11;
+            this.CancelBtn.TabIndex = 12;
             this.CancelBtn.Text = "Cancel";
             this.CancelBtn.UseVisualStyleBackColor = true;
             this.CancelBtn.Click += new System.EventHandler(this.onCancelBtn);
@@ -169,9 +172,9 @@
             this.label5.Location = new System.Drawing.Point(24, 159);
             this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(98, 16);
+            this.label5.Size = new System.Drawing.Size(117, 16);
             this.label5.TabIndex = 0;
-            this.label5.Text = "Salvage Time :";
+            this.label5.Text = "Salvage Time(M) :";
             // 
             // SalvageTimeTxt
             // 
@@ -183,7 +186,7 @@
             0});
             this.SalvageTimeTxt.Name = "SalvageTimeTxt";
             this.SalvageTimeTxt.Size = new System.Drawing.Size(141, 22);
-            this.SalvageTimeTxt.TabIndex = 5;
+            this.SalvageTimeTxt.TabIndex = 4;
             // 
             // label6
             // 
@@ -205,7 +208,7 @@
             0});
             this.DozerSpeedTxt.Name = "DozerSpeedTxt";
             this.DozerSpeedTxt.Size = new System.Drawing.Size(141, 22);
-            this.DozerSpeedTxt.TabIndex = 6;
+            this.DozerSpeedTxt.TabIndex = 5;
             // 
             // label7
             // 
@@ -213,9 +216,9 @@
             this.label7.Location = new System.Drawing.Point(24, 258);
             this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(124, 16);
+            this.label7.Size = new System.Drawing.Size(143, 16);
             this.label7.TabIndex = 0;
-            this.label7.Text = "LCC Loading Time :";
+            this.label7.Text = "LCC Loading Time(M) :";
             // 
             // LCCLoadingTimeTxt
             // 
@@ -227,7 +230,7 @@
             0});
             this.LCCLoadingTimeTxt.Name = "LCCLoadingTimeTxt";
             this.LCCLoadingTimeTxt.Size = new System.Drawing.Size(141, 22);
-            this.LCCLoadingTimeTxt.TabIndex = 8;
+            this.LCCLoadingTimeTxt.TabIndex = 7;
             // 
             // label8
             // 
@@ -249,7 +252,7 @@
             0});
             this.LCCSpeedTxt.Name = "LCCSpeedTxt";
             this.LCCSpeedTxt.Size = new System.Drawing.Size(141, 22);
-            this.LCCSpeedTxt.TabIndex = 7;
+            this.LCCSpeedTxt.TabIndex = 6;
             // 
             // label9
             // 
@@ -257,9 +260,9 @@
             this.label9.Location = new System.Drawing.Point(24, 291);
             this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(105, 16);
+            this.label9.Size = new System.Drawing.Size(124, 16);
             this.label9.TabIndex = 0;
-            this.label9.Text = "LCC Drop Time :";
+            this.label9.Text = "LCC Drop Time(M) :";
             // 
             // LCCDropTimeTxt
             // 
@@ -271,20 +274,44 @@
             0});
             this.LCCDropTimeTxt.Name = "LCCDropTimeTxt";
             this.LCCDropTimeTxt.Size = new System.Drawing.Size(141, 22);
-            this.LCCDropTimeTxt.TabIndex = 9;
+            this.LCCDropTimeTxt.TabIndex = 8;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(24, 323);
+            this.label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(82, 16);
+            this.label10.TabIndex = 0;
+            this.label10.Text = "LCC Counts :";
+            // 
+            // LCCCountsTxt
+            // 
+            this.LCCCountsTxt.Location = new System.Drawing.Point(186, 320);
+            this.LCCCountsTxt.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.LCCCountsTxt.Name = "LCCCountsTxt";
+            this.LCCCountsTxt.Size = new System.Drawing.Size(141, 22);
+            this.LCCCountsTxt.TabIndex = 9;
             // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(350, 375);
+            this.ClientSize = new System.Drawing.Size(350, 401);
             this.Controls.Add(this.CancelBtn);
             this.Controls.Add(this.OKBtn);
             this.Controls.Add(this.LCCSpeedTxt);
+            this.Controls.Add(this.LCCCountsTxt);
             this.Controls.Add(this.LCCDropTimeTxt);
             this.Controls.Add(this.LCCLoadingTimeTxt);
             this.Controls.Add(this.DozerSpeedTxt);
             this.Controls.Add(this.SalvageTimeTxt);
+            this.Controls.Add(this.label10);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.EFrameTimeTxt);
@@ -315,6 +342,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.LCCLoadingTimeTxt)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.LCCSpeedTxt)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.LCCDropTimeTxt)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.LCCCountsTxt)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -342,5 +370,7 @@
         private System.Windows.Forms.NumericUpDown LCCSpeedTxt;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.NumericUpDown LCCDropTimeTxt;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.NumericUpDown LCCCountsTxt;
     }
 }

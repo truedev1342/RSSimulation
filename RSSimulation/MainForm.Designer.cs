@@ -64,16 +64,19 @@
             this.TimeSpeedSB = new System.Windows.Forms.ToolStripStatusLabel();
             this.MousePositionSB = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolBar = new System.Windows.Forms.ToolStrip();
-            this.NewBtn = new System.Windows.Forms.ToolStripButton();
             this.OpenBtn = new System.Windows.Forms.ToolStripButton();
+            this.NewBtn = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.SetALocationBtn = new System.Windows.Forms.ToolStripButton();
-            this.SetBLocationBtn = new System.Windows.Forms.ToolStripButton();
+            this.SimulationPropertiesBtn = new System.Windows.Forms.ToolStripButton();
+            this.SalvageSequenceBtn = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
+            this.SetLocationEFrameBtn = new System.Windows.Forms.ToolStripButton();
+            this.SetLocationABtn = new System.Windows.Forms.ToolStripButton();
+            this.SetLocationBBtn = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-            this.EFramePosBtn = new System.Windows.Forms.ToolStripButton();
             this.SetRouteABtn = new System.Windows.Forms.ToolStripButton();
             this.SetRouteBBtn = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.SetRouteDozerBtn = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.StartSimulationBtn = new System.Windows.Forms.ToolStripButton();
             this.StopSimulationBtn = new System.Windows.Forms.ToolStripButton();
@@ -359,36 +362,28 @@
             // 
             this.toolBar.Dock = System.Windows.Forms.DockStyle.None;
             this.toolBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.NewBtn,
             this.OpenBtn,
+            this.NewBtn,
             this.toolStripSeparator3,
-            this.SetALocationBtn,
-            this.SetBLocationBtn,
+            this.SimulationPropertiesBtn,
+            this.SalvageSequenceBtn,
+            this.toolStripSeparator7,
+            this.SetLocationEFrameBtn,
+            this.SetLocationABtn,
+            this.SetLocationBBtn,
             this.toolStripSeparator4,
-            this.EFramePosBtn,
             this.SetRouteABtn,
             this.SetRouteBBtn,
-            this.toolStripButton1,
+            this.SetRouteDozerBtn,
             this.toolStripSeparator5,
             this.StartSimulationBtn,
             this.StopSimulationBtn,
             this.toolStripSeparator2});
             this.toolBar.Location = new System.Drawing.Point(3, 0);
             this.toolBar.Name = "toolBar";
-            this.toolBar.Size = new System.Drawing.Size(266, 25);
+            this.toolBar.Size = new System.Drawing.Size(349, 25);
             this.toolBar.TabIndex = 5;
             this.toolBar.Text = "toolStrip1";
-            // 
-            // NewBtn
-            // 
-            this.NewBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.NewBtn.Image = global::RSSimulation.Properties.Resources.btn_new;
-            this.NewBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.NewBtn.Name = "NewBtn";
-            this.NewBtn.Size = new System.Drawing.Size(23, 22);
-            this.NewBtn.Text = "New Simulation";
-            this.NewBtn.ToolTipText = "New Simulation";
-            this.NewBtn.Click += new System.EventHandler(this.onNewSMenu);
             // 
             // OpenBtn
             // 
@@ -401,51 +396,93 @@
             this.OpenBtn.ToolTipText = "Open Dxf File";
             this.OpenBtn.Click += new System.EventHandler(this.onOpenSMenu);
             // 
+            // NewBtn
+            // 
+            this.NewBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.NewBtn.Image = global::RSSimulation.Properties.Resources.btn_new;
+            this.NewBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.NewBtn.Name = "NewBtn";
+            this.NewBtn.Size = new System.Drawing.Size(23, 22);
+            this.NewBtn.Text = "New Simulation";
+            this.NewBtn.ToolTipText = "New Simulation";
+            this.NewBtn.Click += new System.EventHandler(this.onNewSMenu);
+            // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
             // 
-            // SetALocationBtn
+            // SimulationPropertiesBtn
             // 
-            this.SetALocationBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.SetALocationBtn.Image = global::RSSimulation.Properties.Resources.btn_storageA;
-            this.SetALocationBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.SetALocationBtn.Name = "SetALocationBtn";
-            this.SetALocationBtn.Size = new System.Drawing.Size(23, 22);
-            this.SetALocationBtn.Text = "Set A Storage Location";
-            this.SetALocationBtn.ToolTipText = "Set A Storage Location";
-            this.SetALocationBtn.Click += new System.EventHandler(this.onSetALocationBtn);
+            this.SimulationPropertiesBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.SimulationPropertiesBtn.Image = ((System.Drawing.Image)(resources.GetObject("SimulationPropertiesBtn.Image")));
+            this.SimulationPropertiesBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SimulationPropertiesBtn.Name = "SimulationPropertiesBtn";
+            this.SimulationPropertiesBtn.Size = new System.Drawing.Size(23, 22);
+            this.SimulationPropertiesBtn.Text = "Simulation Properties Setting";
+            this.SimulationPropertiesBtn.ToolTipText = "Set Simulation Properties";
+            this.SimulationPropertiesBtn.Click += new System.EventHandler(this.onSimulationProperiesSMenu);
             // 
-            // SetBLocationBtn
+            // SalvageSequenceBtn
             // 
-            this.SetBLocationBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.SetBLocationBtn.Image = global::RSSimulation.Properties.Resources.btn_storageB;
-            this.SetBLocationBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.SetBLocationBtn.Name = "SetBLocationBtn";
-            this.SetBLocationBtn.Size = new System.Drawing.Size(23, 22);
-            this.SetBLocationBtn.Text = "Set B Storage Location";
-            this.SetBLocationBtn.ToolTipText = "Set B Storage Location";
-            this.SetBLocationBtn.Click += new System.EventHandler(this.onEFramePosBtn);
+            this.SalvageSequenceBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.SalvageSequenceBtn.Image = ((System.Drawing.Image)(resources.GetObject("SalvageSequenceBtn.Image")));
+            this.SalvageSequenceBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SalvageSequenceBtn.Name = "SalvageSequenceBtn";
+            this.SalvageSequenceBtn.Size = new System.Drawing.Size(23, 22);
+            this.SalvageSequenceBtn.Text = "Salvage Sequence Setting";
+            this.SalvageSequenceBtn.ToolTipText = "Set Salvage Sequence";
+            this.SalvageSequenceBtn.Click += new System.EventHandler(this.onSalvageSequenceSMenu);
+            // 
+            // toolStripSeparator7
+            // 
+            this.toolStripSeparator7.Name = "toolStripSeparator7";
+            this.toolStripSeparator7.Size = new System.Drawing.Size(6, 25);
+            // 
+            // SetLocationEFrameBtn
+            // 
+            this.SetLocationEFrameBtn.CheckOnClick = true;
+            this.SetLocationEFrameBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.SetLocationEFrameBtn.Image = global::RSSimulation.Properties.Resources.btn_location;
+            this.SetLocationEFrameBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SetLocationEFrameBtn.Name = "SetLocationEFrameBtn";
+            this.SetLocationEFrameBtn.Size = new System.Drawing.Size(23, 22);
+            this.SetLocationEFrameBtn.Text = "Set E-Frame Position";
+            this.SetLocationEFrameBtn.ToolTipText = "Set E-Frame Position";
+            this.SetLocationEFrameBtn.Click += new System.EventHandler(this.onSetLocationEFrameBtn);
+            // 
+            // SetLocationABtn
+            // 
+            this.SetLocationABtn.CheckOnClick = true;
+            this.SetLocationABtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.SetLocationABtn.Image = global::RSSimulation.Properties.Resources.btn_storageA;
+            this.SetLocationABtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SetLocationABtn.Name = "SetLocationABtn";
+            this.SetLocationABtn.Size = new System.Drawing.Size(23, 22);
+            this.SetLocationABtn.Text = "Set A Storage Location";
+            this.SetLocationABtn.ToolTipText = "Set A Storage Location";
+            this.SetLocationABtn.Click += new System.EventHandler(this.onSetLocationABtn);
+            // 
+            // SetLocationBBtn
+            // 
+            this.SetLocationBBtn.CheckOnClick = true;
+            this.SetLocationBBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.SetLocationBBtn.Image = global::RSSimulation.Properties.Resources.btn_storageB;
+            this.SetLocationBBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SetLocationBBtn.Name = "SetLocationBBtn";
+            this.SetLocationBBtn.Size = new System.Drawing.Size(23, 22);
+            this.SetLocationBBtn.Text = "Set B Storage Location";
+            this.SetLocationBBtn.ToolTipText = "Set B Storage Location";
+            this.SetLocationBBtn.Click += new System.EventHandler(this.onSetLocationEFrameBtn);
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
             this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
             // 
-            // EFramePosBtn
-            // 
-            this.EFramePosBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.EFramePosBtn.Image = global::RSSimulation.Properties.Resources.btn_location;
-            this.EFramePosBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.EFramePosBtn.Name = "EFramePosBtn";
-            this.EFramePosBtn.Size = new System.Drawing.Size(23, 22);
-            this.EFramePosBtn.Text = "Set E-Frame Position";
-            this.EFramePosBtn.ToolTipText = "Set E-Frame Position";
-            this.EFramePosBtn.Click += new System.EventHandler(this.onEFramePosBtn);
-            // 
             // SetRouteABtn
             // 
+            this.SetRouteABtn.CheckOnClick = true;
             this.SetRouteABtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.SetRouteABtn.Image = global::RSSimulation.Properties.Resources.btn_routeA;
             this.SetRouteABtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -457,6 +494,7 @@
             // 
             // SetRouteBBtn
             // 
+            this.SetRouteBBtn.CheckOnClick = true;
             this.SetRouteBBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.SetRouteBBtn.Image = global::RSSimulation.Properties.Resources.btn_routeB;
             this.SetRouteBBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -466,14 +504,17 @@
             this.SetRouteBBtn.ToolTipText = "Set Route to B Storage";
             this.SetRouteBBtn.Click += new System.EventHandler(this.onSetRouteBBtn);
             // 
-            // toolStripButton1
+            // SetRouteDozerBtn
             // 
-            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton1.Image = global::RSSimulation.Properties.Resources.btn_routeD;
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton1.Text = "toolStripButton1";
+            this.SetRouteDozerBtn.CheckOnClick = true;
+            this.SetRouteDozerBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.SetRouteDozerBtn.Image = global::RSSimulation.Properties.Resources.btn_routeD;
+            this.SetRouteDozerBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SetRouteDozerBtn.Name = "SetRouteDozerBtn";
+            this.SetRouteDozerBtn.Size = new System.Drawing.Size(23, 22);
+            this.SetRouteDozerBtn.Text = "Set Route of Dozer";
+            this.SetRouteDozerBtn.ToolTipText = "Set Route of Dozer";
+            this.SetRouteDozerBtn.Click += new System.EventHandler(this.onSetRouteDozerBtn);
             // 
             // toolStripSeparator5
             // 
@@ -567,7 +608,6 @@
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Real Time Roof Support Simulation";
-            this.Load += new System.EventHandler(this.MainForm_Load);
             this.MainMenu.ResumeLayout(false);
             this.MainMenu.PerformLayout();
             this.StatusBar.ResumeLayout(false);
@@ -603,7 +643,7 @@
         private System.Windows.Forms.ToolStripMenuItem SimulationPropertiesSMenu;
         private System.Windows.Forms.ToolStrip toolBar;
         private System.Windows.Forms.ToolStripButton StartSimulationBtn;
-        private System.Windows.Forms.ToolStripButton EFramePosBtn;
+        private System.Windows.Forms.ToolStripButton SetLocationEFrameBtn;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton StopSimulationBtn;
         private System.Windows.Forms.Timer timer1;
@@ -628,8 +668,8 @@
         private System.Windows.Forms.ToolStripButton NewBtn;
         private System.Windows.Forms.ToolStripButton OpenBtn;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-        private System.Windows.Forms.ToolStripButton SetALocationBtn;
-        private System.Windows.Forms.ToolStripButton SetBLocationBtn;
+        private System.Windows.Forms.ToolStripButton SetLocationABtn;
+        private System.Windows.Forms.ToolStripButton SetLocationBBtn;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripButton SetRouteABtn;
         private System.Windows.Forms.ToolStripButton SetRouteBBtn;
@@ -640,7 +680,10 @@
         private System.Windows.Forms.ToolStripMenuItem MoveRightsMenu;
         private System.Windows.Forms.ToolStripMenuItem MoveUpSMenu;
         private System.Windows.Forms.ToolStripMenuItem MoveDownSMenu;
-        private System.Windows.Forms.ToolStripButton toolStripButton1;
+        private System.Windows.Forms.ToolStripButton SetRouteDozerBtn;
+        private System.Windows.Forms.ToolStripButton SimulationPropertiesBtn;
+        private System.Windows.Forms.ToolStripButton SalvageSequenceBtn;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
     }
 }
 

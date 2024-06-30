@@ -27,7 +27,7 @@ namespace RSSimulation
         private string filePath = "2013.dxf";
         private DxfDocument _dxfDocument = null;
         private HaDesDxf _haDesDxf = null;
-        SizeF DrawAreaSize;
+        SizeF DrawAreaSize = new SizeF();
 
         private BoundingBox initialRect = new BoundingBox();
         private ZoomFactor zoomFactor = new ZoomFactor(1.0f, 0.1f, 0.1f, 100.0f);
@@ -36,16 +36,24 @@ namespace RSSimulation
 
         private DateTime _curTime = DateTime.Now;
         private DateTime SimulationTime = DateTime.Now;
-        private int SimulationSpeed = 3600;
-        private int RSCounts = 0;
-        private int EFrameBuiltTime = 48;
+        private int SimulationSpeed = 3600; 
+        private int RSCounts = 149;
+        private int EFrameBuiltTime = 48;   //unit : hour
+        private int SalvageTime = 60;       //unit : min
+        private int DozerSpeed = 10;        //unit : meter/min
+        private int LCCSpeed = 20;          //unit : meter/min
+        private int LCCLoadingTime = 60;    //unit : min
+        private int LCCDropTime = 60;       //unit : min
+        private int LCCCounts = 3;
+
+
         private int _elapsed = 0;
         private int _total = 0;
         private bool _started = false;
 
         private LinePos initRSPos = new LinePos();
-        private PointF eFramePoint = Point.Empty;
-        private PointF _basePoint = new PointF();
+        private PointF eFramePoint = PointF.Empty;
+        private PointF _basePoint = PointF.Empty;
 
         private RoofSupport[] _rsData = new RoofSupport[202];
         private Dozer _dozer = new Dozer();
@@ -67,27 +75,28 @@ namespace RSSimulation
             DrawArea.MouseMove += DrawArea_MouseMove;
             DrawArea.MouseWheel += new MouseEventHandler(DrawPanel_MouseWheel);            
         }
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            if (RSCounts == 0)
-            {
-                EFramePosBtn.Enabled = false;
-                EFramePosBtn.CheckOnClick = true;
-                StopSimulationBtn.Enabled = false;
-                SimulationTimeSB.Text = SimulationTime.ToString();
-                ElapsedTimeSB.Text = "00:00:00";
-            }
-        }
         private void initForms()
         {
             _dxfDocument = null;
             _haDesDxf = null;
             initialRect = new BoundingBox();
             zoomFactor = new ZoomFactor(1.0f, 0.1f, 0.1f, 100.0f);
+            offsetPos = new PointF();
+            DrawAreaSize = new SizeF();
+            _unavailable = new List<int>();
+            _available = new List<int>();
+            for (int i = 1; i <= RSCounts; i++)
+            {
+                _available.Add(i);
+            }
+            SimulationTimeSB.Text = SimulationTime.ToString();
+            ElapsedTimeSB.Text = "00:00:00";
+            enableSimulation(false);
             for (int i = 0; i < 202; i++)
             {
                 _rsData[i] = new RoofSupport();
             }
+            DrawArea.Invalidate();
         }
         private void LoadDXFFile(string strPath)
         {
@@ -96,7 +105,8 @@ namespace RSSimulation
                 _dxfDocument = DxfDocument.Load(strPath);
                 _haDesDxf = new HaDesDxf();
                 initialRect = _haDesDxf.ReadDxf(_dxfDocument);
-                initRSPos = _haDesDxf.getPrimaryLinePos();
+                if( _haDesDxf.getPrimaryLinePos(ref initRSPos))
+                    enableSimulation(true);
                 //initialRect = HaDesMath.GetBoundingBox(_dxfDocument, ref initRSPos);
                 DrawAreaSize = HaDesMath.UpdateDrawAreaSize(initialRect, zoomFactor);
                 DrawArea.Invalidate();
@@ -108,16 +118,22 @@ namespace RSSimulation
         }         
         private void InitializeRSandDozer()
         {
+            if (eFramePoint == PointF.Empty)
+            {
+                return;
+            }
             _basePoint = HaDesMath.CalcBasePoint(initRSPos, eFramePoint);
             float c = HaDesMath.CalcDistancePoints(initRSPos.StartPos, initRSPos.EndPos);
             float alpha = (float)(Math.Acos((initRSPos.EndPos.X - initRSPos.StartPos.X) / c) * 180 / Math.PI);
 
-            float dx = (float)((initRSPos.EndPos.X - initRSPos.StartPos.X) * 5 / c);
-            float dy = (float)((initRSPos.EndPos.Y - initRSPos.StartPos.Y) * 5 / c);
+            int idx = RSCounts - getNextMoveId(RSCounts + 1);
+
+            float dx = (float)((initRSPos.EndPos.X - initRSPos.StartPos.X) * 2.5 / c);
+            float dy = (float)((initRSPos.EndPos.Y - initRSPos.StartPos.Y) * 2.5 / c);
             float positionX = _basePoint.X + dx;
             float positionY = _basePoint.Y - dy;
-            dx = (float)((initRSPos.EndPos.X - initRSPos.StartPos.X) * 1.7 / c);
-            dy = (float)((initRSPos.EndPos.Y - initRSPos.StartPos.Y) * 1.7 / c);
+            dx = (float)((initRSPos.EndPos.X - initRSPos.StartPos.X) * (1.7 + 2 * idx) / c);
+            dy = (float)((initRSPos.EndPos.Y - initRSPos.StartPos.Y) * (1.7 + 2 * idx) / c);
             positionX = positionX - dx;
             positionY = positionY - dy;
             _dozer.setAngle(alpha - 90);
@@ -233,9 +249,8 @@ namespace RSSimulation
             return 0;
         }
 
-        private void makeCommandList()
+        private void makeEFrameCommand()
         {
-            _commands.Clear();
             int curTime = 0;
             int step = EFrameBuiltTime * 3600 / 18;
             Command _cmd;
@@ -252,6 +267,18 @@ namespace RSSimulation
                     break;
                 }
                 if (isSalvage(i)) continue;
+
+                if (carried == 0) // in first RS moving move up to RS
+                {
+                    // move up
+                    x1 = tempPos.X + (float)(2.5 * Math.Cos(tempAngle * Math.PI / 180));
+                    y1 = tempPos.Y + (float)(2.5 * Math.Sin(tempAngle * Math.PI / 180));
+                    _cmd = new Command(curTime, curTime + step, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, false, 0);
+                    _commands.Enqueue(_cmd);
+                    tempPos = new PointF(x1, y1);
+                    curTime += step;
+                }
+
                 // move down
                 x1 = tempPos.X - (float)((4 - 2 * carried) * Math.Cos(tempAngle * Math.PI / 180));
                 y1 = tempPos.Y - (float)((4 - 2 * carried) * Math.Sin(tempAngle * Math.PI / 180));
@@ -280,42 +307,49 @@ namespace RSSimulation
                 tempPos = new PointF(x1, y1);
                 curTime += step;
 
-                // move to next position
-                nextId = getNextMoveId(i);
-                if (carried == 2 && _unavailable.Count > 0)
-                {
-                    nextId = _unavailable[0];
-                }
-                dx = (float)((initRSPos.EndPos.X - initRSPos.StartPos.X) * (1 + 2 * carried) / c);
-                dy = (float)((initRSPos.EndPos.Y - initRSPos.StartPos.Y) * (1 + 2 * carried) / c);
-                x1 = _basePoint.X + dx;
-                y1 = _basePoint.Y - dy;
-                dx = (float)((initRSPos.EndPos.X - initRSPos.StartPos.X) * (1.7 + (RSCounts - nextId) * 2) / c);
-                dy = (float)((initRSPos.EndPos.Y - initRSPos.StartPos.Y) * (1.7 + (RSCounts - nextId) * 2) / c);
-                x1 = x1 - dx;
-                y1 = y1 - dy;
-                _cmd = new Command(curTime, curTime + step, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, false, 0);
-                _commands.Enqueue(_cmd);
-                tempPos = new PointF(x1, y1);
-                curTime += step;
-
-                // rotate 90 degree
-                _cmd = new Command(curTime, curTime + step, 0, -1, tempPos, tempPos, tempAngle, tempAngle - 90, false, 0);
-                _commands.Enqueue(_cmd);
-                tempAngle -= 90;
-                curTime += step;
-
-                // move up
-                x1 = tempPos.X + (float)((4 - 2 * carried) * Math.Cos(tempAngle * Math.PI / 180));
-                y1 = tempPos.Y + (float)((4 - 2 * carried) * Math.Sin(tempAngle * Math.PI / 180));
                 if (carried == 2)
                 {
+                    // move to complete eframe position
+                    nextId = getNextMoveId(i);
+                    dx = (float)((initRSPos.EndPos.X - initRSPos.StartPos.X) * 5 / c);
+                    dy = (float)((initRSPos.EndPos.Y - initRSPos.StartPos.Y) * 5 / c);
+                    x1 = _basePoint.X + dx;
+                    y1 = _basePoint.Y - dy;
+                    dx = (float)((initRSPos.EndPos.X - initRSPos.StartPos.X) * 10 / c);
+                    dy = (float)((initRSPos.EndPos.Y - initRSPos.StartPos.Y) * 10 / c);
+                    x1 = x1 - dx;
+                    y1 = y1 - dy;
                     _cmd = new Command(curTime, EFrameBuiltTime * 3600, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, false, 0);
                     _commands.Enqueue(_cmd);
                     tempPos = new PointF(x1, y1);
-                    curTime  = EFrameBuiltTime * 3600;
+                    curTime = EFrameBuiltTime * 3600;
+                    
                 } else
                 {
+                    // move to next position
+                    nextId = getNextMoveId(i);
+                    dx = (float)((initRSPos.EndPos.X - initRSPos.StartPos.X) * (1 + 2 * carried) / c);
+                    dy = (float)((initRSPos.EndPos.Y - initRSPos.StartPos.Y) * (1 + 2 * carried) / c);
+                    x1 = _basePoint.X + dx;
+                    y1 = _basePoint.Y - dy;
+                    dx = (float)((initRSPos.EndPos.X - initRSPos.StartPos.X) * (1.7 + (RSCounts - nextId) * 2) / c);
+                    dy = (float)((initRSPos.EndPos.Y - initRSPos.StartPos.Y) * (1.7 + (RSCounts - nextId) * 2) / c);
+                    x1 = x1 - dx;
+                    y1 = y1 - dy;
+                    _cmd = new Command(curTime, curTime + step, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, false, 0);
+                    _commands.Enqueue(_cmd);
+                    tempPos = new PointF(x1, y1);
+                    curTime += step;
+
+                    // rotate 90 degree
+                    _cmd = new Command(curTime, curTime + step, 0, -1, tempPos, tempPos, tempAngle, tempAngle - 90, false, 0);
+                    _commands.Enqueue(_cmd);
+                    tempAngle -= 90;
+                    curTime += step;
+
+                    // move up
+                    x1 = tempPos.X + (float)((4 - 2 * carried) * Math.Cos(tempAngle * Math.PI / 180));
+                    y1 = tempPos.Y + (float)((4 - 2 * carried) * Math.Sin(tempAngle * Math.PI / 180));
                     _cmd = new Command(curTime, curTime + step, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, false, 0);
                     _commands.Enqueue(_cmd);
                     tempPos = new PointF(x1, y1);
@@ -324,7 +358,56 @@ namespace RSSimulation
 
                 carried++;
             }
+        }
 
+        private void makeFirstSalvageCommand()
+        {
+            int curTime = EFrameBuiltTime * 3600;
+            if (_unavailable.Count == 0) return;
+            int idx = _unavailable[0];
+            Command _cmd;
+            float c = HaDesMath.CalcDistancePoints(initRSPos.StartPos, initRSPos.EndPos);
+            float dx, dy, x1, y1;
+            PointF tempPos = _dozer.getCenter();
+            float tempAngle = _dozer.getAngle();
+
+            dx = (float)((initRSPos.EndPos.X - initRSPos.StartPos.X) * 5 / c);
+            dy = (float)((initRSPos.EndPos.Y - initRSPos.StartPos.Y) * 5 / c);
+            tempPos.X = _basePoint.X + dx;
+            tempPos.Y = _basePoint.Y - dy;
+            dx = (float)((initRSPos.EndPos.X - initRSPos.StartPos.X) * 10 / c);
+            dy = (float)((initRSPos.EndPos.Y - initRSPos.StartPos.Y) * 10 / c);
+            tempPos.X = tempPos.X - dx;
+            tempPos.Y = tempPos.Y - dy;
+
+
+            dx = (float)((initRSPos.EndPos.X - initRSPos.StartPos.X) * 5 / c);
+            dy = (float)((initRSPos.EndPos.Y - initRSPos.StartPos.Y) * 5 / c);
+            x1 = _basePoint.X + dx;
+            y1 = _basePoint.Y - dy;
+            dx = (float)((initRSPos.EndPos.X - initRSPos.StartPos.X) * (1.7 + (RSCounts - idx) * 2) / c);
+            dy = (float)((initRSPos.EndPos.Y - initRSPos.StartPos.Y) * (1.7 + (RSCounts - idx) * 2) / c);
+            x1 = x1 - dx;
+            y1 = y1 - dy;
+            float d = HaDesMath.CalcDistancePoints(new PointF(x1, y1), tempPos);
+            int step = (int)d * 180;
+            _cmd = new Command(curTime, curTime + step, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, false, 0);
+            _commands.Enqueue(_cmd);
+            tempPos = new PointF(x1, y1);
+            curTime += step;
+
+        }
+
+        private void makeWholeSalvageCommand()
+        {
+            int curTime = 0;
+            int step = EFrameBuiltTime * 3600 / 18;
+            Command _cmd;
+            float c = HaDesMath.CalcDistancePoints(initRSPos.StartPos, initRSPos.EndPos);
+            float dx, dy, x1, y1;
+            PointF tempPos = _dozer.getCenter();
+            float tempAngle = _dozer.getAngle();
+            int nextId;
             for (int i = 0; i < _unavailable.Count; i++)
             {
                 // move down
@@ -357,7 +440,8 @@ namespace RSSimulation
                 if (i + 1 == _unavailable.Count)
                 {
                     nextId = _unavailable[i];
-                } else
+                }
+                else
                 {
                     nextId = _unavailable[i + 1];
                 }
@@ -389,7 +473,6 @@ namespace RSSimulation
                 _commands.Enqueue(_cmd);
                 tempPos = new PointF(x1, y1);
                 curTime += 1800;
-
             }
         }
         private void timer1_Tick(object sender, EventArgs e)
@@ -408,6 +491,22 @@ namespace RSSimulation
             processSimulation();
             DrawArea.Invalidate();
         }
+        //
+        private void enableSimulation(bool state = true)
+        {
+            SimulationPropertiesBtn.Enabled = state;
+            SimulationPropertiesSMenu.Enabled = state;
+            SalvageSequenceBtn.Enabled = state;
+            SalvageSequenceSMenu.Enabled = state;
+            SetLocationEFrameBtn.Enabled = state;
+            SetLocationABtn.Enabled = state;
+            SetLocationBBtn.Enabled = state;
+            SetRouteABtn.Enabled = state;
+            SetRouteBBtn.Enabled = state;
+            SetRouteDozerBtn.Enabled = state;
+            StartSimulationBtn.Enabled = state;
+            StopSimulationBtn.Enabled = state;
+        }
         ///Mouse Event process Start
         private void DrawArea_MouseDown(object sender, MouseEventArgs e)
         {
@@ -420,12 +519,12 @@ namespace RSSimulation
             if (e.Button == MouseButtons.Left)
             {
                 DrawArea.Cursor = Cursors.Cross;
-                if (EFramePosBtn.Checked == true)
+                if (SetLocationEFrameBtn.Checked == true)
                 {
                     //DrawArea.Cursor = Cursors.Default;
                     //eFramePoint = HaDesGraphics.GetDxfPosF(e.Location, initialRect, offsetPos, zoomFactor);
                     eFramePoint = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
-                    EFramePosBtn.Checked = false;
+                    SetLocationEFrameBtn.Checked = false;
                     _elapsed = 0;
                     _curTime = SimulationTime;
                     InitializeRSandDozer();
@@ -509,7 +608,8 @@ namespace RSSimulation
         /// Menubar Event Process Start
         private void onNewSMenu(object sender, EventArgs e)
         {
-
+            enableSimulation(false);
+            initForms();
         }
         private void onOpenSMenu(object sender, EventArgs e)
         {
@@ -530,7 +630,7 @@ namespace RSSimulation
         }
         private void onCloseSMenu(object sender, EventArgs e)
         {
-
+            System.Windows.Forms.Application.Exit();
         }
         private void onZoomInSMenu(object sender, EventArgs e)
         {
@@ -589,11 +689,16 @@ namespace RSSimulation
         {
             SettingsForm sfrm = new SettingsForm();
 
-            sfrm.EFrameBuiltTime = EFrameBuiltTime;
+            sfrm.SimulationTime = SimulationTime;
             sfrm.SimulationSpeed = SimulationSpeed;
             sfrm.RSCounts = RSCounts;
-            sfrm.SimulationTime = SimulationTime;
-
+            sfrm.EFrameBuiltTime = EFrameBuiltTime;
+            sfrm.SalvageTime = SalvageTime;
+            sfrm.DozerSpeed = DozerSpeed;
+            sfrm.LCCSpeed = LCCSpeed;
+            sfrm.LCCLoadingTime = LCCLoadingTime;
+            sfrm.LCCDropTime = LCCDropTime;
+            sfrm.LCCCounts  = LCCCounts;
 
             if (sfrm.ShowDialog() == DialogResult.OK)
             {
@@ -601,6 +706,12 @@ namespace RSSimulation
                 SimulationSpeed = sfrm.SimulationSpeed;
                 RSCounts = sfrm.RSCounts;
                 SimulationTime = sfrm.SimulationTime;
+                SalvageTime = sfrm.SalvageTime;
+                DozerSpeed = sfrm.DozerSpeed;
+                LCCSpeed = sfrm.LCCSpeed;
+                LCCLoadingTime = sfrm.LCCLoadingTime;
+                LCCDropTime = sfrm.LCCDropTime;
+                LCCCounts = sfrm.LCCCounts;
 
                 if (RSCounts > 0 && RSCounts < 150)
                 {
@@ -610,14 +721,16 @@ namespace RSSimulation
                     {
                         _available.Add(i);
                     }
-                    EFramePosBtn.Enabled = true;
-                    EFramePosBtn.Checked = false;
+                    SetLocationEFrameBtn.Enabled = true;
+                    SetLocationEFrameBtn.Checked = false;
                 }
                 else
                 {
-                    EFramePosBtn.Enabled = false;
-                    EFramePosBtn.Checked = false;
+                    SetLocationEFrameBtn.Enabled = false;
+                    SetLocationEFrameBtn.Checked = false;
                 }
+                InitializeRSandDozer();
+                DrawArea.Invalidate();
             }
 
         }
@@ -632,6 +745,8 @@ namespace RSSimulation
                 _available = svfrm._available;
                 _unavailable = svfrm._unavailable;
                 RSCounts = svfrm.RSCounts;
+                InitializeRSandDozer();
+                DrawArea.Invalidate();
             }
         }
         private void onViewHelpSMenu(object sender, EventArgs e)
@@ -640,17 +755,17 @@ namespace RSSimulation
         }
         /// Menubar Event Process End
         /// Toolbar Event process Start
-        private void onSetALocationBtn(object sender, EventArgs e)
+        private void onSetLocationABtn(object sender, EventArgs e)
         {
 
         }
-        private void onSetBLocationBtn(object sender, EventArgs e)
+        private void onSetLocationBBtn(object sender, EventArgs e)
         {
 
         }
-        private void onEFramePosBtn(object sender, EventArgs e)
+        private void onSetLocationEFrameBtn(object sender, EventArgs e)
         {
-            if (EFramePosBtn.Checked)
+            if (SetLocationEFrameBtn.Checked)
             {
                 DrawArea.Cursor = Cursors.Hand;
             }
@@ -667,6 +782,10 @@ namespace RSSimulation
         {
 
         }
+        private void onSetRouteDozerBtn(object sender, EventArgs e)
+        {
+
+        }
         private void onStartSimulationBtn(object sender, EventArgs e)
         {
             if (eFramePoint == Point.Empty) return;
@@ -677,7 +796,8 @@ namespace RSSimulation
             StartSimulationBtn.Enabled = false;
             StopSimulationBtn.Enabled = true;
             InitializeRSandDozer();
-            makeCommandList();
+            _commands.Clear();
+            makeEFrameCommand();
             timer1.Interval = 100;
             timer1.Enabled = true;
         }

@@ -1,2 +1,5 @@
-./RSSimulation/bin
-./RSSimulation/obj
+.vs
+RSSimulation/bin
+RSSimulation/obj
+RSSimulation/.vs
+

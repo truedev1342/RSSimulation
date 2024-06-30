@@ -48,22 +48,22 @@
             this.listBoxAvailable.Location = new System.Drawing.Point(31, 71);
             this.listBoxAvailable.Margin = new System.Windows.Forms.Padding(4);
             this.listBoxAvailable.Name = "listBoxAvailable";
-            this.listBoxAvailable.Size = new System.Drawing.Size(187, 452);
+            this.listBoxAvailable.Size = new System.Drawing.Size(150, 452);
             this.listBoxAvailable.TabIndex = 0;
             // 
             // listBoxUnavailable
             // 
             this.listBoxUnavailable.FormattingEnabled = true;
             this.listBoxUnavailable.ItemHeight = 16;
-            this.listBoxUnavailable.Location = new System.Drawing.Point(315, 71);
+            this.listBoxUnavailable.Location = new System.Drawing.Point(237, 71);
             this.listBoxUnavailable.Margin = new System.Windows.Forms.Padding(4);
             this.listBoxUnavailable.Name = "listBoxUnavailable";
-            this.listBoxUnavailable.Size = new System.Drawing.Size(187, 452);
+            this.listBoxUnavailable.Size = new System.Drawing.Size(150, 452);
             this.listBoxUnavailable.TabIndex = 0;
             // 
             // btnOK
             // 
-            this.btnOK.Location = new System.Drawing.Point(315, 543);
+            this.btnOK.Location = new System.Drawing.Point(218, 543);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
             this.btnOK.TabIndex = 1;
@@ -73,7 +73,7 @@
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(427, 543);
+            this.btnCancel.Location = new System.Drawing.Point(312, 543);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 1;
@@ -83,7 +83,7 @@
             // 
             // btnMoveRight
             // 
-            this.btnMoveRight.Location = new System.Drawing.Point(246, 201);
+            this.btnMoveRight.Location = new System.Drawing.Point(188, 194);
             this.btnMoveRight.Name = "btnMoveRight";
             this.btnMoveRight.Size = new System.Drawing.Size(42, 23);
             this.btnMoveRight.TabIndex = 1;
@@ -93,7 +93,7 @@
             // 
             // btnMoveLeft
             // 
-            this.btnMoveLeft.Location = new System.Drawing.Point(246, 244);
+            this.btnMoveLeft.Location = new System.Drawing.Point(188, 237);
             this.btnMoveLeft.Name = "btnMoveLeft";
             this.btnMoveLeft.Size = new System.Drawing.Size(42, 23);
             this.btnMoveLeft.TabIndex = 1;
@@ -103,21 +103,21 @@
             // 
             // RSCountsTxt
             // 
-            this.RSCountsTxt.Location = new System.Drawing.Point(284, 21);
+            this.RSCountsTxt.Location = new System.Drawing.Point(237, 25);
             this.RSCountsTxt.Maximum = new decimal(new int[] {
             149,
             0,
             0,
             0});
             this.RSCountsTxt.Name = "RSCountsTxt";
-            this.RSCountsTxt.Size = new System.Drawing.Size(141, 22);
+            this.RSCountsTxt.Size = new System.Drawing.Size(150, 22);
             this.RSCountsTxt.TabIndex = 5;
             this.RSCountsTxt.ValueChanged += new System.EventHandler(this.RSCountsTxt_ValueChanged);
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(122, 24);
+            this.label3.Location = new System.Drawing.Point(94, 27);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(136, 16);
@@ -126,7 +126,7 @@
             // 
             // btnMoveUp
             // 
-            this.btnMoveUp.Location = new System.Drawing.Point(246, 288);
+            this.btnMoveUp.Location = new System.Drawing.Point(188, 281);
             this.btnMoveUp.Name = "btnMoveUp";
             this.btnMoveUp.Size = new System.Drawing.Size(42, 23);
             this.btnMoveUp.TabIndex = 1;
@@ -136,7 +136,7 @@
             // 
             // btnMoveDown
             // 
-            this.btnMoveDown.Location = new System.Drawing.Point(246, 330);
+            this.btnMoveDown.Location = new System.Drawing.Point(188, 323);
             this.btnMoveDown.Name = "btnMoveDown";
             this.btnMoveDown.Size = new System.Drawing.Size(42, 23);
             this.btnMoveDown.TabIndex = 1;
@@ -148,7 +148,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(544, 589);
+            this.ClientSize = new System.Drawing.Size(424, 589);
             this.Controls.Add(this.RSCountsTxt);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.btnCancel);
@@ -166,7 +166,7 @@
             this.MinimizeBox = false;
             this.Name = "SalvageForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Salvage";
+            this.Text = "Salvage Sequence Setting Dialog";
             this.Load += new System.EventHandler(this.SalvageForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.RSCountsTxt)).EndInit();
             this.ResumeLayout(false);

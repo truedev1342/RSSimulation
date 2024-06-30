@@ -473,7 +473,7 @@
             this.SetLocationBBtn.Size = new System.Drawing.Size(23, 22);
             this.SetLocationBBtn.Text = "Set B Storage Location";
             this.SetLocationBBtn.ToolTipText = "Set B Storage Location";
-            this.SetLocationBBtn.Click += new System.EventHandler(this.onSetLocationEFrameBtn);
+            this.SetLocationBBtn.Click += new System.EventHandler(this.onSetLocationBBtn);
             // 
             // toolStripSeparator4
             // 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
@@ -57,11 +58,13 @@ namespace RSSimulation
 
         private RoofSupport[] _rsData = new RoofSupport[202];
         private Dozer _dozer = new Dozer();
+
+        private int setPosBtnId = -1;
         
         private List<int> _available = new List<int>();
         private List<int> _unavailable = new List<int>();
 
-        private Queue<Command> _commands = new Queue<Command>();
+        private Queue<Command> _cmdDozer = new Queue<Command>();
 
         public MainForm()
         {
@@ -176,17 +179,17 @@ namespace RSSimulation
                 _rsData[i].draw(g);
             }
         }                 
-        private void processSimulation()
+        private void processDozerSimulation()
         {
-            while (_commands.Count > 0 && _commands.Peek()._enTime <= _elapsed)
+            while (_cmdDozer.Count > 0 && _cmdDozer.Peek()._enTime <= _elapsed)
             {
-                _commands.Dequeue();
+                _cmdDozer.Dequeue();
             }
-            if (_commands.Count == 0)
+            if (_cmdDozer.Count == 0 || _cmdDozer.Peek()._stTime > _elapsed)
             {
                 return;
             }
-            Command _cmd = _commands.Peek();
+            Command _cmd = _cmdDozer.Peek();
             int dt = SimulationSpeed * timer1.Interval / 1000;
             if (_elapsed + dt >= _cmd._enTime) {
                 if (_cmd._type == 0) // rotating...
@@ -202,13 +205,6 @@ namespace RSSimulation
                 if (_cmd._type == 0) // rotating...
                 {
                     float _ang = Math.Abs(_cmd._enAngle - _dozer.getAngle());
-                    /*if (_ang < 0)
-                    {
-                        _ang += 360;
-                    } else if (_ang > 360)
-                    {
-                        _ang -= 360;
-                    }*/
                     _dozer.rotate((float)_cmd._rotDir * _ang / cmdLeft);
                 }
                 else if (_cmd._type == 1) // moving...
@@ -274,7 +270,7 @@ namespace RSSimulation
                     x1 = tempPos.X + (float)(2.5 * Math.Cos(tempAngle * Math.PI / 180));
                     y1 = tempPos.Y + (float)(2.5 * Math.Sin(tempAngle * Math.PI / 180));
                     _cmd = new Command(curTime, curTime + step, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, false, 0);
-                    _commands.Enqueue(_cmd);
+                    _cmdDozer.Enqueue(_cmd);
                     tempPos = new PointF(x1, y1);
                     curTime += step;
                 }
@@ -283,13 +279,13 @@ namespace RSSimulation
                 x1 = tempPos.X - (float)((4 - 2 * carried) * Math.Cos(tempAngle * Math.PI / 180));
                 y1 = tempPos.Y - (float)((4 - 2 * carried) * Math.Sin(tempAngle * Math.PI / 180));
                 _cmd = new Command(curTime, curTime + step, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, true, i);
-                _commands.Enqueue(_cmd);
+                _cmdDozer.Enqueue(_cmd);
                 tempPos = new PointF(x1, y1);
                 curTime += step;
 
                 // rotate 90 degree
                 _cmd = new Command(curTime, curTime + step, 0, 1, tempPos, tempPos, tempAngle, tempAngle + 90, true, i);
-                _commands.Enqueue(_cmd);
+                _cmdDozer.Enqueue(_cmd);
                 tempAngle += 90;
                 curTime += step;
 
@@ -303,7 +299,7 @@ namespace RSSimulation
                 x1 = x1 - dx;
                 y1 = y1 - dy;
                 _cmd = new Command(curTime, curTime + step, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, true, i);
-                _commands.Enqueue(_cmd);
+                _cmdDozer.Enqueue(_cmd);
                 tempPos = new PointF(x1, y1);
                 curTime += step;
 
@@ -320,7 +316,7 @@ namespace RSSimulation
                     x1 = x1 - dx;
                     y1 = y1 - dy;
                     _cmd = new Command(curTime, EFrameBuiltTime * 3600, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, false, 0);
-                    _commands.Enqueue(_cmd);
+                    _cmdDozer.Enqueue(_cmd);
                     tempPos = new PointF(x1, y1);
                     curTime = EFrameBuiltTime * 3600;
                     
@@ -337,13 +333,13 @@ namespace RSSimulation
                     x1 = x1 - dx;
                     y1 = y1 - dy;
                     _cmd = new Command(curTime, curTime + step, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, false, 0);
-                    _commands.Enqueue(_cmd);
+                    _cmdDozer.Enqueue(_cmd);
                     tempPos = new PointF(x1, y1);
                     curTime += step;
 
                     // rotate 90 degree
                     _cmd = new Command(curTime, curTime + step, 0, -1, tempPos, tempPos, tempAngle, tempAngle - 90, false, 0);
-                    _commands.Enqueue(_cmd);
+                    _cmdDozer.Enqueue(_cmd);
                     tempAngle -= 90;
                     curTime += step;
 
@@ -351,35 +347,26 @@ namespace RSSimulation
                     x1 = tempPos.X + (float)((4 - 2 * carried) * Math.Cos(tempAngle * Math.PI / 180));
                     y1 = tempPos.Y + (float)((4 - 2 * carried) * Math.Sin(tempAngle * Math.PI / 180));
                     _cmd = new Command(curTime, curTime + step, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, false, 0);
-                    _commands.Enqueue(_cmd);
+                    _cmdDozer.Enqueue(_cmd);
                     tempPos = new PointF(x1, y1);
                     curTime += step;
                 }
 
                 carried++;
             }
+            makeFirstSalvageCommand(tempPos, tempAngle, curTime);
         }
 
-        private void makeFirstSalvageCommand()
+        private void makeFirstSalvageCommand(PointF lastPos, float lastAng, int lastTime)
         {
-            int curTime = EFrameBuiltTime * 3600;
+            int curTime = lastTime;
             if (_unavailable.Count == 0) return;
             int idx = _unavailable[0];
             Command _cmd;
             float c = HaDesMath.CalcDistancePoints(initRSPos.StartPos, initRSPos.EndPos);
             float dx, dy, x1, y1;
-            PointF tempPos = _dozer.getCenter();
-            float tempAngle = _dozer.getAngle();
-
-            dx = (float)((initRSPos.EndPos.X - initRSPos.StartPos.X) * 5 / c);
-            dy = (float)((initRSPos.EndPos.Y - initRSPos.StartPos.Y) * 5 / c);
-            tempPos.X = _basePoint.X + dx;
-            tempPos.Y = _basePoint.Y - dy;
-            dx = (float)((initRSPos.EndPos.X - initRSPos.StartPos.X) * 10 / c);
-            dy = (float)((initRSPos.EndPos.Y - initRSPos.StartPos.Y) * 10 / c);
-            tempPos.X = tempPos.X - dx;
-            tempPos.Y = tempPos.Y - dy;
-
+            PointF tempPos = lastPos;
+            float tempAngle = lastAng;
 
             dx = (float)((initRSPos.EndPos.X - initRSPos.StartPos.X) * 5 / c);
             dy = (float)((initRSPos.EndPos.Y - initRSPos.StartPos.Y) * 5 / c);
@@ -392,10 +379,29 @@ namespace RSSimulation
             float d = HaDesMath.CalcDistancePoints(new PointF(x1, y1), tempPos);
             int step = (int)d * 180;
             _cmd = new Command(curTime, curTime + step, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, false, 0);
-            _commands.Enqueue(_cmd);
+            _cmdDozer.Enqueue(_cmd);
             tempPos = new PointF(x1, y1);
             curTime += step;
 
+            // rotate 90 degree
+            _cmd = new Command(curTime, curTime + 1800, 0, -1, tempPos, tempPos, tempAngle, tempAngle - 90, false, 0);
+            _cmdDozer.Enqueue(_cmd);
+            tempAngle -= 90;
+            curTime += 1800;
+
+            // move down
+            x1 = tempPos.X - (float)(3 * Math.Cos(tempAngle * Math.PI / 180));
+            y1 = tempPos.Y - (float)(3 * Math.Sin(tempAngle * Math.PI / 180));
+            _cmd = new Command(curTime, curTime + 1800, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, true, idx);
+            _cmdDozer.Enqueue(_cmd);
+            tempPos = new PointF(x1, y1);
+            curTime += 1800;
+
+            // rotate 90 degree
+            _cmd = new Command(curTime, curTime + 1800, 0, 1, tempPos, tempPos, tempAngle, tempAngle + 90, true, idx);
+            _cmdDozer.Enqueue(_cmd);
+            tempAngle += 90;
+            curTime += 1800;
         }
 
         private void makeWholeSalvageCommand()
@@ -414,13 +420,13 @@ namespace RSSimulation
                 x1 = tempPos.X - (float)(3 * Math.Cos(tempAngle * Math.PI / 180));
                 y1 = tempPos.Y - (float)(3 * Math.Sin(tempAngle * Math.PI / 180));
                 _cmd = new Command(curTime, curTime + 1800, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, true, _unavailable[i]);
-                _commands.Enqueue(_cmd);
+                _cmdDozer.Enqueue(_cmd);
                 tempPos = new PointF(x1, y1);
                 curTime += 1800;
 
                 // rotate 90 degree
                 _cmd = new Command(curTime, curTime + 1800, 0, 1, tempPos, tempPos, tempAngle, tempAngle + 90, true, _unavailable[i]);
-                _commands.Enqueue(_cmd);
+                _cmdDozer.Enqueue(_cmd);
                 tempAngle += 90;
                 curTime += 1800;
 
@@ -432,7 +438,7 @@ namespace RSSimulation
                 float d = HaDesMath.CalcDistancePoints(new PointF(x1, y1), tempPos);
                 step = (int)d * 180;
                 _cmd = new Command(curTime, curTime + step, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, true, _unavailable[i]);
-                _commands.Enqueue(_cmd);
+                _cmdDozer.Enqueue(_cmd);
                 tempPos = new PointF(x1, y1);
                 curTime += step;
 
@@ -456,13 +462,13 @@ namespace RSSimulation
                 d = HaDesMath.CalcDistancePoints(new PointF(x1, y1), tempPos);
                 step = (int)d * 180;
                 _cmd = new Command(curTime, curTime + step, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, false, 0);
-                _commands.Enqueue(_cmd);
+                _cmdDozer.Enqueue(_cmd);
                 tempPos = new PointF(x1, y1);
                 curTime += step;
 
                 // rotate 90 degree
                 _cmd = new Command(curTime, curTime + 1800, 0, -1, tempPos, tempPos, tempAngle, tempAngle - 90, false, 0);
-                _commands.Enqueue(_cmd);
+                _cmdDozer.Enqueue(_cmd);
                 tempAngle -= 90;
                 curTime += 1800;
 
@@ -470,25 +476,18 @@ namespace RSSimulation
                 x1 = tempPos.X + (float)(3 * Math.Cos(tempAngle * Math.PI / 180));
                 y1 = tempPos.Y + (float)(3 * Math.Sin(tempAngle * Math.PI / 180));
                 _cmd = new Command(curTime, curTime + 1800, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, false, 0);
-                _commands.Enqueue(_cmd);
+                _cmdDozer.Enqueue(_cmd);
                 tempPos = new PointF(x1, y1);
                 curTime += 1800;
             }
         }
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (_commands.Count == 0)
-            {
-                timer1.Enabled = false;
-                StopSimulationBtn.Enabled = false;
-                StartSimulationBtn.Enabled = true;
-                return;
-            }
             _elapsed += SimulationSpeed * timer1.Interval / 1000;
             _curTime = _curTime + TimeSpan.FromSeconds(SimulationSpeed * timer1.Interval / 1000);
             SimulationTimeSB.Text = _curTime.ToString();
             ElapsedTimeSB.Text = HaDesMath.ConvertSecToTimeStr(_elapsed);
-            processSimulation();
+            processDozerSimulation();
             DrawArea.Invalidate();
         }
         //
@@ -514,17 +513,16 @@ namespace RSSimulation
             if (e.Button == MouseButtons.Right)
             {
                 moveStartPoint = currentPoint;
-                DrawArea.Cursor = Cursors.Hand;
+                DrawArea.Cursor = Cursors.SizeAll;
             }
             if (e.Button == MouseButtons.Left)
             {
                 DrawArea.Cursor = Cursors.Cross;
                 if (SetLocationEFrameBtn.Checked == true)
                 {
-                    //DrawArea.Cursor = Cursors.Default;
-                    //eFramePoint = HaDesGraphics.GetDxfPosF(e.Location, initialRect, offsetPos, zoomFactor);
                     eFramePoint = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
                     SetLocationEFrameBtn.Checked = false;
+                    DrawArea.Cursor = Cursors.Default;
                     _elapsed = 0;
                     _curTime = SimulationTime;
                     InitializeRSandDozer();
@@ -556,7 +554,8 @@ namespace RSSimulation
                     $"AreaSize:({DrawAreaSize.Width},{DrawAreaSize.Height})";
                 DrawArea.Invalidate();
             }
-            DrawArea.Cursor = Cursors.Default;
+            if (setPosBtnId == -1)
+                DrawArea.Cursor = Cursors.Default;
         }
         private void DrawArea_MouseMove(object sender, MouseEventArgs e)
         {
@@ -575,6 +574,9 @@ namespace RSSimulation
                 MousePositionSB.Text = $"Offset:({offsetPos.X}, {offsetPos.Y}), " +
                     $"AreaSize:({DrawAreaSize.Width},{DrawAreaSize.Height})";
                 DrawArea.Invalidate();
+            } else if (setPosBtnId > -1)
+            {
+                //TODO
             }
         }
         private void DrawPanel_MouseWheel(object sender, MouseEventArgs e)
@@ -757,17 +759,37 @@ namespace RSSimulation
         /// Toolbar Event process Start
         private void onSetLocationABtn(object sender, EventArgs e)
         {
-
+            if (SetLocationABtn.Checked)
+            {
+                setUncheckRest(1);
+            }
         }
         private void onSetLocationBBtn(object sender, EventArgs e)
         {
+            if (SetLocationBBtn.Checked)
+            {
+                setUncheckRest(2);
+            }
+        }
 
+        private void setUncheckRest(int id)
+        {
+            SetLocationEFrameBtn.Checked = (id == 0);
+            SetLocationABtn.Checked = (id == 1);
+            SetLocationBBtn.Checked = (id == 2);
+            SetRouteABtn.Checked = (id == 3);
+            SetRouteBBtn.Checked = (id == 4);
+            SetRouteDozerBtn.Checked = (id == 5);
+
+            setPosBtnId = id;
+            DrawArea.Cursor = Cursors.Cross;
         }
         private void onSetLocationEFrameBtn(object sender, EventArgs e)
         {
             if (SetLocationEFrameBtn.Checked)
             {
                 DrawArea.Cursor = Cursors.Hand;
+                setUncheckRest(0);
             }
             else
             {
@@ -776,15 +798,24 @@ namespace RSSimulation
         }
         private void onSetRouteABtn(object sender, EventArgs e)
         {
-
+            if (SetRouteABtn.Checked)
+            {
+                setUncheckRest(3);
+            }
         }
         private void onSetRouteBBtn(object sender, EventArgs e)
         {
-
+            if (SetRouteBBtn.Checked)
+            {
+                setUncheckRest(4);
+            }
         }
         private void onSetRouteDozerBtn(object sender, EventArgs e)
         {
-
+            if (SetRouteDozerBtn.Checked)
+            {
+                setUncheckRest(5);
+            }
         }
         private void onStartSimulationBtn(object sender, EventArgs e)
         {
@@ -796,7 +827,7 @@ namespace RSSimulation
             StartSimulationBtn.Enabled = false;
             StopSimulationBtn.Enabled = true;
             InitializeRSandDozer();
-            _commands.Clear();
+            _cmdDozer.Clear();
             makeEFrameCommand();
             timer1.Interval = 100;
             timer1.Enabled = true;

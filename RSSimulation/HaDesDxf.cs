@@ -431,7 +431,7 @@ namespace RSSimulation
             foreach(LineData line in lines)
             {
                 g.DrawLine(line.pen, ToPointF(line.startPos), ToPointF(line.endPos));
-            }                
+            }
         }
         private void DrawPolyline2D(Graphics g)
         {

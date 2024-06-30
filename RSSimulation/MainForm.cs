@@ -74,6 +74,9 @@ namespace RSSimulation
         private List<PointF> routeAPoints = new List<PointF>();
         private List<PointF> routeBPoints = new List<PointF>();
         private List<PointF> routeDozerPoints = new List<PointF>();
+        private PointF routeATempPos = PointF.Empty;
+        private PointF routeBTempPos = PointF.Empty;
+        private PointF routeDozerTempPos = PointF.Empty;
 
         private Queue<Command> _cmdDozer = new Queue<Command>();
 
@@ -189,7 +192,45 @@ namespace RSSimulation
             {
                 _rsData[i].draw(g);
             }
-        }                 
+            g.DrawLine(new Pen(Color.Red, 0.01f), locAPosSt, locAPosEn);
+            g.DrawLine(new Pen(Color.Blue, 0.01f), locBPosSt, locBPosEn);
+
+            for (int i = 0; i < routeDozerPoints.Count; i ++)
+            {
+                if (i <  routeDozerPoints.Count - 1)
+                {
+                    g.DrawLine(new Pen(Color.Yellow, 0.01f), routeDozerPoints[i], routeDozerPoints[i + 1]);
+                } else
+                {
+                    g.DrawLine(new Pen(Color.Yellow, 0.01f), routeDozerPoints[i], routeDozerTempPos);
+                }
+            }
+
+            for (int i = 0; i < routeAPoints.Count; i++)
+            {
+                if (i < routeAPoints.Count - 1)
+                {
+                    g.DrawLine(new Pen(Color.Red, 0.01f), routeAPoints[i], routeAPoints[i + 1]);
+                }
+                else
+                {
+                    g.DrawLine(new Pen(Color.Red, 0.01f), routeAPoints[i], routeATempPos);
+                }
+            }
+
+            for (int i = 0; i < routeBPoints.Count; i++)
+            {
+                if (i < routeBPoints.Count - 1)
+                {
+                    g.DrawLine(new Pen(Color.Blue, 0.01f), routeBPoints[i], routeBPoints[i + 1]);
+                }
+                else
+                {
+                    g.DrawLine(new Pen(Color.Blue, 0.01f), routeBPoints[i], routeBTempPos);
+                }
+            }
+
+        }
         private void processDozerSimulation()
         {
             while (_cmdDozer.Count > 0 && _cmdDozer.Peek()._enTime <= _elapsed)
@@ -528,40 +569,56 @@ namespace RSSimulation
             }
             if (e.Button == MouseButtons.Left)
             {
-                DrawArea.Cursor = Cursors.Cross;
-                if (setPosBtnId == 0)  // set e-frame point
+                switch (setPosBtnId)
                 {
-                    eFramePoint = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
-                    setUncheckRest(-1);
-                    _elapsed = 0;
-                    _curTime = SimulationTime;
-                    InitializeRSandDozer();
-                    DrawArea.Invalidate();
-                } else if (setPosBtnId == 1) // set location A
-                {
-                    if (locAPosSt == PointF.Empty)
-                    {
-                        locAPosSt = e.Location;
-                    } else
-                    {
-                        locAPosEn = e.Location;
+                    case 0: // set e-frame point
+                        eFramePoint = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
                         setUncheckRest(-1);
-                    }
-                } else if (setPosBtnId == 2) // set location B
-                {
-                    if (locBPosSt == PointF.Empty)
-                    {
-                        locBPosSt = e.Location;
-                    }
-                    else
-                    {
-                        locBPosEn = e.Location;
-                        setUncheckRest(-1);
-                    }
-                }
-                else
-                {
-                    moveStartPoint = e.Location;
+                        _elapsed = 0;
+                        _curTime = SimulationTime;
+                        InitializeRSandDozer();
+                        DrawArea.Invalidate();
+                        break;
+                    case 1: // set location A
+                        if (locAPosSt == PointF.Empty)
+                        {
+                            locAPosSt = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
+                        }
+                        else
+                        {
+                            locAPosEn = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
+                            DrawArea.Invalidate();
+                            setUncheckRest(-1);
+                        }
+                        break;
+                    case 2: // set location B
+                        if (locBPosSt == PointF.Empty)
+                        {
+                            locBPosSt = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
+                        }
+                        else
+                        {
+                            locBPosEn = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
+                            DrawArea.Invalidate();
+                            setUncheckRest(-1);
+                        }
+                        break;
+                    case 3: // set route A
+                        routeAPoints.Add(HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor));
+                        DrawArea.Invalidate();
+                        break;
+                    case 4: // set route B
+                        routeBPoints.Add(HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor));
+                        DrawArea.Invalidate();
+                        break;
+                    case 5: // set dozer route
+                        routeDozerPoints.Add(HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor));
+                        DrawArea.Invalidate();
+                        break;
+                    default:
+                        DrawArea.Cursor = Cursors.Cross;
+                        moveStartPoint = e.Location;
+                        break;
                 }
             }
         }
@@ -586,7 +643,13 @@ namespace RSSimulation
                 DrawArea.Invalidate();
             }
             if (setPosBtnId == -1)
+            {
                 DrawArea.Cursor = Cursors.Default;
+            }
+            else
+            {
+                DrawArea.Cursor = Cursors.Cross;
+            }
         }
         private void DrawArea_MouseMove(object sender, MouseEventArgs e)
         {
@@ -605,9 +668,39 @@ namespace RSSimulation
                 MousePositionSB.Text = $"Offset:({offsetPos.X}, {offsetPos.Y}), " +
                     $"AreaSize:({DrawAreaSize.Width},{DrawAreaSize.Height})";
                 DrawArea.Invalidate();
-            } else if (setPosBtnId > -1)
+            }
+            switch (setPosBtnId)
             {
-                //TODO
+                case 1: // set location A
+                    if (locAPosSt != PointF.Empty)
+                    {
+                        locAPosEn = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
+                        DrawArea.Invalidate();
+                    }
+                    break;
+                case 2: // set location B
+                    if (locBPosSt != PointF.Empty)
+                    {
+                        locBPosEn = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
+                        DrawArea.Invalidate();
+                    }
+                    break;
+                case 3: // set route A
+                    routeATempPos = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
+                    DrawArea.Invalidate();
+                    break;
+                case 4: // set route B
+                    routeBTempPos = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
+                    DrawArea.Invalidate();
+                    break;
+                case 5: // set dozer route
+                    routeDozerTempPos = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
+                    DrawArea.Invalidate();
+                    break;
+                default:
+                    moveStartPoint = e.Location;
+                    break;
+
             }
         }
         private void DrawPanel_MouseWheel(object sender, MouseEventArgs e)
@@ -795,6 +888,7 @@ namespace RSSimulation
                 setUncheckRest(1);
                 locAPosSt = PointF.Empty;
                 locAPosEn = PointF.Empty;
+                DrawArea.Invalidate();
             } else
             {
                 setUncheckRest(-1);
@@ -804,9 +898,10 @@ namespace RSSimulation
         {
             if (SetLocationBBtn.Checked)
             {
-                locAPosSt = PointF.Empty;
-                locAPosEn = PointF.Empty;
                 setUncheckRest(2);
+                locBPosSt = PointF.Empty;
+                locBPosEn = PointF.Empty;
+                DrawArea.Invalidate();
             } else
             {
                 setUncheckRest(-1);
@@ -835,7 +930,6 @@ namespace RSSimulation
         {
             if (SetLocationEFrameBtn.Checked)
             {
-                DrawArea.Cursor = Cursors.Hand;
                 setUncheckRest(0);
             }
             else
@@ -847,6 +941,16 @@ namespace RSSimulation
         {
             if (SetRouteABtn.Checked)
             {
+                if (routeDozerPoints.Count == 0)
+                {
+                    MessageBox.Show("Please set Dozer route.");
+                    setUncheckRest(-1);
+                    return;
+                }
+                routeAPoints.Clear();
+                routeAPoints.Add(routeDozerPoints[routeDozerPoints.Count - 1]);
+                routeATempPos = routeAPoints[0];
+                DrawArea.Invalidate();
                 setUncheckRest(3);
             } else
             {
@@ -857,6 +961,16 @@ namespace RSSimulation
         {
             if (SetRouteBBtn.Checked)
             {
+                if (routeDozerPoints.Count == 0)
+                {
+                    MessageBox.Show("Please set Dozer route.");
+                    setUncheckRest(-1);
+                    return;
+                }
+                routeBPoints.Clear();
+                routeBPoints.Add(routeDozerPoints[routeDozerPoints.Count - 1]);
+                routeBTempPos = routeBPoints[0];
+                DrawArea.Invalidate();
                 setUncheckRest(4);
             } else
             {
@@ -867,9 +981,39 @@ namespace RSSimulation
         {
             if (SetRouteDozerBtn.Checked)
             {
+                routeDozerPoints.Clear();
+                float c = HaDesMath.CalcDistancePoints(initRSPos.StartPos, initRSPos.EndPos);
+
+                float dx = (float)((initRSPos.EndPos.X - initRSPos.StartPos.X) * 3 / c);
+                float dy = (float)((initRSPos.EndPos.Y - initRSPos.StartPos.Y) * 3 / c);
+                float positionX = initRSPos.EndPos.X + dx;
+                float positionY = initRSPos.EndPos.Y - dy;
+                dx = (float)((initRSPos.EndPos.X - initRSPos.StartPos.X) * 21 / c);
+                dy = (float)((initRSPos.EndPos.Y - initRSPos.StartPos.Y) * 21 / c);
+                positionX = positionX + dx;
+                positionY = positionY + dy;
+
+                routeDozerPoints.Add(new PointF(positionX, positionY));
+
+                dx = (float)((initRSPos.EndPos.X - initRSPos.StartPos.X) * 3 / c);
+                dy = (float)((initRSPos.EndPos.Y - initRSPos.StartPos.Y) * 3 / c);
+                positionX = initRSPos.StartPos.X + dx;
+                positionY = initRSPos.StartPos.Y - dy;
+                dx = (float)((initRSPos.EndPos.X - initRSPos.StartPos.X) * 21 / c);
+                dy = (float)((initRSPos.EndPos.Y - initRSPos.StartPos.Y) * 21 / c);
+                positionX = positionX - dx;
+                positionY = positionY - dy;
+
+                routeDozerPoints.Add(new PointF(positionX, positionY));
+                routeDozerTempPos = new PointF(positionX, positionY);
+
+                routeDozerTempPos = PointF.Empty;
+                DrawArea.Invalidate();
                 setUncheckRest(5);
             } else
             {
+                routeDozerTempPos = routeDozerPoints[routeDozerPoints.Count - 1];
+                DrawArea.Invalidate();
                 setUncheckRest(-1);
             }
         }

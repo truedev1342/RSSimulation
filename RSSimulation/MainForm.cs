@@ -64,6 +64,17 @@ namespace RSSimulation
         private List<int> _available = new List<int>();
         private List<int> _unavailable = new List<int>();
 
+
+        private PointF locAPosSt = PointF.Empty;
+        private PointF locAPosEn = PointF.Empty;
+
+        private PointF locBPosSt = PointF.Empty;
+        private PointF locBPosEn = PointF.Empty;
+
+        private List<PointF> routeAPoints = new List<PointF>();
+        private List<PointF> routeBPoints = new List<PointF>();
+        private List<PointF> routeDozerPoints = new List<PointF>();
+
         private Queue<Command> _cmdDozer = new Queue<Command>();
 
         public MainForm()
@@ -518,15 +529,35 @@ namespace RSSimulation
             if (e.Button == MouseButtons.Left)
             {
                 DrawArea.Cursor = Cursors.Cross;
-                if (SetLocationEFrameBtn.Checked == true)
+                if (setPosBtnId == 0)  // set e-frame point
                 {
                     eFramePoint = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
-                    SetLocationEFrameBtn.Checked = false;
-                    DrawArea.Cursor = Cursors.Default;
+                    setUncheckRest(-1);
                     _elapsed = 0;
                     _curTime = SimulationTime;
                     InitializeRSandDozer();
                     DrawArea.Invalidate();
+                } else if (setPosBtnId == 1) // set location A
+                {
+                    if (locAPosSt == PointF.Empty)
+                    {
+                        locAPosSt = e.Location;
+                    } else
+                    {
+                        locAPosEn = e.Location;
+                        setUncheckRest(-1);
+                    }
+                } else if (setPosBtnId == 2) // set location B
+                {
+                    if (locBPosSt == PointF.Empty)
+                    {
+                        locBPosSt = e.Location;
+                    }
+                    else
+                    {
+                        locBPosEn = e.Location;
+                        setUncheckRest(-1);
+                    }
                 }
                 else
                 {
@@ -762,13 +793,23 @@ namespace RSSimulation
             if (SetLocationABtn.Checked)
             {
                 setUncheckRest(1);
+                locAPosSt = PointF.Empty;
+                locAPosEn = PointF.Empty;
+            } else
+            {
+                setUncheckRest(-1);
             }
         }
         private void onSetLocationBBtn(object sender, EventArgs e)
         {
             if (SetLocationBBtn.Checked)
             {
+                locAPosSt = PointF.Empty;
+                locAPosEn = PointF.Empty;
                 setUncheckRest(2);
+            } else
+            {
+                setUncheckRest(-1);
             }
         }
 
@@ -782,7 +823,13 @@ namespace RSSimulation
             SetRouteDozerBtn.Checked = (id == 5);
 
             setPosBtnId = id;
-            DrawArea.Cursor = Cursors.Cross;
+            if (id == -1)
+            {
+                DrawArea.Cursor = Cursors.Default;
+            } else
+            {
+                DrawArea.Cursor = Cursors.Cross;
+            }
         }
         private void onSetLocationEFrameBtn(object sender, EventArgs e)
         {
@@ -793,7 +840,7 @@ namespace RSSimulation
             }
             else
             {
-                DrawArea.Cursor = Cursors.Default;
+                setUncheckRest(-1);
             }
         }
         private void onSetRouteABtn(object sender, EventArgs e)
@@ -801,6 +848,9 @@ namespace RSSimulation
             if (SetRouteABtn.Checked)
             {
                 setUncheckRest(3);
+            } else
+            {
+                setUncheckRest(-1);
             }
         }
         private void onSetRouteBBtn(object sender, EventArgs e)
@@ -808,6 +858,9 @@ namespace RSSimulation
             if (SetRouteBBtn.Checked)
             {
                 setUncheckRest(4);
+            } else
+            {
+                setUncheckRest(-1);
             }
         }
         private void onSetRouteDozerBtn(object sender, EventArgs e)
@@ -815,6 +868,9 @@ namespace RSSimulation
             if (SetRouteDozerBtn.Checked)
             {
                 setUncheckRest(5);
+            } else
+            {
+                setUncheckRest(-1);
             }
         }
         private void onStartSimulationBtn(object sender, EventArgs e)

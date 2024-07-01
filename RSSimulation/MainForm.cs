@@ -238,42 +238,45 @@ namespace RSSimulation
         }
         private void processDozerSimulation()
         {
-            while (_cmdDozer.Count > 0 && _cmdDozer.Peek()._enTime <= _elapsed)
+            while (_cmdDozer.Count > 0 && _cmdDozer.Peek().enTime <= _elapsed)
             {
                 _cmdDozer.Dequeue();
             }
-            if (_cmdDozer.Count == 0 || _cmdDozer.Peek()._stTime > _elapsed)
+            if (_cmdDozer.Count == 0 || _cmdDozer.Peek().stTime > _elapsed)
             {
                 return;
             }
             Command _cmd = _cmdDozer.Peek();
             int dt = SimulationSpeed * timer1.Interval / 1000;
-            if (_elapsed + dt >= _cmd._enTime) {
-                if (_cmd._type == 0) // rotating...
+            if (_elapsed + dt >= _cmd.enTime) {
+                if (_cmd.direction == 0) // moving...
                 {
-                    _dozer.setAngle(_cmd._enAngle);
-                } else if (_cmd._type == 1) // moving...
+                    _dozer.setCenter(_cmd.enPos);
+                }
+                else // rotating...
                 {
-                    _dozer.setCenter(_cmd._enPos);
+                    _dozer.setAngle(_cmd.enAngle);
                 }
             } else
             {
-                int cmdLeft = (_cmd._enTime - _elapsed) / dt;
-                if (_cmd._type == 0) // rotating...
+                int cmdLeft = (_cmd.enTime - _elapsed) / dt;
+                if (_cmd.direction == 0) // moving...
                 {
-                    float _ang = Math.Abs(_cmd._enAngle - _dozer.getAngle());
-                    _dozer.rotate((float)_cmd._rotDir * _ang / cmdLeft);
-                }
-                else if (_cmd._type == 1) // moving...
-                {
-                    float dx = (_cmd._enPos.X - _dozer.getCenter().X) / cmdLeft;
-                    float dy = (_cmd._enPos.Y - _dozer.getCenter().Y) / cmdLeft;
+                    float dx = (_cmd.enPos.X - _dozer.getCenter().X) / cmdLeft;
+                    float dy = (_cmd.enPos.Y - _dozer.getCenter().Y) / cmdLeft;
+                    _dozer.setAngle(_cmd.enAngle);
                     _dozer.move(dx, dy);
                 }
+                else // rotating...
+                {
+                    float _ang = Math.Abs(_cmd.enAngle - _dozer.getAngle());
+                    _dozer.rotate((float)_cmd.direction * _ang / cmdLeft);
+                    _dozer.setCenter(_cmd.enPos);
+                }
             }
-            if (_cmd._loadedRS)
+            if (_cmd.loadedRS != -1)
             {
-                int id = _cmd._rsNum;
+                int id = _cmd.loadedRS;
                 float x1 = _dozer.getCenter().X + (float)(3.5 * Math.Cos(_dozer.getAngle() * Math.PI / 180));
                 float y1 = _dozer.getCenter().Y + (float)(3.5 * Math.Sin(_dozer.getAngle() * Math.PI / 180));
                 _rsData[id].setCenter(new PointF(x1, y1));
@@ -326,7 +329,7 @@ namespace RSSimulation
                     // move up
                     x1 = tempPos.X + (float)(2.5 * Math.Cos(tempAngle * Math.PI / 180));
                     y1 = tempPos.Y + (float)(2.5 * Math.Sin(tempAngle * Math.PI / 180));
-                    _cmd = new Command(curTime, curTime + step, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, false, 0);
+                    _cmd = new Command(curTime, curTime + step, tempPos, new PointF(x1, y1), tempAngle, tempAngle, 0, -1);
                     _cmdDozer.Enqueue(_cmd);
                     tempPos = new PointF(x1, y1);
                     curTime += step;
@@ -335,13 +338,13 @@ namespace RSSimulation
                 // move down
                 x1 = tempPos.X - (float)((4 - 2 * carried) * Math.Cos(tempAngle * Math.PI / 180));
                 y1 = tempPos.Y - (float)((4 - 2 * carried) * Math.Sin(tempAngle * Math.PI / 180));
-                _cmd = new Command(curTime, curTime + step, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, true, i);
+                _cmd = new Command(curTime, curTime + step, tempPos, new PointF(x1, y1), tempAngle, tempAngle, 0, i);
                 _cmdDozer.Enqueue(_cmd);
                 tempPos = new PointF(x1, y1);
                 curTime += step;
 
                 // rotate 90 degree
-                _cmd = new Command(curTime, curTime + step, 0, 1, tempPos, tempPos, tempAngle, tempAngle + 90, true, i);
+                _cmd = new Command(curTime, curTime + step, tempPos, tempPos, tempAngle, tempAngle + 90, 1, i);
                 _cmdDozer.Enqueue(_cmd);
                 tempAngle += 90;
                 curTime += step;
@@ -355,7 +358,7 @@ namespace RSSimulation
                 dy = (float)((initRSPos.EndPos.Y - initRSPos.StartPos.Y) * 6 / c);
                 x1 = x1 - dx;
                 y1 = y1 - dy;
-                _cmd = new Command(curTime, curTime + step, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, true, i);
+                _cmd = new Command(curTime, curTime + step, tempPos, new PointF(x1, y1), tempAngle, tempAngle, 0, i);
                 _cmdDozer.Enqueue(_cmd);
                 tempPos = new PointF(x1, y1);
                 curTime += step;
@@ -372,7 +375,7 @@ namespace RSSimulation
                     dy = (float)((initRSPos.EndPos.Y - initRSPos.StartPos.Y) * 10 / c);
                     x1 = x1 - dx;
                     y1 = y1 - dy;
-                    _cmd = new Command(curTime, EFrameBuiltTime * 3600, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, false, 0);
+                    _cmd = new Command(curTime, EFrameBuiltTime * 3600, tempPos, new PointF(x1, y1), tempAngle, tempAngle, 0, -1);
                     _cmdDozer.Enqueue(_cmd);
                     tempPos = new PointF(x1, y1);
                     curTime = EFrameBuiltTime * 3600;
@@ -389,13 +392,13 @@ namespace RSSimulation
                     dy = (float)((initRSPos.EndPos.Y - initRSPos.StartPos.Y) * (1.7 + (RSCounts - nextId) * 2) / c);
                     x1 = x1 - dx;
                     y1 = y1 - dy;
-                    _cmd = new Command(curTime, curTime + step, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, false, 0);
+                    _cmd = new Command(curTime, curTime + step, tempPos, new PointF(x1, y1), tempAngle, tempAngle, 0, -1);
                     _cmdDozer.Enqueue(_cmd);
                     tempPos = new PointF(x1, y1);
                     curTime += step;
 
                     // rotate 90 degree
-                    _cmd = new Command(curTime, curTime + step, 0, -1, tempPos, tempPos, tempAngle, tempAngle - 90, false, 0);
+                    _cmd = new Command(curTime, curTime + step, tempPos, tempPos, tempAngle, tempAngle - 90, -1, -1);
                     _cmdDozer.Enqueue(_cmd);
                     tempAngle -= 90;
                     curTime += step;
@@ -403,7 +406,7 @@ namespace RSSimulation
                     // move up
                     x1 = tempPos.X + (float)((4 - 2 * carried) * Math.Cos(tempAngle * Math.PI / 180));
                     y1 = tempPos.Y + (float)((4 - 2 * carried) * Math.Sin(tempAngle * Math.PI / 180));
-                    _cmd = new Command(curTime, curTime + step, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, false, 0);
+                    _cmd = new Command(curTime, curTime + step, tempPos, new PointF(x1, y1), tempAngle, tempAngle, 0, -1);
                     _cmdDozer.Enqueue(_cmd);
                     tempPos = new PointF(x1, y1);
                     curTime += step;
@@ -435,13 +438,13 @@ namespace RSSimulation
             y1 = y1 - dy;
             float d = HaDesMath.CalcDistancePoints(new PointF(x1, y1), tempPos);
             int step = (int)(d * 60.0f / DozerSpeed);
-            _cmd = new Command(curTime, curTime + step, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, false, 0);
+            _cmd = new Command(curTime, curTime + step, tempPos, new PointF(x1, y1), tempAngle, tempAngle, 0, -1);
             _cmdDozer.Enqueue(_cmd);
             tempPos = new PointF(x1, y1);
             curTime += step;
 
             // rotate 90 degree
-            _cmd = new Command(curTime, curTime + 1800, 0, -1, tempPos, tempPos, tempAngle, tempAngle - 90, false, 0);
+            _cmd = new Command(curTime, curTime + 1800, tempPos, tempPos, tempAngle, tempAngle - 90, -1, -1);
             _cmdDozer.Enqueue(_cmd);
             tempAngle -= 90;
             curTime += 1800;
@@ -449,13 +452,13 @@ namespace RSSimulation
             // move down
             x1 = tempPos.X - (float)(2 * Math.Cos(tempAngle * Math.PI / 180));
             y1 = tempPos.Y - (float)(2 * Math.Sin(tempAngle * Math.PI / 180));
-            _cmd = new Command(curTime, curTime + 1800, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, true, idx);
+            _cmd = new Command(curTime, curTime + 1800, tempPos, new PointF(x1, y1), tempAngle, tempAngle, 0, idx);
             _cmdDozer.Enqueue(_cmd);
             tempPos = new PointF(x1, y1);
             curTime += 1800;
 
             // rotate 90 degree
-            _cmd = new Command(curTime, curTime + 1800, 0, 1, tempPos, tempPos, tempAngle, tempAngle + 90, true, idx);
+            _cmd = new Command(curTime, curTime + 1800, tempPos, tempPos, tempAngle, tempAngle + 90, 1, idx);
             _cmdDozer.Enqueue(_cmd);
             tempAngle += 90;
             curTime += 1800;
@@ -477,7 +480,7 @@ namespace RSSimulation
             float alpha = (float)(Math.Acos((tempPos.X - routeDozerPoints[1].X) / d) * 180 / Math.PI);
 
             int step = (int)(d * 60.0f / DozerSpeed);
-            _cmd = new Command(curTime, curTime + step, 1, 0, tempPos, routeDozerPoints[1], alpha, alpha, true, idx);
+            _cmd = new Command(curTime, curTime + step, tempPos, routeDozerPoints[1], alpha, alpha, 0, idx);
             _cmdDozer.Enqueue(_cmd);
             tempPos = routeDozerPoints[1];
             curTime += step;
@@ -488,14 +491,14 @@ namespace RSSimulation
                 alpha = (float)(Math.Acos((tempPos.X - routeDozerPoints[i].X) / d) * 180 / Math.PI);
 
                 step = (int)(d * 60.0f / DozerSpeed);
-                _cmd = new Command(curTime, curTime + step, 1, 0, tempPos, routeDozerPoints[i], alpha, alpha, true, idx);
+                _cmd = new Command(curTime, curTime + step, tempPos, routeDozerPoints[i], alpha, alpha, 0, idx);
                 _cmdDozer.Enqueue(_cmd);
                 tempPos = routeDozerPoints[1];
                 curTime += step;
             }
         }
 
-        private void makeWholeSalvageCommand()
+        /*private void makeWholeSalvageCommand()
         {
             int curTime = 0;
             int step = EFrameBuiltTime * 3600 / 18;
@@ -571,7 +574,7 @@ namespace RSSimulation
                 tempPos = new PointF(x1, y1);
                 curTime += 1800;
             }
-        }
+        } */
         private void timer1_Tick(object sender, EventArgs e)
         {
             _elapsed += SimulationSpeed * timer1.Interval / 1000;
@@ -605,6 +608,14 @@ namespace RSSimulation
             {
                 moveStartPoint = currentPoint;
                 DrawArea.Cursor = Cursors.SizeAll;
+
+                if (SetRouteDozerBtn.Checked)
+                {
+                    SetRouteDozerBtn.Checked = false;
+                    routeDozerTempPos = routeDozerPoints[routeDozerPoints.Count - 1];
+                    DrawArea.Invalidate();
+                    setUncheckRest(-1);
+                }
             }
             if (e.Button == MouseButtons.Left)
             {
@@ -1090,42 +1101,39 @@ namespace RSSimulation
 
     public class Command
     {
-        public int _stTime; // command start time.
-        public int _enTime; // command end time.
-        public int _type;   // command type 0: rotate, 1: move.
-        public int _rotDir; // rotation direction 1: clockwise, -1: anti-clockwise
-        public PointF _stPos;  // start position when move
-        public PointF _enPos;  // end position when move
-        public float _stAngle; // start angle when rotate
-        public float _enAngle; // end angle when rotate
-        public bool _loadedRS;         // rs loaded
-        public int _rsNum;
+        public int stTime; // command start time.
+        public int enTime; // command end time.
+        public PointF stPos;  // start position when move
+        public PointF enPos;  // end position when move
+        public float stAngle; // start angle when rotate
+        public float enAngle; // end angle when rotate
+        public int direction; // move direction 1: rotate clockwise, 0: move forword, -1: rotate anti-clockwise
+        public int loadedRS;  // roaded RS numb -1: not loaded
+        public int type;   // command type:  used to determine next command
 
         public Command()
         {
-            _stTime = 0;
-            _enTime = 0;
-            _type = 0;
-            _rotDir = -1;
-            _stPos = PointF.Empty;
-            _enPos = PointF.Empty;
-            _stAngle = 0;
-            _enAngle = 0;
-            _loadedRS = false;
-            _rsNum = 0;
+            stTime = 0;
+            enTime = 0;
+            stPos = PointF.Empty;
+            enPos = PointF.Empty;
+            stAngle = 0;
+            enAngle = 0;
+            direction = -1;
+            loadedRS = -1;
+            type = 0;
         }
-        public Command(int _stt, int _ent, int _tp, int _rd, PointF _stp, PointF _enp, float _sta, float _ena, bool _lrs, int _rsn)
+        public Command(int _stTime, int _enTime, PointF _stPos, PointF _enPos, float _stAngle, float _enAngle, int _direction = 0, int _loadedRS = -1, int _type = 0)
         {
-            _stTime = _stt;
-            _enTime = _ent;
-            _type = _tp;
-            _rotDir = _rd;
-            _stPos = _stp;
-            _enPos = _enp;
-            _stAngle = _sta;
-            _enAngle = _ena;
-            _loadedRS = _lrs;
-            _rsNum = _rsn;
+            stTime = _stTime;
+            enTime = _enTime;
+            stPos = _stPos;
+            enPos = _enPos;
+            stAngle = _stAngle;
+            enAngle = _enAngle;
+            direction = _direction;
+            loadedRS = _loadedRS;
+            type = _type;
         }
     }
 }

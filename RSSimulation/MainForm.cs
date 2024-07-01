@@ -187,14 +187,10 @@ namespace RSSimulation
             RectangleF visibleArea = HaDesMath.GetVisibleAreaOfDrawArea(DrawArea, zoomFactor.Value, initialRect, offsetPos);
 
             _haDesDxf.DrawDxf(g);
-            _dozer.draw(g);
-            for (int i = 1; i <= RSCounts; i++)
-            {
-                _rsData[i].draw(g);
-            }
             g.DrawLine(new Pen(Color.Red, 0.01f), locAPosSt, locAPosEn);
             g.DrawLine(new Pen(Color.Blue, 0.01f), locBPosSt, locBPosEn);
 
+            // draw dozer route
             for (int i = 0; i < routeDozerPoints.Count; i ++)
             {
                 if (i <  routeDozerPoints.Count - 1)
@@ -206,6 +202,7 @@ namespace RSSimulation
                 }
             }
 
+            // draw route A
             for (int i = 0; i < routeAPoints.Count; i++)
             {
                 if (i < routeAPoints.Count - 1)
@@ -218,6 +215,7 @@ namespace RSSimulation
                 }
             }
 
+            // draw route B
             for (int i = 0; i < routeBPoints.Count; i++)
             {
                 if (i < routeBPoints.Count - 1)
@@ -230,6 +228,13 @@ namespace RSSimulation
                 }
             }
 
+            _dozer.draw(g);  // draw dozer
+
+            // draw RS
+            for (int i = 1; i <= RSCounts; i++)
+            {
+                _rsData[i].draw(g);
+            }
         }
         private void processDozerSimulation()
         {
@@ -429,7 +434,7 @@ namespace RSSimulation
             x1 = x1 - dx;
             y1 = y1 - dy;
             float d = HaDesMath.CalcDistancePoints(new PointF(x1, y1), tempPos);
-            int step = (int)d * 180;
+            int step = (int)(d * 60.0f / DozerSpeed);
             _cmd = new Command(curTime, curTime + step, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, false, 0);
             _cmdDozer.Enqueue(_cmd);
             tempPos = new PointF(x1, y1);
@@ -442,8 +447,8 @@ namespace RSSimulation
             curTime += 1800;
 
             // move down
-            x1 = tempPos.X - (float)(3 * Math.Cos(tempAngle * Math.PI / 180));
-            y1 = tempPos.Y - (float)(3 * Math.Sin(tempAngle * Math.PI / 180));
+            x1 = tempPos.X - (float)(2 * Math.Cos(tempAngle * Math.PI / 180));
+            y1 = tempPos.Y - (float)(2 * Math.Sin(tempAngle * Math.PI / 180));
             _cmd = new Command(curTime, curTime + 1800, 1, 0, tempPos, new PointF(x1, y1), tempAngle, tempAngle, true, idx);
             _cmdDozer.Enqueue(_cmd);
             tempPos = new PointF(x1, y1);
@@ -454,6 +459,40 @@ namespace RSSimulation
             _cmdDozer.Enqueue(_cmd);
             tempAngle += 90;
             curTime += 1800;
+
+            gotoLCCStartPos(tempPos, tempAngle, curTime, idx);
+        }
+
+        private void gotoLCCStartPos(PointF lastPos, float lastAng, int lastTime, int idx)
+        {
+            if (routeDozerPoints.Count < 2)
+            {
+                return;
+            }
+            int curTime = lastTime;
+            PointF tempPos = lastPos;
+            float tempAngle = lastAng;
+            Command _cmd;
+            float d = HaDesMath.CalcDistancePoints(tempPos, routeDozerPoints[1]);
+            float alpha = (float)(Math.Acos((tempPos.X - routeDozerPoints[1].X) / d) * 180 / Math.PI);
+
+            int step = (int)(d * 60.0f / DozerSpeed);
+            _cmd = new Command(curTime, curTime + step, 1, 0, tempPos, routeDozerPoints[1], alpha, alpha, true, idx);
+            _cmdDozer.Enqueue(_cmd);
+            tempPos = routeDozerPoints[1];
+            curTime += step;
+
+            for (int i = 2; i < routeDozerPoints.Count; i ++)
+            {
+                d = HaDesMath.CalcDistancePoints(tempPos, routeDozerPoints[i]);
+                alpha = (float)(Math.Acos((tempPos.X - routeDozerPoints[i].X) / d) * 180 / Math.PI);
+
+                step = (int)(d * 60.0f / DozerSpeed);
+                _cmd = new Command(curTime, curTime + step, 1, 0, tempPos, routeDozerPoints[i], alpha, alpha, true, idx);
+                _cmdDozer.Enqueue(_cmd);
+                tempPos = routeDozerPoints[1];
+                curTime += step;
+            }
         }
 
         private void makeWholeSalvageCommand()

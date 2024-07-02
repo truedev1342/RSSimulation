@@ -85,6 +85,7 @@
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.DrawPanel = new System.Windows.Forms.Panel();
             this.DrawArea = new System.Windows.Forms.PictureBox();
+            this.SetLocationShuntBtn = new System.Windows.Forms.ToolStripButton();
             this.MainMenu.SuspendLayout();
             this.StatusBar.SuspendLayout();
             this.toolBar.SuspendLayout();
@@ -371,6 +372,7 @@
             this.SetLocationEFrameBtn,
             this.SetLocationABtn,
             this.SetLocationBBtn,
+            this.SetLocationShuntBtn,
             this.toolStripSeparator4,
             this.SetRouteABtn,
             this.SetRouteBBtn,
@@ -381,7 +383,7 @@
             this.toolStripSeparator2});
             this.toolBar.Location = new System.Drawing.Point(3, 0);
             this.toolBar.Name = "toolBar";
-            this.toolBar.Size = new System.Drawing.Size(349, 25);
+            this.toolBar.Size = new System.Drawing.Size(372, 25);
             this.toolBar.TabIndex = 5;
             this.toolBar.Text = "toolStrip1";
             // 
@@ -594,6 +596,18 @@
             this.DrawArea.TabIndex = 1;
             this.DrawArea.TabStop = false;
             // 
+            // SetLocationShuntBtn
+            // 
+            this.SetLocationShuntBtn.CheckOnClick = true;
+            this.SetLocationShuntBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.SetLocationShuntBtn.Image = global::RSSimulation.Properties.Resources.btn_shunt;
+            this.SetLocationShuntBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SetLocationShuntBtn.Name = "SetLocationShuntBtn";
+            this.SetLocationShuntBtn.Size = new System.Drawing.Size(23, 22);
+            this.SetLocationShuntBtn.Text = "Set Shunt Location";
+            this.SetLocationShuntBtn.ToolTipText = "Set Shunt Location";
+            this.SetLocationShuntBtn.Click += new System.EventHandler(this.SetLocationShuntBtn_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -684,6 +698,7 @@
         private System.Windows.Forms.ToolStripButton SimulationPropertiesBtn;
         private System.Windows.Forms.ToolStripButton SalvageSequenceBtn;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
+        private System.Windows.Forms.ToolStripButton SetLocationShuntBtn;
     }
 }
 

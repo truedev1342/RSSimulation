@@ -62,6 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Carrier.cs" />
     <Compile Include="Dozer.cs" />
     <Compile Include="HaDesDxf.cs" />
     <Compile Include="HaDesGraphics.cs" />
@@ -125,6 +126,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Main.ico" />
+    <None Include="res\btn_shunt.png" />
     <None Include="res\btn_routeD.png" />
     <None Include="res\btn_storageB.png" />
     <None Include="res\btn_storageA.png" />

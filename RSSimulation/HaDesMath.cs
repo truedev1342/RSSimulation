@@ -293,6 +293,12 @@ namespace RSSimulation
 
             return basePoint;
         }
+
+        public static float calcShuntDistance(PointF shuntPos, List<PointF> routePoints)
+        {
+            if (routePoints.Count == 0) return 0.0f;
+            return 50.0f;
+        }
         public static string ConvertSecToTimeStr(int sec)
         {
             string result = "";

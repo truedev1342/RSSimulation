@@ -62,7 +62,7 @@ namespace RSSimulation
                     return;
                 }
             }
-            listBoxAvailable.Items.Add(value);
+            listBoxAvailable.Items.Add("Roof Support #" + value);
         }
         private void btnOK_Click(object sender, EventArgs e)
         {

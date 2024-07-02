@@ -12,6 +12,8 @@ namespace RSSimulation
         private PointF center { get; set; }
         private float angle { get; set; }
 
+        private float telemeter { get; set; }
+
         private Image lcc = Properties.Resources.LCC;
 
         public PointF getCenter()
@@ -33,6 +35,16 @@ namespace RSSimulation
             angle = _angle;
         }
 
+        public float getTelemeter()
+        {
+            return telemeter;
+        }
+
+        public void setTelemeter(float _telemeter)
+        {
+            telemeter = _telemeter;
+        }
+
         public void rotate(float _angle)
         {
             angle += _angle;
@@ -41,6 +53,15 @@ namespace RSSimulation
         public void move(float _dx, float _dy)
         {
             center = new PointF(center.X + _dx, center.Y + _dy);
+            if (telemeter != -1)
+            {
+                increaseTelemeter((float)Math.Sqrt(_dx * _dx + _dy * _dy));
+            }
+        }
+
+        public void increaseTelemeter(float d)
+        {
+            telemeter += d;
         }
 
         public void draw(Graphics g)
@@ -62,7 +83,7 @@ namespace RSSimulation
 
             // Apply the transformations
             g.TranslateTransform(center.X, center.Y); // Move to the rotation point
-            g.RotateTransform(angle); // Rotate 45 degrees
+            g.RotateTransform(angle - 180); // Rotate 45 degrees
             g.TranslateTransform(-centerX, -centerY); // Move back by the rotation point offsets
 
             // Draw the image at the translated and rotated position

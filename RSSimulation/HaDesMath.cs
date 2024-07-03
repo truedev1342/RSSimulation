@@ -1,15 +1,9 @@
 ﻿using netDxf;
 using netDxf.Entities;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static netDxf.Entities.HatchBoundaryPath;
-using Point = System.Drawing.Point;
 
 namespace RSSimulation
 {
@@ -294,10 +288,49 @@ namespace RSSimulation
             return basePoint;
         }
 
+        public static float calcDistancePointToLine(PointF st, PointF en, PointF pos, out PointF closest)
+        {
+            float dx = en.X - st.X;
+            float dy = en.Y - st.Y;
+
+            float lenSq = dx * dx + dy * dy;
+            float t = Math.Max(0, Math.Min(1, ((pos.X - st.X) * dx + (pos.Y - st.Y) * dy) / lenSq));
+            float cx = st.X + t * dx;
+            float cy = st.Y + t * dy;
+            closest = new PointF(cx, cy);
+            return CalcDistancePoints(closest, pos);
+        }
+
         public static float calcShuntDistance(PointF shuntPos, List<PointF> routePoints)
         {
             if (routePoints.Count == 0) return 0.0f;
-            return 50.0f;
+            float minD = float.MaxValue;
+            float totLen = 0.0f;
+            float result = 0.0f;
+            PointF cpos = PointF.Empty;
+            for (int i = 1; i < routePoints.Count; i ++)
+            {
+                float d = calcDistancePointToLine(routePoints[i - 1], routePoints[i], shuntPos, out cpos);
+                if (d < minD)
+                {
+                    minD = d;
+                    result = totLen + CalcDistancePoints(routePoints[i - 1], cpos);
+                }
+                totLen += CalcDistancePoints(routePoints[i - 1], routePoints[i]);
+            }
+            return result;
+        }
+
+        private static PointF movePointByDisAndAngle(PointF pos, float alpha, float dis)
+        {
+            float cosA = (float)Math.Cos(alpha * Math.PI / dis);
+            float sinA = (float)Math.Sin(alpha * Math.PI / dis);
+            return new PointF(pos.X + dis * cosA, pos.Y + dis * sinA);
+        }
+
+        private static float getAngleByPoints(PointF st, PointF en)
+        {
+            return (float)( Math.Atan2(st.Y - en.Y, st.X - en.X) * 180 / Math.PI);
         }
         public static string ConvertSecToTimeStr(int sec)
         {

@@ -4,12 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static netDxf.Entities.HatchBoundaryPath;
-using static System.Net.Mime.MediaTypeNames;
 using Point = System.Drawing.Point;
 
 namespace RSSimulation
@@ -127,7 +122,7 @@ namespace RSSimulation
         }
         public void setPrimaryLin(LineData line)
         {
-            primaryLine = line;
+            primaryLine = line; primaryLine.startPos.Y -= 300;
         }
         public void Add(LineData line) {
             lines.Add(line);

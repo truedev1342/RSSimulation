@@ -1,24 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using netDxf;
-using netDxf.Collections;
-using netDxf.Entities;
-using netDxf.Tables;
-using static System.Net.Mime.MediaTypeNames;
-using static netDxf.Entities.HatchBoundaryPath;
-using FontStyle = System.Drawing.FontStyle;
-using Image = System.Drawing.Image;
 using Point = System.Drawing.Point;
 
 namespace RSSimulation
@@ -997,6 +983,7 @@ namespace RSSimulation
                         break;
                     case 6:
                         locShuntPos = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
+                        shuntDistance = HaDesMath.calcShuntDistance(locShuntPos, routeAPoints);
                         setUncheckRest(-1);
                         DrawArea.Invalidate();
                         break;
@@ -1349,6 +1336,7 @@ namespace RSSimulation
             } else
             {
                 routeAcurPos = routeAPoints[routeAPoints.Count - 1];
+                shuntDistance = HaDesMath.calcShuntDistance(locShuntPos, routeAPoints);
                 DrawArea.Invalidate();
                 setUncheckRest(-1);
             }

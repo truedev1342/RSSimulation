@@ -1,11 +1,7 @@
 ﻿using netDxf.Entities;
 using System;
-using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using netDxf.Collections;
 using netDxf;
 using Point = System.Drawing.Point;

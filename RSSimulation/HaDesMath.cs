@@ -321,16 +321,28 @@ namespace RSSimulation
             return result;
         }
 
-        private static PointF movePointByDisAndAngle(PointF pos, float alpha, float dis)
+        public static PointF movePointByDisAndAngle(PointF pos, float alpha, float dis)
         {
-            float cosA = (float)Math.Cos(alpha * Math.PI / dis);
-            float sinA = (float)Math.Sin(alpha * Math.PI / dis);
+            float cosA = (float)Math.Cos(alpha * Math.PI / 180);
+            float sinA = (float)Math.Sin(alpha * Math.PI / 180);
             return new PointF(pos.X + dis * cosA, pos.Y + dis * sinA);
         }
 
-        private static float getAngleByPoints(PointF st, PointF en)
+        public static float getAngleByPoints(PointF st, PointF en)
         {
-            return (float)( Math.Atan2(st.Y - en.Y, st.X - en.X) * 180 / Math.PI);
+            return (float)( Math.Atan2(en.Y - st.Y, en.X - st.X) * 180 / Math.PI);
+        }
+
+        public static PointF SubtractVectors(PointF p1, PointF p2)
+        {
+            return new PointF(p1.X - p2.X, p1.Y - p2.Y);
+        }
+
+        public static float vectorMulti(PointF a, PointF b, PointF c)
+        {
+            PointF ab = SubtractVectors(b, a);
+            PointF ac = SubtractVectors(c, a);
+            return ab.X * ac.Y - ac.X * ab.Y;
         }
         public static string ConvertSecToTimeStr(int sec)
         {

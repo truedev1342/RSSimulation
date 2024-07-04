@@ -122,7 +122,7 @@ namespace RSSimulation
         }
         public void setPrimaryLin(LineData line)
         {
-            primaryLine = line; primaryLine.startPos.Y -= 300;
+            primaryLine = line;
         }
         public void Add(LineData line) {
             lines.Add(line);

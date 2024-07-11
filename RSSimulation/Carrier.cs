@@ -76,6 +76,7 @@ namespace RSSimulation
                 }
                 setCenter(_cmd.enPos);
                 setAngle(_cmd.enAngle);
+                dequeueCommand();
                 return _cmd.type;
             }
             else

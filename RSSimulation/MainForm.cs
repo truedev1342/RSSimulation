@@ -27,16 +27,14 @@ namespace RSSimulation
         private int RSCounts = 149;
         private int EFrameBuiltTime = 48;   //unit : hour
         private int SalvageTime = 60;       //unit : min
-        private float DozerSpeed = 1;        //unit : km/h
-        private float LCCSpeed = 2;          //unit : km/h
+        private float DozerSpeed = 0.12f;        //unit : km/h
+        private float LCCSpeed = 0.06f;          //unit : km/h
         private int LCCLoadingTime = 60;    //unit : min
         private int LCCDropTime = 60;       //unit : min
         private int LCCCounts = 3;
 
 
         private int _elapsed = 0;
-        private int _total = 0;
-        private bool _started = false;
 
         private LinePos initRSPos = new LinePos();
         private PointF eFramePoint = PointF.Empty;
@@ -169,6 +167,8 @@ namespace RSSimulation
                 _lcc[i].setAngle(tempAng);
                 _lcc[i].setTelemeter(-1);
                 _lcc[i].clearCommand();
+                _lcc[i].setStatus(0);
+                _lcc[i].setLoadedRS(-1);
             }
             waitingLCCId = 0;
             rsInLocA.Clear();
@@ -180,6 +180,8 @@ namespace RSSimulation
             _surfLcc.setAngle(90);
             _surfLcc.setTelemeter(0);
             _surfLcc.setStatus(3);
+            _surfLcc.setLoadedRS(-1);
+            _surfLcc.clearCommand();
             rsInSurface.Clear();
 
             curStorage = 0;
@@ -201,6 +203,9 @@ namespace RSSimulation
             pos = HaDesMath.movePointByDisAndAngle(pos, alpha - 180, 1.7f + 2.0f * idx);
             _dozer.setAngle(alpha - 90);
             _dozer.setCenter(pos);
+            _dozer.setStatus(0);
+            _dozer.setLoadedRS(-1);
+            _dozer.clearCommand();
 
             for (int i = 0; i < RSCounts; i++)
             {
@@ -382,7 +387,6 @@ namespace RSSimulation
             Command _cmd;
             int carried = 0;
             float c = HaDesMath.CalcDistancePoints(initRSPos.StartPos, initRSPos.EndPos);
-            float dx, dy, x1, y1;
             PointF curPos = _dozer.getCenter(), pos;
             float curAngle = _dozer.getAngle();
             float alpha = HaDesMath.getAngleByPoints(initRSPos.StartPos, initRSPos.EndPos);
@@ -684,6 +688,9 @@ namespace RSSimulation
                             {
                                 carryRSToLocB(i, _lcc[i].getCenter(), _lcc[i].getAngle(), _elapsed, _lcc[i].getLoadedRS());
                             }
+                            waitingLCCId = (waitingLCCId + 1) % LCCCounts;
+                            _lcc[i].setStatus(routeNum);
+                            stockedRSinStorage++;
                         }
                     }
                     continue;
@@ -703,15 +710,17 @@ namespace RSSimulation
                 }
                 if (status == 1 || status == 2)
                 {
-                    _dozer.setStatus(status);
+                    _lcc[i].setStatus(status);
                 }
                 else if (status == 4)
                 {
                     rsInLocA.Add(_lcc[i].getLoadedRS());
+                    lastRSPosInA = HaDesMath.movePointByDisAndAngle(lastRSPosInA, HaDesMath.getAngleByPoints(locAPosEn, locAPosSt), 5.0f);
                 }
                 else if (status == 5)
                 {
                     rsInLocB.Add(_lcc[i].getLoadedRS());
+                    lastRSPosInB = HaDesMath.movePointByDisAndAngle(lastRSPosInB, HaDesMath.getAngleByPoints(locBPosEn, locBPosSt), 5.0f);
                 }
             }
         }
@@ -768,8 +777,6 @@ namespace RSSimulation
                 curAngle = alpha;
                 curTime += step;
             }
-
-            lastRSPosInA = HaDesMath.movePointByDisAndAngle(lastRSPosInA, HaDesMath.getAngleByPoints(locAPosEn, locAPosSt), 5.0f);
         }
 
 
@@ -826,8 +833,6 @@ namespace RSSimulation
                 curAngle = alpha;
                 curTime += step;
             }
-
-            lastRSPosInB = HaDesMath.movePointByDisAndAngle(lastRSPosInB, HaDesMath.getAngleByPoints(locBPosEn, locBPosSt), 5.0f);
         }
 
         private void gotoWaitingRoom(int id)
@@ -937,6 +942,7 @@ namespace RSSimulation
             else { dir = -1; }
             _cmd = new Command(lastTime + step + LCCLoadingTime * 30, lastTime + step + LCCLoadingTime * 60, pos, pos, alpha, beta, dir, idRS, 1);
             _lcc[idx].addCommand(_cmd);
+            _dozer.setStatus(0);
         }
 
         private int checkRSinStorage(List<int> rss)
@@ -1693,7 +1699,6 @@ namespace RSSimulation
             {
                 return;
             }
-            _started = true;
             _elapsed = 0;
             _curTime = SimulationTime;
             StartSimulationBtn.Enabled = false;
@@ -1701,7 +1706,6 @@ namespace RSSimulation
             movedSalvageRS = 0;
             InitializeRSandDozer();
             InitializeLCCs();
-            _dozer.clearCommand();
             makeEFrameCommand();
             timer1.Interval = 100;
             timer1.Enabled = true;
@@ -1709,7 +1713,6 @@ namespace RSSimulation
         private void onStopSimulationBtn(object sender, EventArgs e)
         {
             timer1.Enabled = false;
-            _started = false;
             StartSimulationBtn.Enabled = true;
             StopSimulationBtn.Enabled = false;
         }

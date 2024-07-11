@@ -1,4 +1,7 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Drawing;
 
 
 namespace RSSimulation
@@ -7,28 +10,90 @@ namespace RSSimulation
     {
         private PointF center { get; set; }
         private float angle { get; set; }
-
+        private int status { get; set; }
+        private int loadedRS { get; set; }
         private Image dz = Properties.Resources.Dozer;
+        private Queue<Command> _cmdList;
 
-        public PointF getCenter()
+        public Dozer()
         {
-            return center;
+            center = PointF.Empty;
+            angle = 0.0f;
+            status = 0;
+            loadedRS = -1;
+            _cmdList = new Queue<Command>();
+        }
+        public PointF getCenter() { return center; }
+        public void setCenter(PointF _center) { center = _center; }
+        public float getAngle() { return angle; }
+        public void setAngle(float _angle) { angle = _angle; }
+        public int getStatus() { return status; }
+        public void setStatus(int _status) { status = _status; }
+        public int getLoadedRS() { return loadedRS; }
+        public void setLoadedRS(int _loadedRS) { loadedRS = _loadedRS; }
+
+        public Command getCommand()
+        {
+            if (_cmdList.Count == 0) return null;
+            return _cmdList.Peek();
         }
 
-        public void setCenter(PointF _center)
+        public Command dequeueCommand()
         {
-            center = _center;
+            if (_cmdList.Count == 0) { return null; }
+            return _cmdList.Dequeue();
         }
 
-        public float getAngle()
+        public void clearCommand()
         {
-            return angle;
+            _cmdList.Clear();
         }
-        public void setAngle(float _angle)
+        public void addCommand(Command cmd)
         {
-            angle = _angle;
+            _cmdList.Enqueue(cmd);
+        }
+        public void addCommand(int _stTime, int _enTime, PointF _stPos, PointF _enPos, float _stAngle, float _enAngle, int _direction = 0, int _loadedRS = -1, int _type = 0)
+        {
+            _cmdList.Enqueue(new Command(_stTime, _enTime, _stPos, _enPos, _stAngle, _enAngle, _direction, _loadedRS, _type));
         }
 
+        public int runCommand(int _curTime, int dt)
+        {
+            while(getCommand() != null && getCommand().enTime <= _curTime)
+            {
+                dequeueCommand();
+            }
+            if (getCommand() == null || getCommand().stTime > _curTime)
+            {
+                return 0;
+            }
+            Command _cmd = getCommand();
+            setLoadedRS(_cmd.loadedRS);
+            if (_curTime + dt >= _cmd.enTime)
+            {
+                setCenter(_cmd.enPos);
+                setAngle(_cmd.enAngle);
+                return _cmd.type;
+            }
+            else
+            {
+                int cmdLeft = (_cmd.enTime - _curTime) / dt;
+                if (_cmd.direction == 0) // moving...
+                {
+                    float dx = (_cmd.enPos.X - getCenter().X) / cmdLeft;
+                    float dy = (_cmd.enPos.Y - getCenter().Y) / cmdLeft;
+                    setAngle(_cmd.enAngle);
+                    move(dx, dy);
+                }
+                else // rotating...
+                {
+                    float _ang = Math.Abs(_cmd.enAngle - getAngle());
+                    rotate((float)_cmd.direction * _ang / cmdLeft);
+                    setCenter(_cmd.enPos);
+                }
+            }
+            return 0;
+        }
         public void rotate(float _angle)
         {
             angle += _angle;

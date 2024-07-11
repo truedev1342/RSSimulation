@@ -123,6 +123,36 @@ namespace RSSimulation.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap btn_routeSurface {
+            get {
+                object obj = ResourceManager.GetObject("btn_routeSurface", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap btn_routeSurfaceA {
+            get {
+                object obj = ResourceManager.GetObject("btn_routeSurfaceA", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap btn_routeSurfaceB {
+            get {
+                object obj = ResourceManager.GetObject("btn_routeSurfaceB", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap btn_shunt {
             get {
                 object obj = ResourceManager.GetObject("btn_shunt", resourceCulture);
@@ -166,6 +196,16 @@ namespace RSSimulation.Properties {
         internal static System.Drawing.Bitmap btn_storageB {
             get {
                 object obj = ResourceManager.GetObject("btn_storageB", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap btn_surface {
+            get {
+                object obj = ResourceManager.GetObject("btn_surface", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

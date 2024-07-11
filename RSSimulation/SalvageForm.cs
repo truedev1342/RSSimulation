@@ -114,5 +114,30 @@ namespace RSSimulation
             listBoxUnavailable.Items.Insert(seled + 1, item);
             listBoxUnavailable.SelectedIndex = seled + 1;
         }
+
+        private void listBoxAvailable_DoubleClick(object sender, EventArgs e)
+        {
+            if (listBoxAvailable.SelectedIndex < 0) return;
+            var value = listBoxAvailable.SelectedItem.ToString();
+            listBoxAvailable.Items.RemoveAt(listBoxAvailable.SelectedIndex);
+            listBoxUnavailable.Items.Add(value);
+        }
+
+        private void listBoxUnavailable_DoubleClick(object sender, EventArgs e)
+        {
+            if (listBoxUnavailable.SelectedIndex < 0) return;
+            int value = int.Parse(listBoxUnavailable.SelectedItem.ToString().Substring(14));
+            listBoxUnavailable.Items.RemoveAt(listBoxUnavailable.SelectedIndex);
+            for (int i = 0; i < listBoxAvailable.Items.Count; i++)
+            {
+                int temp = int.Parse(listBoxAvailable.Items[i].ToString().Substring(14));
+                if (temp > value)
+                {
+                    listBoxAvailable.Items.Insert(i, "Roof Support #" + value.ToString());
+                    return;
+                }
+            }
+            listBoxAvailable.Items.Add("Roof Support #" + value);
+        }
     }
 }

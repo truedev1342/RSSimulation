@@ -50,6 +50,7 @@
             this.listBoxAvailable.Name = "listBoxAvailable";
             this.listBoxAvailable.Size = new System.Drawing.Size(150, 452);
             this.listBoxAvailable.TabIndex = 0;
+            this.listBoxAvailable.DoubleClick += new System.EventHandler(this.listBoxAvailable_DoubleClick);
             // 
             // listBoxUnavailable
             // 
@@ -60,6 +61,7 @@
             this.listBoxUnavailable.Name = "listBoxUnavailable";
             this.listBoxUnavailable.Size = new System.Drawing.Size(150, 452);
             this.listBoxUnavailable.TabIndex = 0;
+            this.listBoxUnavailable.DoubleClick += new System.EventHandler(this.listBoxUnavailable_DoubleClick);
             // 
             // btnOK
             // 

@@ -27,8 +27,8 @@ namespace RSSimulation
         private int RSCounts = 149;
         private int EFrameBuiltTime = 48;   //unit : hour
         private int SalvageTime = 60;       //unit : min
-        private int DozerSpeed = 1;        //unit : meter/min
-        private int LCCSpeed = 2;          //unit : meter/min
+        private float DozerSpeed = 1;        //unit : km/h
+        private float LCCSpeed = 2;          //unit : km/h
         private int LCCLoadingTime = 60;    //unit : min
         private int LCCDropTime = 60;       //unit : min
         private int LCCCounts = 3;
@@ -45,6 +45,7 @@ namespace RSSimulation
         private RoofSupport[] _rsData = new RoofSupport[202];
         private Dozer _dozer = new Dozer();
         private Carrier[] _lcc = new Carrier[3];
+        private Carrier _surfLcc = new Carrier();
 
         private int setPosBtnId = -1;
         
@@ -59,13 +60,20 @@ namespace RSSimulation
         private PointF locBPosEn = PointF.Empty;
 
         private PointF locShuntPos = PointF.Empty;
+        private PointF locSurfacePos = PointF.Empty;
 
         private List<PointF> routeAPoints = new List<PointF>();
         private List<PointF> routeBPoints = new List<PointF>();
         private List<PointF> routeDozerPoints = new List<PointF>();
+        private List<PointF> routeSurfaceAPoints = new List<PointF>();
+        private List<PointF> routeSurfaceBPoints = new List<PointF>();
+
         private PointF routeAcurPos = PointF.Empty;
         private PointF routeBcurPos = PointF.Empty;
         private PointF routeDozercurPos = PointF.Empty;
+        private PointF routeSurfaceAcurPos = PointF.Empty;
+        private PointF routeSurfaceBcurPos = PointF.Empty;
+
         private PointF lastRSPosInA = PointF.Empty;
         private PointF lastRSPosInB = PointF.Empty;
 
@@ -74,10 +82,14 @@ namespace RSSimulation
 
         private Queue<Command> _cmdDozer = new Queue<Command>();
         private Queue<Command>[] _cmdLCC = new Queue<Command>[3];
+        private Queue<Command> _cmdSLCC = new Queue<Command>();
+
         private float shuntDistanceA = 50.0f;
         private float shuntDistanceB = 50.0f;
         private List<int> rsInLocA = new List<int>();
         private List<int> rsInLocB = new List<int>();
+
+        private List<int> rsInSurface = new List<int>();
 
         public MainForm()
         {
@@ -90,9 +102,8 @@ namespace RSSimulation
             DrawArea.MouseUp += DrawArea_MouseUp;
             DrawArea.MouseMove += DrawArea_MouseMove;
             DrawArea.MouseWheel += new MouseEventHandler(DrawPanel_MouseWheel);
-            DrawArea.MouseClick += DrawArea_MouseClick;
             DrawArea.MouseDoubleClick += DrawArea_MouseDblClick;
-
+            DrawArea.MouseClick += DrawArea_MouseClick;
         }
         private void initForms()
         {
@@ -161,8 +172,15 @@ namespace RSSimulation
             waitingLCCId = 0;
             rsInLocA.Clear();
             rsInLocB.Clear();
-            lastRSPosInA = locAPosSt;
-            lastRSPosInB = locBPosSt;
+            lastRSPosInA = HaDesMath.movePointByDisAndAngle(locAPosEn, HaDesMath.getAngleByPoints(locAPosEn, locAPosSt), 5.0f);
+            lastRSPosInB = HaDesMath.movePointByDisAndAngle(locBPosEn, HaDesMath.getAngleByPoints(locBPosEn, locBPosSt), 5.0f);
+
+            _surfLcc.setCenter(locSurfacePos);
+            _surfLcc.setAngle(90);
+            _surfLcc.setTelemeter(0);
+            _cmdSLCC.Clear();
+            _cmdSLCC.Enqueue(new Command(0, int.MaxValue, _surfLcc.getCenter(), _surfLcc.getCenter(), _surfLcc.getAngle(), _surfLcc.getAngle(), 0, -1, 3));
+            rsInSurface.Clear();
         }
 
         private void InitializeRSandDozer()
@@ -205,13 +223,15 @@ namespace RSSimulation
             RectangleF visibleArea = HaDesMath.GetVisibleAreaOfDrawArea(DrawArea, zoomFactor.Value, initialRect, offsetPos);
 
 
+            // draw shunt point
             g.DrawEllipse(new Pen(Color.DarkBlue), new RectangleF(new PointF(locShuntPos.X - 10, locShuntPos.Y - 10), new Size(20, 20)));
             g.FillEllipse(new SolidBrush(Color.Red), new RectangleF(new PointF(locShuntPos.X - 10, locShuntPos.Y - 10), new Size(20, 20)));
 
-            _haDesDxf.DrawDxf(g);
+            // draw surface point
+            g.DrawEllipse(new Pen(Color.DarkBlue), new RectangleF(new PointF(locSurfacePos.X - 2, locSurfacePos.Y - 2), new Size(4, 4)));
+            g.FillEllipse(new SolidBrush(Color.Red), new RectangleF(new PointF(locSurfacePos.X - 2, locSurfacePos.Y - 2), new Size(4, 4)));
 
-            g.DrawLine(new Pen(Color.Red, 0.1f), locAPosSt, locAPosEn);
-            g.DrawLine(new Pen(Color.Blue, 0.1f), locBPosSt, locBPosEn);
+            _haDesDxf.DrawDxf(g);
 
             // draw dozer route
             for (int i = 0; i < routeDozerPoints.Count; i ++)
@@ -238,6 +258,13 @@ namespace RSSimulation
                 }
             }
 
+            // draw storage A
+            g.DrawLine(new Pen(Color.Green, 0.2f), locAPosSt, locAPosEn);
+            float alpha = HaDesMath.getAngleByPoints(locAPosSt, locAPosEn);
+            g.DrawLine(new Pen(Color.Green, 0.1f), HaDesMath.movePointByDisAndAngle(locAPosSt, alpha - 90, 1.5f), HaDesMath.movePointByDisAndAngle(locAPosSt, alpha + 90, 1.5f));
+            g.DrawLine(new Pen(Color.Green, 0.1f), HaDesMath.movePointByDisAndAngle(locAPosEn, alpha - 90, 1.5f), HaDesMath.movePointByDisAndAngle(locAPosEn, alpha + 90, 1.5f));
+
+
             // draw route B
             for (int i = 0; i < routeBPoints.Count; i++)
             {
@@ -251,11 +278,45 @@ namespace RSSimulation
                 }
             }
 
+            // draw storage B
+            g.DrawLine(new Pen(Color.Green, 0.2f), locBPosSt, locBPosEn);
+            alpha = HaDesMath.getAngleByPoints(locBPosSt, locBPosEn);
+            g.DrawLine(new Pen(Color.Green, 0.1f), HaDesMath.movePointByDisAndAngle(locBPosSt, alpha - 90, 1.5f), HaDesMath.movePointByDisAndAngle(locBPosSt, alpha + 90, 1.5f));
+            g.DrawLine(new Pen(Color.Green, 0.1f), HaDesMath.movePointByDisAndAngle(locBPosEn, alpha - 90, 1.5f), HaDesMath.movePointByDisAndAngle(locBPosEn, alpha + 90, 1.5f));
+
+            // draw route A to Surface
+            for (int i = 0; i < routeSurfaceAPoints.Count; i++)
+            {
+                if (i < routeSurfaceAPoints.Count - 1)
+                {
+                    g.DrawLine(new Pen(Color.Red, 0.1f), routeSurfaceAPoints[i], routeSurfaceAPoints[i + 1]);
+                }
+                else
+                {
+                    g.DrawLine(new Pen(Color.Red, 0.1f), routeSurfaceAPoints[i], routeSurfaceAcurPos);
+                }
+            }
+
+            // draw route B to Surface
+            for (int i = 0; i < routeSurfaceBPoints.Count; i++)
+            {
+                if (i < routeSurfaceBPoints.Count - 1)
+                {
+                    g.DrawLine(new Pen(Color.Blue, 0.1f), routeSurfaceBPoints[i], routeSurfaceBPoints[i + 1]);
+                }
+                else
+                {
+                    g.DrawLine(new Pen(Color.Blue, 0.1f), routeSurfaceBPoints[i], routeSurfaceBcurPos);
+                }
+            }
+
             // draw LCC
             for (int i = 0; i < LCCCounts; i++)
             {
                 _lcc[i].draw(g);
             }
+
+            _surfLcc.draw(g);
 
             _dozer.draw(g);  // draw dozer
 
@@ -445,31 +506,31 @@ namespace RSSimulation
             pos = HaDesMath.movePointByDisAndAngle(pos, alpha - 180, 1.7f + (RSCounts - idx) * 2.0f);
 
             d = HaDesMath.CalcDistancePoints(pos, curPos);
-            int step = (int)(d * 60.0f / DozerSpeed);
+            int step = (int)(d * 3.6f / DozerSpeed);
             _cmd = new Command(curTime, curTime + step, curPos, pos, curAngle, curAngle, 0, -1);
             _cmdDozer.Enqueue(_cmd);
             curPos = pos;
             curTime += step;
 
             // rotate 90 degree
-            _cmd = new Command(curTime, curTime + 1200, curPos, curPos, curAngle, curAngle - 90, -1, -1);
+            _cmd = new Command(curTime, curTime + SalvageTime * 20, curPos, curPos, curAngle, curAngle - 90, -1, -1);
             _cmdDozer.Enqueue(_cmd);
             curAngle -= 90;
-            curTime += 1200;
+            curTime += SalvageTime * 20;
 
             // move down
 
             pos = HaDesMath.movePointByDisAndAngle(curPos, alpha - 90, -2);
-            _cmd = new Command(curTime, curTime + 1200, curPos, pos, curAngle, curAngle, 0, idx);
+            _cmd = new Command(curTime, curTime + SalvageTime * 20, curPos, pos, curAngle, curAngle, 0, idx);
             _cmdDozer.Enqueue(_cmd);
             curPos = pos;
-            curTime += 1200;
+            curTime += SalvageTime * 20;
 
             // rotate 90 degree
-            _cmd = new Command(curTime, curTime + 1200, curPos, curPos, curAngle, curAngle + 90, 1, idx);
+            _cmd = new Command(curTime, curTime + SalvageTime * 20, curPos, curPos, curAngle, curAngle + 90, 1, idx);
             _cmdDozer.Enqueue(_cmd);
             curAngle += 90;
-            curTime += 1200;
+            curTime += SalvageTime * 20;
 
             gotoLCCStartPos(curPos, curAngle, curTime, idx);
         }
@@ -487,7 +548,7 @@ namespace RSSimulation
             float d = HaDesMath.CalcDistancePoints(curPos, routeDozerPoints[1]);
             float alpha = HaDesMath.getAngleByPoints(routeDozerPoints[1], curPos);
 
-            int step = (int)(d * 60.0f / DozerSpeed);
+            int step = (int)(d * 3.6f / DozerSpeed);
             _cmd = new Command(curTime, curTime + step, curPos, routeDozerPoints[1], alpha, alpha, 0, idx);
             _cmdDozer.Enqueue(_cmd);
             curPos = routeDozerPoints[1];
@@ -497,7 +558,7 @@ namespace RSSimulation
             {
                 d = HaDesMath.CalcDistancePoints(curPos, routeDozerPoints[i]);
                 alpha = HaDesMath.getAngleByPoints(routeDozerPoints[i], curPos);
-                step = (int)(d * 60.0f / DozerSpeed);
+                step = (int)(d * 3.6f / DozerSpeed);
                 _cmd = new Command(curTime, curTime + step, curPos, routeDozerPoints[i], alpha, alpha, 0, idx);
                 _cmdDozer.Enqueue(_cmd);
                 curPos = routeDozerPoints[i];
@@ -528,7 +589,7 @@ namespace RSSimulation
                 d = HaDesMath.CalcDistancePoints(curPos, routeDozerPoints[i]);
                 alpha = HaDesMath.getAngleByPoints(curPos, routeDozerPoints[i]);
 
-                step = (int)(d * 60.0f / DozerSpeed);
+                step = (int)(d * 3.6f / DozerSpeed);
                 _cmd = new Command(curTime, curTime + step, curPos, routeDozerPoints[i], alpha, alpha, 0, -1);
                 _cmdDozer.Enqueue(_cmd);
                 curPos = routeDozerPoints[i];
@@ -541,7 +602,7 @@ namespace RSSimulation
 
             d = HaDesMath.CalcDistancePoints(pos, curPos);
             alpha = HaDesMath.getAngleByPoints(curPos, pos);
-            step = (int)(d * 60.0f / DozerSpeed);
+            step = (int)(d * 3.6f / DozerSpeed);
             _cmd = new Command(curTime, curTime + step, curPos, pos, alpha, alpha, 0, -1);
             _cmdDozer.Enqueue(_cmd);
             curPos = pos;
@@ -549,78 +610,92 @@ namespace RSSimulation
             curTime += step;
 
             // rotate 90 degree
-            _cmd = new Command(curTime, curTime + 900, curPos, curPos, curAngle, curAngle - 90, -1, -1);
+            _cmd = new Command(curTime, curTime + SalvageTime * 15, curPos, curPos, curAngle, curAngle - 90, -1, -1);
             _cmdDozer.Enqueue(_cmd);
             curAngle -= 90;
-            curTime += 900;
+            curTime += SalvageTime * 15;
 
             // move up
             pos = HaDesMath.movePointByDisAndAngle(curPos, curAngle, 2.0f);
-            _cmd = new Command(curTime, curTime + 900, curPos, pos, curAngle, curAngle, 0, -1);
+            _cmd = new Command(curTime, curTime + SalvageTime * 15, curPos, pos, curAngle, curAngle, 0, -1);
             _cmdDozer.Enqueue(_cmd);
             curPos = pos;
-            curTime += 900;
+            curTime += SalvageTime * 15;
 
             // move down
             pos = HaDesMath.movePointByDisAndAngle(curPos, curAngle, -2.0f);
-            _cmd = new Command(curTime, curTime + 900, curPos, pos, curAngle, curAngle, 0, idx);
+            _cmd = new Command(curTime, curTime + SalvageTime * 15, curPos, pos, curAngle, curAngle, 0, idx);
             _cmdDozer.Enqueue(_cmd);
             curPos = pos;
-            curTime += 900;
+            curTime += SalvageTime * 15;
 
             // rotate 90 degree
-            _cmd = new Command(curTime, curTime + 900, curPos, curPos, curAngle, curAngle + 90, 1, idx);
+            _cmd = new Command(curTime, curTime + SalvageTime * 15, curPos, curPos, curAngle, curAngle + 90, 1, idx);
             _cmdDozer.Enqueue(_cmd);
             curAngle += 90;
-            curTime += 900;
+            curTime += SalvageTime * 15;
 
             gotoLCCStartPos(curPos, curAngle, curTime, idx);
         }
 
-        private void processPassingLCCs()
+        private void insertWaitingCommand(int waitingTime, int id)
         {
+            Queue<Command> _cmdTemp = new Queue<Command>();
+
+            foreach (Command cmd in _cmdLCC[id])
+            {
+                _cmdTemp.Enqueue(cmd);
+            }
+            _cmdLCC[id].Clear();
+            Command _cmd = new Command(_elapsed, _elapsed + waitingTime, _lcc[id].getCenter(), _lcc[id].getCenter(), _lcc[id].getAngle(), _lcc[id].getAngle(), 0, _cmdTemp.Peek().loadedRS, 3);
+            _cmdLCC[id].Enqueue(_cmd);
+
+            _cmd = _cmdTemp.Dequeue();
+            _cmd.stAngle = _lcc[id].getAngle();
+            _cmd.stPos = _lcc[id].getCenter();
+            _cmd.stTime = _elapsed + waitingTime;
+            if (_cmd.enTime != int.MaxValue) _cmd.enTime = _cmd.enTime + waitingTime;
+            _cmdLCC[id].Enqueue(_cmd);
+
+            while (_cmdTemp.Count > 0)
+            {
+                _cmd = _cmdTemp.Dequeue();
+                _cmd.stTime += waitingTime;
+                if (_cmd.enTime != int.MaxValue) _cmd.enTime = _cmd.enTime + waitingTime;
+                _cmdLCC[id].Enqueue(_cmd);
+            }
+        }
+
+        private void processPassingLCCs(int waitingTime)
+        {
+            float dl = (float)LCCSpeed * SimulationSpeed * timer1.Interval / 3600.0f;
             for (int i = 0; i < LCCCounts; i ++)
             {
                 if (_lcc[i].getTelemeter() <= 0 || _cmdLCC[i].Count == 0) continue;
-                bool passing = false;
-                for (int j = 0; j < LCCCounts; j ++)
+                if (HaDesMath.CalcDistancePoints(_lcc[i].getCenter(), routeAPoints[0]) < 3.0f * dl) continue;
+                if (_cmdLCC[i].Peek().type == 3) // waiting...
                 {
-                    if (i == j || _lcc[j].getTelemeter() <= 0 || _cmdLCC[j].Count == 0) continue;
-                    float dl = (float)LCCSpeed * SimulationSpeed * timer1.Interval / 60000.0f;
-                    if (HaDesMath.CalcDistancePoints(_lcc[i].getCenter(), _lcc[j].getCenter()) <= dl)
+                    continue;
+                }
+                for (int j = i + 1; j < LCCCounts; j ++)
+                {
+                    if (_lcc[j].getTelemeter() <= 0 || _cmdLCC[j].Count == 0) continue;
+                    if (HaDesMath.CalcDistancePoints(_lcc[j].getCenter(), routeAPoints[0]) < 3.0f * dl) continue;
+                    if (_cmdLCC[j].Peek().type == 3) // waiting...
                     {
-                        passing = true;
-                        break;
+                        continue;
                     }
-                }
-                if (!passing) continue;
-                Queue<Command> _cmdTemp = new Queue<Command>();
-
-                foreach (Command cmd in _cmdLCC[i])
-                {
-                    _cmdTemp.Enqueue(cmd);
-                }
-                _cmdLCC[i].Clear();
-                Command _cmd = new Command(_elapsed, _elapsed + 180, _lcc[i].getCenter(), _lcc[i].getCenter(), _lcc[i].getAngle(), _lcc[i].getAngle(), 0, _cmdTemp.Peek().loadedRS);
-                _cmdLCC[i].Enqueue(_cmd);
-
-                _cmd = _cmdTemp.Dequeue();
-                _cmd.stAngle = _lcc[i].getAngle();
-                _cmd.stPos = _lcc[i].getCenter();
-                _cmd.stTime = _elapsed + 180;
-                _cmd.enTime = _cmd.enTime + 180;
-                _cmdLCC[i].Enqueue(_cmd);
-
-                while (_cmdTemp.Count > 0)
-                {
-                    _cmd = _cmdTemp.Dequeue();
-                    _cmdLCC[i].Enqueue( _cmd);
+                    if (HaDesMath.CalcDistancePoints(_lcc[i].getCenter(), _lcc[j].getCenter()) < dl * 1.05f)
+                    {
+                        insertWaitingCommand(waitingTime, i);
+                        insertWaitingCommand(waitingTime, j);
+                    }
                 }
             }
         }
         private void processLCCSimulation()
         {
-            //processPassingLCCs();
+            //processPassingLCCs(180);
             for (int i = 0; i < LCCCounts; i ++)
             {
                 while (_cmdLCC[i].Count > 0 && _cmdLCC[i].Peek().enTime <= _elapsed)
@@ -638,10 +713,11 @@ namespace RSSimulation
                     if (checkShunt((i + LCCCounts - 1) % LCCCounts))
                     {
                         _cmdLCC[i].Dequeue();
-                        if ((int)(HaDesMath.CalcDistancePoints(locAPosSt, locAPosEn) / 2.0f) > rsInLocA.Count)
+                        if (checkStorageNotFull(0))
                         {
                             carryRSToLocA(i, _lcc[i].getCenter(), _lcc[i].getAngle(), _elapsed, _cmd.loadedRS);
-                        } else
+                        }
+                        else
                         {
                             carryRSToLocB(i, _lcc[i].getCenter(), _lcc[i].getAngle(), _elapsed, _cmd.loadedRS);
                         }
@@ -665,6 +741,15 @@ namespace RSSimulation
                     }
                     _lcc[i].setAngle(_cmd.enAngle);
                     _lcc[i].setCenter(_cmd.enPos);
+
+                    if (_cmd.type == 4) // droping on storage A
+                    {
+                        rsInLocA.Add(_cmd.loadedRS);
+                    }
+                    else if (_cmd.type == 5) // droping on storage B
+                    {
+                        rsInLocB.Add(_cmd.loadedRS);
+                    }
                 }
                 else
                 {
@@ -696,21 +781,10 @@ namespace RSSimulation
 
         private void carryRSToLocA(int id, PointF lastPos, float lastAng, int lastTime, int idRS)
         {
-            int curTime = lastTime;
-            PointF curPos = lastPos, pos;
-            float curAngle = lastAng, alpha;
+            int curTime = lastTime, step;
+            PointF curPos = lastPos;
+            float curAngle = lastAng, alpha, d;
             Command _cmd;
-            float d, vect = HaDesMath.vectorMulti(locAPosSt, locAPosEn, routeAPoints[routeAPoints.Count - 1]);
-            float beta = HaDesMath.getAngleByPoints(locAPosSt, locAPosEn);
-            int step;
-            if (vect < 0)
-            {
-                beta += 90;
-            }
-            else
-            {
-                beta -= 90;
-            }
 
             // move in route A: carry
             for (int i = 1; i < routeAPoints.Count; i++)
@@ -718,7 +792,7 @@ namespace RSSimulation
                 d = HaDesMath.CalcDistancePoints(curPos, routeAPoints[i]);
                 alpha = HaDesMath.getAngleByPoints(routeAPoints[i], curPos);
 
-                step = (int)(d * 60.0f / LCCSpeed);
+                step = (int)(d * 3.6f / LCCSpeed);
                 _cmd = new Command(curTime, curTime + step, curPos, routeAPoints[i], alpha, alpha, 0, idRS);
                 _cmdLCC[id].Enqueue(_cmd);
                 curPos = routeAPoints[i];
@@ -727,42 +801,21 @@ namespace RSSimulation
             }
 
             // go to location A load pos
-            pos = HaDesMath.movePointByDisAndAngle(lastRSPosInA, beta, -5.0f);
-            d = HaDesMath.CalcDistancePoints(curPos, pos);
-            alpha = HaDesMath.getAngleByPoints(pos, curPos);
+            d = HaDesMath.CalcDistancePoints(curPos, lastRSPosInA);
+            alpha = HaDesMath.getAngleByPoints(lastRSPosInA, curPos);
 
-            step = (int)(d * 60.0f / LCCSpeed);
-            _cmd = new Command(curTime, curTime + step, curPos, pos, alpha, alpha, 0, idRS);
+            step = (int)(d * 3.6f / LCCSpeed);
+            _cmd = new Command(curTime, curTime + step, curPos, lastRSPosInA, alpha, alpha, 0, idRS);
             _cmdLCC[id].Enqueue(_cmd);
-            curPos = pos;
+            curPos = lastRSPosInA;
             curAngle = alpha;
             curTime += step;
 
             // drop RS
-            if (beta < curAngle)
-            {
-                _cmd = new Command(curTime, curTime + LCCDropTime * 20, curPos, curPos, curAngle, beta, -1, idRS);
-            } else
-            {
-                _cmd = new Command(curTime, curTime + LCCDropTime * 20, curPos, curPos, curAngle, beta, 1, idRS);
-            }
+            _cmd = new Command(curTime, curTime + LCCDropTime * 60, curPos, curPos, curAngle, curAngle + 180, 1, idRS, 4);
             _cmdLCC[id].Enqueue(_cmd);
-            curAngle = beta;
-            curTime += LCCDropTime * 20;
-
-            // move +5m to drop
-            pos = HaDesMath.movePointByDisAndAngle(curPos, beta, 5.0f);
-            _cmd = new Command(curTime, curTime + LCCDropTime * 20, curPos, pos, curAngle, curAngle, 0, idRS);
-            _cmdLCC[id].Enqueue(_cmd);
-            curPos = pos;
-            curTime += LCCDropTime * 20;
-
-            // move back -5m to back
-            pos = HaDesMath.movePointByDisAndAngle(curPos, beta, -5.0f);
-            _cmd = new Command(curTime, curTime + LCCDropTime * 20, curPos, pos, curAngle, curAngle, 0, -1);
-            _cmdLCC[id].Enqueue(_cmd);
-            curPos = pos;
-            curTime += LCCDropTime * 20;
+            curAngle = curAngle + 180;
+            curTime += LCCDropTime * 60;
 
 
             // move in route A: back
@@ -771,7 +824,7 @@ namespace RSSimulation
                 d = HaDesMath.CalcDistancePoints(curPos, routeAPoints[i]);
                 alpha = HaDesMath.getAngleByPoints(routeAPoints[i], curPos);
 
-                step = (int)(d * 60.0f / LCCSpeed);
+                step = (int)(d * 3.6f / LCCSpeed);
                 _cmd = new Command(curTime, curTime + step, curPos, routeAPoints[i], alpha, alpha, 0, -1);
                 _cmdLCC[id].Enqueue(_cmd);
                 curPos = routeAPoints[i];
@@ -779,34 +832,19 @@ namespace RSSimulation
                 curTime += step;
             }
 
-
             _cmd = new Command(curTime, int.MaxValue, curPos, curPos, curAngle, curAngle, 0, -1, 2); // insert waiting command
             _cmdLCC[id].Enqueue(_cmd);
-            rsInLocA.Add(idRS);
-
-            d = HaDesMath.CalcDistancePoints(locAPosSt, locAPosEn);
-            lastRSPosInA.X += (locAPosEn.X - locAPosSt.X) * 2 / d;
-            lastRSPosInA.Y += (locAPosEn.Y - locAPosSt.Y) * 2 / d;
+            lastRSPosInA = HaDesMath.movePointByDisAndAngle(lastRSPosInA, HaDesMath.getAngleByPoints(locAPosEn, locAPosSt), 5.0f);
         }
 
 
         private void carryRSToLocB(int id, PointF lastPos, float lastAng, int lastTime, int idRS)
         {
-            int curTime = lastTime;
-            PointF curPos = lastPos, pos;
-            float curAngle = lastAng, alpha;
+            int curTime = lastTime, step;
+            PointF curPos = lastPos;
+            float curAngle = lastAng, alpha, d;
             Command _cmd;
-            float d, vect = HaDesMath.vectorMulti(locBPosSt, locBPosEn, routeBPoints[routeBPoints.Count - 1]);
-            float beta = HaDesMath.getAngleByPoints(locBPosSt, locBPosEn);
-            int step;
-            if (vect < 0)
-            {
-                beta += 90;
-            }
-            else
-            {
-                beta -= 90;
-            }
+            
 
             // move in route B: carry
             for (int i = 1; i < routeBPoints.Count; i++)
@@ -814,7 +852,7 @@ namespace RSSimulation
                 d = HaDesMath.CalcDistancePoints(curPos, routeBPoints[i]);
                 alpha = HaDesMath.getAngleByPoints(routeBPoints[i], curPos);
 
-                step = (int)(d * 60.0f / LCCSpeed);
+                step = (int)(d * 3.6f / LCCSpeed);
                 _cmd = new Command(curTime, curTime + step, curPos, routeBPoints[i], alpha, alpha, 0, idRS);
                 _cmdLCC[id].Enqueue(_cmd);
                 curPos = routeBPoints[i];
@@ -823,43 +861,21 @@ namespace RSSimulation
             }
 
             // go to location B load pos
-            pos = HaDesMath.movePointByDisAndAngle(lastRSPosInB, beta, -5.0f);
-            d = HaDesMath.CalcDistancePoints(curPos, pos);
-            alpha = HaDesMath.getAngleByPoints(pos, curPos);
+            d = HaDesMath.CalcDistancePoints(curPos, lastRSPosInB);
+            alpha = HaDesMath.getAngleByPoints(lastRSPosInB, curPos);
 
-            step = (int)(d * 60.0f / LCCSpeed);
-            _cmd = new Command(curTime, curTime + step, curPos, pos, alpha, alpha, 0, idRS);
+            step = (int)(d * 3.6f / LCCSpeed);
+            _cmd = new Command(curTime, curTime + step, curPos, lastRSPosInB, alpha, alpha, 0, idRS);
             _cmdLCC[id].Enqueue(_cmd);
-            curPos = pos;
+            curPos = lastRSPosInB;
             curAngle = alpha;
             curTime += step;
 
             // drop RS
-            if (beta < curAngle)
-            {
-                _cmd = new Command(curTime, curTime + LCCDropTime * 20, curPos, curPos, curAngle, beta, -1, idRS);
-            }
-            else
-            {
-                _cmd = new Command(curTime, curTime + LCCDropTime * 20, curPos, curPos, curAngle, beta, 1, idRS);
-            }
+            _cmd = new Command(curTime, curTime + LCCDropTime * 60, curPos, curPos, curAngle, curAngle + 180, 1, idRS, 5);
             _cmdLCC[id].Enqueue(_cmd);
-            curAngle = beta;
-            curTime += LCCDropTime * 20;
-
-            // move +5m to drop
-            pos = HaDesMath.movePointByDisAndAngle(curPos, beta, 5.0f);
-            _cmd = new Command(curTime, curTime + LCCDropTime * 20, curPos, pos, curAngle, curAngle, 0, idRS);
-            _cmdLCC[id].Enqueue(_cmd);
-            curPos = pos;
-            curTime += LCCDropTime * 20;
-
-            // move back -5m to back
-            pos = HaDesMath.movePointByDisAndAngle(curPos, beta, -5.0f);
-            _cmd = new Command(curTime, curTime + LCCDropTime * 20, curPos, pos, curAngle, curAngle, 0, -1);
-            _cmdLCC[id].Enqueue(_cmd);
-            curPos = pos;
-            curTime += LCCDropTime * 20;
+            curAngle = curAngle + 180;
+            curTime += LCCDropTime * 60;
 
 
             // move in route B: back
@@ -868,7 +884,7 @@ namespace RSSimulation
                 d = HaDesMath.CalcDistancePoints(curPos, routeBPoints[i]);
                 alpha = HaDesMath.getAngleByPoints(routeBPoints[i], curPos);
 
-                step = (int)(d * 60.0f / LCCSpeed);
+                step = (int)(d * 3.6f / LCCSpeed);
                 _cmd = new Command(curTime, curTime + step, curPos, routeBPoints[i], alpha, alpha, 0, -1);
                 _cmdLCC[id].Enqueue(_cmd);
                 curPos = routeBPoints[i];
@@ -879,11 +895,8 @@ namespace RSSimulation
 
             _cmd = new Command(curTime, int.MaxValue, curPos, curPos, curAngle, curAngle, 0, -1, 2); // insert waiting command
             _cmdLCC[id].Enqueue(_cmd);
-            rsInLocB.Add(idRS);
 
-            d = HaDesMath.CalcDistancePoints(locBPosSt, locBPosEn);
-            lastRSPosInB.X += (locBPosEn.X - locBPosSt.X) * 2 / d;
-            lastRSPosInB.Y += (locBPosEn.Y - locBPosSt.Y) * 2 / d;
+            lastRSPosInB = HaDesMath.movePointByDisAndAngle(lastRSPosInB, HaDesMath.getAngleByPoints(locBPosEn, locBPosSt), 5.0f);
         }
 
         private void gotoWaitingRoom(int id)
@@ -900,10 +913,35 @@ namespace RSSimulation
             _lcc[id].setTelemeter(-1);
         }
 
+        // check storages are full or not t: 0, A, t: 1, B
+        private bool checkStorageNotFull(int t) 
+        {
+            float d;
+            PointF A, B, C;
+            if (t == 0)
+            {
+                d = HaDesMath.CalcDistancePoints(lastRSPosInA, locAPosSt);
+                A = locAPosSt;
+                B = lastRSPosInA;
+                C = HaDesMath.movePointByDisAndAngle(lastRSPosInA, HaDesMath.getAngleByPoints(locAPosEn, locAPosSt), 5.0f);
+            } else
+            {
+                d = HaDesMath.CalcDistancePoints(lastRSPosInB, locBPosSt);
+                A = locBPosSt;
+                B = lastRSPosInB;
+                C = HaDesMath.movePointByDisAndAngle(lastRSPosInB, HaDesMath.getAngleByPoints(locBPosEn, locBPosSt), 5.0f);
+            }
+
+            if (d <= 0.01) return true;
+            if (Math.Abs(HaDesMath.getAngleByPoints(A, B) - HaDesMath.getAngleByPoints(A, C)) <= 0.01) return true;
+            
+            return false;
+        }
+
         private bool checkShunt(int id)
         {
             if (_lcc[id].getTelemeter() == -1) return true;
-            if ((int)(HaDesMath.CalcDistancePoints(locAPosSt, locAPosEn) / 2.0f) > rsInLocA.Count)
+            if (checkStorageNotFull(0))
             {
                 if (_lcc[id].getTelemeter() >= shuntDistanceA) return true;
             }
@@ -918,7 +956,7 @@ namespace RSSimulation
         {
             Command _cmd;
             int idx;
-            int step = (int)(5.0f * 60.0f / DozerSpeed);
+            int step = (int)(5.0f * 3.6f / LCCSpeed);
             for (int i = 0; i < LCCCounts; i ++)
             {
                 idx = (waitingLCCId + i) % LCCCounts;
@@ -933,9 +971,12 @@ namespace RSSimulation
 
             float alpha = HaDesMath.getAngleByPoints(routeDozerPoints[routeDozerPoints.Count - 1], routeDozerPoints[routeDozerPoints.Count - 2]);
             float beta = HaDesMath.getAngleByPoints(routeAPoints[0], routeAPoints[1]) - 180;
-            if ((int)(HaDesMath.CalcDistancePoints(locAPosSt, locAPosEn) / 2.0f) > rsInLocA.Count)
+            if (checkStorageNotFull(0))
             {
-                beta = HaDesMath.getAngleByPoints(routeBPoints[0], routeBPoints[1]) - 180;
+                if (routeBPoints.Count > 1)
+                {
+                    beta = HaDesMath.getAngleByPoints(routeBPoints[0], routeBPoints[1]) - 180;
+                }
             }
                 int dir;
             if (_lcc[idx].getAngle() < alpha) { dir = 1; }
@@ -951,6 +992,182 @@ namespace RSSimulation
             _cmd = new Command(lastTime + step + LCCLoadingTime * 60, int.MaxValue, pos, pos, beta, beta, 0, idRS, 1);
             _cmdLCC[idx].Enqueue(_cmd);
         }
+
+        private int checkRSinStorage(List<int> rss)
+        {
+            for (int i = 0; i < rss.Count; i++)
+            {
+                if (rss[i] != -1)
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        private void carryRSFromLocA(int p, PointF lastPos, float lastAng, int lastTime)
+        {
+            int curTime = lastTime, step;
+            PointF curPos = lastPos;
+            float curAngle = lastAng, alpha, d;
+            Command _cmd;
+
+            // move in surface route A
+            for (int i = routeSurfaceAPoints.Count - 1; i >= 0; i --)
+            {
+                PointF pos = i > 0 ? routeSurfaceAPoints[i - 1] : HaDesMath.movePointByDisAndAngle(locAPosEn, HaDesMath.getAngleByPoints(locAPosEn, locAPosSt), 5.0f * p);
+                d = HaDesMath.CalcDistancePoints(curPos, pos);
+                alpha = HaDesMath.getAngleByPoints(pos, curPos);
+
+                step = (int)(d * 3.6f / LCCSpeed);
+                _cmd = new Command(curTime, curTime + step, curPos, pos, alpha, alpha, 0, -1);
+                _cmdSLCC.Enqueue(_cmd);
+                curPos = pos;
+                curAngle = alpha;
+                curTime += step;
+            }
+
+            // load RS
+            _cmd = new Command(curTime, curTime + LCCLoadingTime * 60, curPos, curPos, curAngle, curAngle + 180, 1, -1);
+            _cmdSLCC.Enqueue(_cmd);
+            curAngle = curAngle + 180;
+            curTime += LCCLoadingTime * 60;
+
+
+            // move in surface route A: back(carrying)
+            for (int i = 0; i < routeSurfaceAPoints.Count; i++)
+            {
+                d = HaDesMath.CalcDistancePoints(curPos, routeSurfaceAPoints[i]);
+                alpha = HaDesMath.getAngleByPoints(routeSurfaceAPoints[i], curPos);
+
+                step = (int)(d * 3.6f / LCCSpeed);
+                _cmd = new Command(curTime, curTime + step, curPos, routeSurfaceAPoints[i], alpha, alpha, 0, rsInLocA[p]);
+                _cmdSLCC.Enqueue(_cmd);
+                curPos = routeSurfaceAPoints[i];
+                curAngle = alpha;
+                curTime += step;
+            }
+
+            int r = (rsInSurface.Count / 15);
+            int c = (rsInSurface.Count % 15);
+
+            // move down.
+            d = 13.0f + 5.0f * r;
+            alpha = -90;
+            step = (int)(d * 3.6f / LCCSpeed);
+            _cmd = new Command(curTime, curTime + step, curPos, HaDesMath.movePointByDisAndAngle(curPos, alpha + 180, d), alpha, alpha, 0, rsInLocA[p]);
+            _cmdSLCC.Enqueue(_cmd);
+            curPos = HaDesMath.movePointByDisAndAngle(curPos, alpha + 180, d);
+            curAngle = alpha;
+            curTime += step;
+
+            // move left
+            d = 13.0f + 2.0f * c;
+            alpha = 180;
+            step = (int)(d * 3.6f / LCCSpeed);
+            _cmd = new Command(curTime, curTime + step, curPos, HaDesMath.movePointByDisAndAngle(curPos, alpha + 180, d), alpha, alpha, 0, rsInLocA[p]);
+            _cmdSLCC.Enqueue(_cmd);
+            curPos = HaDesMath.movePointByDisAndAngle(curPos, alpha + 180, d);
+            curAngle = alpha;
+            curTime += step;
+
+            // rotate 90 degree
+            _cmd = new Command(curTime, curTime + LCCDropTime * 30, curPos, curPos, curAngle, curAngle + 90, 1, rsInLocA[p]);
+            _cmdSLCC.Enqueue(_cmd);
+            curAngle += 90;
+            curTime += LCCDropTime * 30;
+
+            // rotate 90 degree
+            _cmd = new Command(curTime, curTime + LCCDropTime * 30, curPos, curPos, curAngle, curAngle + 90, 1, -1);
+            _cmdSLCC.Enqueue(_cmd);
+            curAngle += 90;
+            curTime += LCCDropTime * 30;
+
+
+            // move right
+            d = 13.0f + 2.0f * c;
+            alpha = 0;
+            step = (int)(d * 3.6f / LCCSpeed);
+            _cmd = new Command(curTime, curTime + step, curPos, HaDesMath.movePointByDisAndAngle(curPos, alpha + 180, d), alpha, alpha, 0, -1);
+            _cmdSLCC.Enqueue(_cmd);
+            curPos = HaDesMath.movePointByDisAndAngle(curPos, alpha + 180, d);
+            curAngle = alpha;
+            curTime += step;
+
+            // move up.
+            d = 13.0f + 5.0f * r;
+            alpha = 90;
+            step = (int)(d * 3.6f / LCCSpeed);
+            _cmd = new Command(curTime, curTime + step, curPos, HaDesMath.movePointByDisAndAngle(curPos, alpha + 180, d), alpha, alpha, 0, -1);
+            _cmdSLCC.Enqueue(_cmd);
+            curPos = HaDesMath.movePointByDisAndAngle(curPos, alpha + 180, d);
+            curAngle = alpha;
+            curTime += step;
+
+
+            _cmd = new Command(curTime, int.MaxValue, curPos, curPos, curAngle, curAngle, 0, -1, 3); // waiting to check next RS
+            _cmdSLCC.Enqueue(_cmd);
+            rsInSurface.Add(rsInLocA[p]);
+            rsInLocA[p] = -1;
+        }
+
+        private void carryRSFromLocB(int p, PointF lastPos, float lastAng, int lastTime)
+        {
+            //////todo
+        }
+
+        private void processSLCCSimulation() {
+            while (_cmdSLCC.Count > 0 && _cmdSLCC.Peek().enTime <= _elapsed)
+            {
+                _cmdSLCC.Dequeue();
+            }
+            if (_cmdSLCC.Count == 0 || _cmdSLCC.Peek().stTime > _elapsed)
+            {
+                return;
+            }
+            Command _cmd = _cmdSLCC.Peek();
+            if (_cmd.type == 3) // waiting to check there is RS in storage A or B
+            {
+                if (checkRSinStorage(rsInLocA) != -1)
+                {
+                    carryRSFromLocA(checkRSinStorage(rsInLocA), _surfLcc.getCenter(), _surfLcc.getAngle(), _elapsed);
+                    _cmdSLCC.Dequeue();
+                } else if (checkRSinStorage(rsInLocB) != -1)
+                {
+                    carryRSFromLocB(checkRSinStorage(rsInLocB), _surfLcc.getCenter(), _surfLcc.getAngle(), _elapsed);
+                    _cmdSLCC.Dequeue();
+                }
+            }
+            int dt = SimulationSpeed * timer1.Interval / 1000;
+            if (_elapsed + dt >= _cmd.enTime)
+            {
+                _surfLcc.setCenter(_cmd.enPos);
+                _surfLcc.setAngle(_cmd.enAngle);
+            }
+            else
+            {
+                int cmdLeft = (_cmd.enTime - _elapsed) / dt;
+                if (_cmd.direction == 0) // moving...
+                {
+                    float dx = (_cmd.enPos.X - _surfLcc.getCenter().X) / cmdLeft;
+                    float dy = (_cmd.enPos.Y - _surfLcc.getCenter().Y) / cmdLeft;
+                    _surfLcc.setAngle(_cmd.enAngle);
+                    _surfLcc.move(dx, dy);
+                }
+                else // rotating...
+                {
+                    float _ang = Math.Abs(_cmd.enAngle - _surfLcc.getAngle());
+                    _surfLcc.rotate((float)_cmd.direction * _ang / cmdLeft);
+                    _surfLcc.setCenter(_cmd.enPos);
+                }
+            }
+            if (_cmd.loadedRS != -1)
+            {
+                int id = _cmd.loadedRS;
+                _rsData[id].setCenter(HaDesMath.movePointByDisAndAngle(_surfLcc.getCenter(), _surfLcc.getAngle(), 2.5f));
+                _rsData[id].setAngle(_surfLcc.getAngle());
+            }
+        }
         private void timer1_Tick(object sender, EventArgs e)
         {
             _elapsed += SimulationSpeed * timer1.Interval / 1000;
@@ -959,6 +1176,7 @@ namespace RSSimulation
             ElapsedTimeSB.Text = HaDesMath.ConvertSecToTimeStr(_elapsed);
             processDozerSimulation();
             processLCCSimulation();
+            processSLCCSimulation();
             DrawArea.Invalidate();
         }
         //
@@ -977,6 +1195,9 @@ namespace RSSimulation
             StartSimulationBtn.Enabled = state;
             StopSimulationBtn.Enabled = state;
             SetLocationShuntBtn.Enabled = state;
+            SetLocationSurfaceBtn.Enabled = state;
+            SetRouteSurfaceABtn.Enabled = state;
+            SetRouteSurfaceBBtn.Enabled = state;
         }
 
         private void DrawArea_MouseClick(object sender, MouseEventArgs e)
@@ -1028,11 +1249,24 @@ namespace RSSimulation
                     routeDozerPoints.Add(HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor));
                     DrawArea.Invalidate();
                     break;
-                case 6:
+                case 6: // set shunt pos
                     locShuntPos = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
                     shuntDistanceA = HaDesMath.calcShuntDistance(locShuntPos, routeAPoints);
                     shuntDistanceB = HaDesMath.calcShuntDistance(locShuntPos, routeBPoints);
                     setUncheckRest(-1);
+                    DrawArea.Invalidate();
+                    break;
+                case 7: // set surface pos
+                    locSurfacePos = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
+                    setUncheckRest(-1);
+                    DrawArea.Invalidate();
+                    break;
+                case 8: // set route A to surface
+                    routeSurfaceAPoints.Add(HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor));
+                    DrawArea.Invalidate();
+                    break;
+                case 9: // set route B to surface
+                    routeSurfaceBPoints.Add(HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor));
                     DrawArea.Invalidate();
                     break;
                 default:
@@ -1046,32 +1280,37 @@ namespace RSSimulation
             switch (setPosBtnId)
             {
                 case 3: // set route A
-                    routeAPoints.Add(HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor));
+                    //routeAPoints.Add(HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor));
                     routeAcurPos = routeAPoints[routeAPoints.Count - 1];
                     shuntDistanceA = HaDesMath.calcShuntDistance(locShuntPos, routeAPoints);
                     DrawArea.Invalidate();
                     setUncheckRest(-1);
                     break;
                 case 4: // set route B
-                    routeBPoints.Add(HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor));
+                    //routeBPoints.Add(HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor));
                     routeBcurPos = routeBPoints[routeBPoints.Count - 1];
                     shuntDistanceB = HaDesMath.calcShuntDistance(locShuntPos, routeBPoints);
                     DrawArea.Invalidate();
                     setUncheckRest(-1);
                     break;
                 case 5: // set dozer route
-                    routeDozerPoints.Add(HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor));
+                    //routeDozerPoints.Add(HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor));
                     routeDozercurPos = routeDozerPoints[routeDozerPoints.Count - 1];
                     InitializeLCCs();
                     DrawArea.Invalidate();
                     setUncheckRest(-1);
                     break;
-                case 6:
-                    locShuntPos = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
-                    shuntDistanceA = HaDesMath.calcShuntDistance(locShuntPos, routeAPoints);
-                    shuntDistanceB = HaDesMath.calcShuntDistance(locShuntPos, routeBPoints);
-                    setUncheckRest(-1);
+                case 8: // set route A to surface
+                    routeSurfaceAPoints.Add(locSurfacePos);
+                    routeSurfaceAcurPos = routeSurfaceAPoints[routeSurfaceAPoints.Count - 1];
                     DrawArea.Invalidate();
+                    setUncheckRest(-1);
+                    break;
+                case 9: // set route B to surface
+                    routeSurfaceBPoints.Add(locSurfacePos);
+                    routeSurfaceBcurPos = routeSurfaceBPoints[routeSurfaceBPoints.Count - 1];
+                    DrawArea.Invalidate();
+                    setUncheckRest(-1);
                     break;
                 default:
                     break;
@@ -1166,6 +1405,14 @@ namespace RSSimulation
                     break;
                 case 5: // set dozer route
                     routeDozercurPos = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
+                    DrawArea.Invalidate();
+                    break;
+                case 8: // set route A to surface
+                    routeSurfaceAcurPos = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
+                    DrawArea.Invalidate();
+                    break;
+                case 9: // set route B to surface
+                    routeSurfaceBcurPos = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
                     DrawArea.Invalidate();
                     break;
                 default:
@@ -1362,10 +1609,15 @@ namespace RSSimulation
         /// Toolbar Event process Start
         private void onSetLocationABtn(object sender, EventArgs e)
         {
+            if (routeAPoints.Count == 0)
+            {
+                MessageBox.Show("Please set route A first.");
+                return;
+            }
             if (SetLocationABtn.Checked)
             {
                 setUncheckRest(1);
-                locAPosSt = PointF.Empty;
+                locAPosSt = routeAPoints[routeAPoints.Count - 1];
                 locAPosEn = PointF.Empty;
                 DrawArea.Invalidate();
             } else
@@ -1375,10 +1627,15 @@ namespace RSSimulation
         }
         private void onSetLocationBBtn(object sender, EventArgs e)
         {
+            if (routeBPoints.Count == 0)
+            {
+                MessageBox.Show("Please set route B first.");
+                return;
+            }
             if (SetLocationBBtn.Checked)
             {
                 setUncheckRest(2);
-                locBPosSt = PointF.Empty;
+                locBPosSt = routeBPoints[routeBPoints.Count - 1];
                 locBPosEn = PointF.Empty;
                 DrawArea.Invalidate();
             } else
@@ -1396,6 +1653,9 @@ namespace RSSimulation
             SetRouteBBtn.Checked = (id == 4);
             SetRouteDozerBtn.Checked = (id == 5);
             SetLocationShuntBtn.Checked = (id == 6);
+            SetLocationSurfaceBtn.Checked = (id == 7);
+            SetRouteSurfaceABtn.Checked = (id == 8);
+            SetRouteSurfaceBBtn.Checked = (id == 9);
 
             setPosBtnId = id;
             if (id == -1)
@@ -1428,6 +1688,7 @@ namespace RSSimulation
                     return;
                 }
                 routeAPoints.Clear();
+                locAPosSt = PointF.Empty;
                 routeAPoints.Add(routeDozerPoints[routeDozerPoints.Count - 1]);
                 routeAcurPos = routeAPoints[0];
                 DrawArea.Invalidate();
@@ -1451,6 +1712,7 @@ namespace RSSimulation
                     return;
                 }
                 routeBPoints.Clear();
+                locBPosSt = PointF.Empty;
                 routeBPoints.Add(routeDozerPoints[routeDozerPoints.Count - 1]);
                 routeBcurPos = routeBPoints[0];
                 DrawArea.Invalidate();
@@ -1489,10 +1751,34 @@ namespace RSSimulation
                 setUncheckRest(-1);
             }
         }
+
+        private bool checkAllParameter()
+        {
+            if (routeDozerPoints.Count == 0)
+            {
+                MessageBox.Show("Please set Dozer route.");
+                return false;
+            }
+            if (routeAPoints.Count == 0)
+            {
+                MessageBox.Show("Please set route A.");
+                return false;
+            }
+            if (routeBPoints.Count == 0)
+            {
+                MessageBox.Show("Please set route B.");
+                return false;
+            }
+            return true;
+        }
         private void onStartSimulationBtn(object sender, EventArgs e)
         {
             if (eFramePoint == Point.Empty) return;
             if (SimulationSpeed <= 0) return;
+            if (!checkAllParameter())
+            {
+                return;
+            }
             _started = true;
             _elapsed = 0;
             _curTime = SimulationTime;
@@ -1522,6 +1808,68 @@ namespace RSSimulation
             }
             else
             {
+                setUncheckRest(-1);
+            }
+        }
+
+        private void SetLocationSurfaceBtn_Click(object sender, EventArgs e)
+        {
+            if (SetLocationSurfaceBtn.Checked)
+            {
+                setUncheckRest(7);
+            }
+            else
+            {
+                setUncheckRest(-1);
+            }
+        }
+
+        private void SetRouteSurfaceABtn_Click(object sender, EventArgs e)
+        {
+            if (SetRouteSurfaceABtn.Checked)
+            {
+                if (locAPosEn == PointF.Empty || locSurfacePos == PointF.Empty)
+                {
+                    MessageBox.Show("Please set storage A and Surface point first.");
+                    setUncheckRest(-1);
+                    return;
+                }
+                routeSurfaceAPoints.Clear();
+                routeSurfaceAPoints.Add(locAPosEn);
+                routeSurfaceAcurPos = routeSurfaceAPoints[0];
+                DrawArea.Invalidate();
+                setUncheckRest(8);
+            }
+            else
+            {
+                routeSurfaceAPoints.Add(locSurfacePos);
+                routeSurfaceAcurPos = routeSurfaceAPoints[routeSurfaceAPoints.Count - 1];
+                DrawArea.Invalidate();
+                setUncheckRest(-1);
+            }
+        }
+
+        private void SetRouteSurfaceBBtn_Click(object sender, EventArgs e)
+        {
+            if (SetRouteSurfaceBBtn.Checked)
+            {
+                if (locBPosEn == PointF.Empty || locSurfacePos == PointF.Empty)
+                {
+                    MessageBox.Show("Please set storage B and Surface point first.");
+                    setUncheckRest(-1);
+                    return;
+                }
+                routeSurfaceBPoints.Clear();
+                routeSurfaceBPoints.Add(locBPosEn);
+                routeSurfaceBcurPos = routeSurfaceBPoints[0];
+                DrawArea.Invalidate();
+                setUncheckRest(9);
+            }
+            else
+            {
+                routeSurfaceBPoints.Add(locSurfacePos);
+                routeSurfaceBcurPos = routeSurfaceBPoints[routeSurfaceBPoints.Count - 1];
+                DrawArea.Invalidate();
                 setUncheckRest(-1);
             }
         }

@@ -71,12 +71,16 @@
             this.SalvageSequenceBtn = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.SetLocationEFrameBtn = new System.Windows.Forms.ToolStripButton();
+            this.SetLocationShuntBtn = new System.Windows.Forms.ToolStripButton();
             this.SetLocationABtn = new System.Windows.Forms.ToolStripButton();
             this.SetLocationBBtn = new System.Windows.Forms.ToolStripButton();
+            this.SetLocationSurfaceBtn = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.SetRouteDozerBtn = new System.Windows.Forms.ToolStripButton();
             this.SetRouteABtn = new System.Windows.Forms.ToolStripButton();
             this.SetRouteBBtn = new System.Windows.Forms.ToolStripButton();
-            this.SetRouteDozerBtn = new System.Windows.Forms.ToolStripButton();
+            this.SetRouteSurfaceABtn = new System.Windows.Forms.ToolStripButton();
+            this.SetRouteSurfaceBBtn = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.StartSimulationBtn = new System.Windows.Forms.ToolStripButton();
             this.StopSimulationBtn = new System.Windows.Forms.ToolStripButton();
@@ -85,7 +89,6 @@
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.DrawPanel = new System.Windows.Forms.Panel();
             this.DrawArea = new System.Windows.Forms.PictureBox();
-            this.SetLocationShuntBtn = new System.Windows.Forms.ToolStripButton();
             this.MainMenu.SuspendLayout();
             this.StatusBar.SuspendLayout();
             this.toolBar.SuspendLayout();
@@ -370,20 +373,23 @@
             this.SalvageSequenceBtn,
             this.toolStripSeparator7,
             this.SetLocationEFrameBtn,
+            this.SetLocationShuntBtn,
             this.SetLocationABtn,
             this.SetLocationBBtn,
-            this.SetLocationShuntBtn,
+            this.SetLocationSurfaceBtn,
             this.toolStripSeparator4,
+            this.SetRouteDozerBtn,
             this.SetRouteABtn,
             this.SetRouteBBtn,
-            this.SetRouteDozerBtn,
+            this.SetRouteSurfaceABtn,
+            this.SetRouteSurfaceBBtn,
             this.toolStripSeparator5,
             this.StartSimulationBtn,
             this.StopSimulationBtn,
             this.toolStripSeparator2});
             this.toolBar.Location = new System.Drawing.Point(3, 0);
             this.toolBar.Name = "toolBar";
-            this.toolBar.Size = new System.Drawing.Size(372, 25);
+            this.toolBar.Size = new System.Drawing.Size(441, 25);
             this.toolBar.TabIndex = 5;
             this.toolBar.Text = "toolStrip1";
             // 
@@ -453,6 +459,18 @@
             this.SetLocationEFrameBtn.ToolTipText = "Set E-Frame Position";
             this.SetLocationEFrameBtn.Click += new System.EventHandler(this.onSetLocationEFrameBtn);
             // 
+            // SetLocationShuntBtn
+            // 
+            this.SetLocationShuntBtn.CheckOnClick = true;
+            this.SetLocationShuntBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.SetLocationShuntBtn.Image = global::RSSimulation.Properties.Resources.btn_shunt;
+            this.SetLocationShuntBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SetLocationShuntBtn.Name = "SetLocationShuntBtn";
+            this.SetLocationShuntBtn.Size = new System.Drawing.Size(23, 22);
+            this.SetLocationShuntBtn.Text = "Set Shunt Location";
+            this.SetLocationShuntBtn.ToolTipText = "Set Shunt Location";
+            this.SetLocationShuntBtn.Click += new System.EventHandler(this.SetLocationShuntBtn_Click);
+            // 
             // SetLocationABtn
             // 
             this.SetLocationABtn.CheckOnClick = true;
@@ -477,10 +495,33 @@
             this.SetLocationBBtn.ToolTipText = "Set B Storage Location";
             this.SetLocationBBtn.Click += new System.EventHandler(this.onSetLocationBBtn);
             // 
+            // SetLocationSurfaceBtn
+            // 
+            this.SetLocationSurfaceBtn.CheckOnClick = true;
+            this.SetLocationSurfaceBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.SetLocationSurfaceBtn.Image = global::RSSimulation.Properties.Resources.btn_surface;
+            this.SetLocationSurfaceBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SetLocationSurfaceBtn.Name = "SetLocationSurfaceBtn";
+            this.SetLocationSurfaceBtn.Size = new System.Drawing.Size(23, 22);
+            this.SetLocationSurfaceBtn.Text = "Set Surface Location";
+            this.SetLocationSurfaceBtn.Click += new System.EventHandler(this.SetLocationSurfaceBtn_Click);
+            // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
             this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
+            // 
+            // SetRouteDozerBtn
+            // 
+            this.SetRouteDozerBtn.CheckOnClick = true;
+            this.SetRouteDozerBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.SetRouteDozerBtn.Image = global::RSSimulation.Properties.Resources.btn_routeD;
+            this.SetRouteDozerBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SetRouteDozerBtn.Name = "SetRouteDozerBtn";
+            this.SetRouteDozerBtn.Size = new System.Drawing.Size(23, 22);
+            this.SetRouteDozerBtn.Text = "Set Route of Dozer";
+            this.SetRouteDozerBtn.ToolTipText = "Set Route of Dozer";
+            this.SetRouteDozerBtn.Click += new System.EventHandler(this.onSetRouteDozerBtn);
             // 
             // SetRouteABtn
             // 
@@ -506,17 +547,27 @@
             this.SetRouteBBtn.ToolTipText = "Set Route to B Storage";
             this.SetRouteBBtn.Click += new System.EventHandler(this.onSetRouteBBtn);
             // 
-            // SetRouteDozerBtn
+            // SetRouteSurfaceABtn
             // 
-            this.SetRouteDozerBtn.CheckOnClick = true;
-            this.SetRouteDozerBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.SetRouteDozerBtn.Image = global::RSSimulation.Properties.Resources.btn_routeD;
-            this.SetRouteDozerBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.SetRouteDozerBtn.Name = "SetRouteDozerBtn";
-            this.SetRouteDozerBtn.Size = new System.Drawing.Size(23, 22);
-            this.SetRouteDozerBtn.Text = "Set Route of Dozer";
-            this.SetRouteDozerBtn.ToolTipText = "Set Route of Dozer";
-            this.SetRouteDozerBtn.Click += new System.EventHandler(this.onSetRouteDozerBtn);
+            this.SetRouteSurfaceABtn.CheckOnClick = true;
+            this.SetRouteSurfaceABtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.SetRouteSurfaceABtn.Image = global::RSSimulation.Properties.Resources.btn_routeSurfaceA;
+            this.SetRouteSurfaceABtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SetRouteSurfaceABtn.Name = "SetRouteSurfaceABtn";
+            this.SetRouteSurfaceABtn.Size = new System.Drawing.Size(23, 22);
+            this.SetRouteSurfaceABtn.Text = "Set Route A Storage to Surface";
+            this.SetRouteSurfaceABtn.Click += new System.EventHandler(this.SetRouteSurfaceABtn_Click);
+            // 
+            // SetRouteSurfaceBBtn
+            // 
+            this.SetRouteSurfaceBBtn.CheckOnClick = true;
+            this.SetRouteSurfaceBBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.SetRouteSurfaceBBtn.Image = global::RSSimulation.Properties.Resources.btn_routeSurfaceB;
+            this.SetRouteSurfaceBBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SetRouteSurfaceBBtn.Name = "SetRouteSurfaceBBtn";
+            this.SetRouteSurfaceBBtn.Size = new System.Drawing.Size(23, 22);
+            this.SetRouteSurfaceBBtn.Text = "Set Route B Storage to Surface";
+            this.SetRouteSurfaceBBtn.Click += new System.EventHandler(this.SetRouteSurfaceBBtn_Click);
             // 
             // toolStripSeparator5
             // 
@@ -595,18 +646,6 @@
             this.DrawArea.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.DrawArea.TabIndex = 1;
             this.DrawArea.TabStop = false;
-            // 
-            // SetLocationShuntBtn
-            // 
-            this.SetLocationShuntBtn.CheckOnClick = true;
-            this.SetLocationShuntBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.SetLocationShuntBtn.Image = global::RSSimulation.Properties.Resources.btn_shunt;
-            this.SetLocationShuntBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.SetLocationShuntBtn.Name = "SetLocationShuntBtn";
-            this.SetLocationShuntBtn.Size = new System.Drawing.Size(23, 22);
-            this.SetLocationShuntBtn.Text = "Set Shunt Location";
-            this.SetLocationShuntBtn.ToolTipText = "Set Shunt Location";
-            this.SetLocationShuntBtn.Click += new System.EventHandler(this.SetLocationShuntBtn_Click);
             // 
             // MainForm
             // 
@@ -699,6 +738,9 @@
         private System.Windows.Forms.ToolStripButton SalvageSequenceBtn;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
         private System.Windows.Forms.ToolStripButton SetLocationShuntBtn;
+        private System.Windows.Forms.ToolStripButton SetLocationSurfaceBtn;
+        private System.Windows.Forms.ToolStripButton SetRouteSurfaceABtn;
+        private System.Windows.Forms.ToolStripButton SetRouteSurfaceBBtn;
     }
 }
 

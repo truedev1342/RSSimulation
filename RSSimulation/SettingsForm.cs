@@ -10,8 +10,8 @@ namespace RSSimulation
         public int RSCounts {  get; set; }
         public int EFrameBuiltTime { get; set; }
         public int SalvageTime { get; set; }
-        public int DozerSpeed { get; set; }
-        public int LCCSpeed { get; set; }
+        public float DozerSpeed { get; set; }
+        public float LCCSpeed { get; set; }
         public int LCCLoadingTime { get; set; }
         public int LCCDropTime { get; set; }
         public int LCCCounts { get; set; }
@@ -26,8 +26,8 @@ namespace RSSimulation
             RSCountsTxt.Value = this.RSCounts;
             EFrameTimeTxt.Value = this.EFrameBuiltTime;
             SalvageTimeTxt.Value =this.SalvageTime;
-            DozerSpeedTxt.Value = this.DozerSpeed;
-            LCCSpeedTxt.Value = this.LCCSpeed;
+            DozerSpeedTxt.Value = Convert.ToDecimal(this.DozerSpeed);
+            LCCSpeedTxt.Value = Convert.ToDecimal(this.LCCSpeed);
             LCCLoadingTimeTxt.Value = this.LCCLoadingTime;
             LCCDropTimeTxt.Value = this.LCCDropTime;
             LCCCountsTxt.Value = this.LCCCounts;
@@ -39,8 +39,8 @@ namespace RSSimulation
             this.RSCounts = (int)RSCountsTxt.Value;
             this.EFrameBuiltTime = (int)EFrameTimeTxt.Value;
             this.SalvageTime = (int)SalvageTimeTxt.Value;
-            this.DozerSpeed = (int)DozerSpeedTxt.Value;
-            this.LCCSpeed = (int)LCCSpeedTxt.Value;
+            this.DozerSpeed = (float)DozerSpeedTxt.Value;
+            this.LCCSpeed = (float)LCCSpeedTxt.Value;
             this.LCCLoadingTime = (int)LCCLoadingTimeTxt.Value;
             this.LCCDropTime = (int)LCCDropTimeTxt.Value;
             this.LCCCounts = (int)LCCCountsTxt.Value;

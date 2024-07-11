@@ -133,20 +133,26 @@
   <data name="btn_routeA" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\res\btn_routeA.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="btn_location" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\res\btn_location.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="btn_surface" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\res\btn_surface.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="btn_start" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\res\btn_start.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="btn_routeSurfaceA" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\res\btn_routeSurfaceA.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="btn_open" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\res\btn_open.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="RS" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\res\RS.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="btn_shunt" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\res\btn_shunt.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btn_start" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\res\btn_start.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="btn_storageB" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\res\btn_storageB.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\res\RS.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="btn_routeB" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\res\btn_routeB.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -157,10 +163,16 @@
   <data name="Dozer" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\res\Dozer.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="btn_location" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\res\btn_location.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btn_routeSurface" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\res\btn_routeSurface.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="btn_storageA" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\res\btn_storageA.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="btn_shunt" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\res\btn_shunt.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="btn_routeSurfaceB" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\res\btn_routeSurfaceB.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

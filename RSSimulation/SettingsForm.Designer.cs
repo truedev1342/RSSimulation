@@ -50,6 +50,12 @@
             this.LCCDropTimeTxt = new System.Windows.Forms.NumericUpDown();
             this.label10 = new System.Windows.Forms.Label();
             this.LCCCountsTxt = new System.Windows.Forms.NumericUpDown();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.SimulationSpeedTxt)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.RSCountsTxt)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.EFrameTimeTxt)).BeginInit();
@@ -97,9 +103,9 @@
             this.label4.Location = new System.Drawing.Point(24, 126);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(145, 16);
+            this.label4.Size = new System.Drawing.Size(127, 16);
             this.label4.TabIndex = 0;
-            this.label4.Text = "E-Frame Built Time(H) :";
+            this.label4.Text = "E-Frame Built Time :";
             // 
             // SimulationTimeTxt
             // 
@@ -172,9 +178,9 @@
             this.label5.Location = new System.Drawing.Point(24, 159);
             this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(117, 16);
+            this.label5.Size = new System.Drawing.Size(98, 16);
             this.label5.TabIndex = 0;
-            this.label5.Text = "Salvage Time(M) :";
+            this.label5.Text = "Salvage Time :";
             // 
             // SalvageTimeTxt
             // 
@@ -200,6 +206,12 @@
             // 
             // DozerSpeedTxt
             // 
+            this.DozerSpeedTxt.DecimalPlaces = 5;
+            this.DozerSpeedTxt.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            196608});
             this.DozerSpeedTxt.Location = new System.Drawing.Point(186, 189);
             this.DozerSpeedTxt.Maximum = new decimal(new int[] {
             100000,
@@ -216,9 +228,9 @@
             this.label7.Location = new System.Drawing.Point(24, 258);
             this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(143, 16);
+            this.label7.Size = new System.Drawing.Size(124, 16);
             this.label7.TabIndex = 0;
-            this.label7.Text = "LCC Loading Time(M) :";
+            this.label7.Text = "LCC Loading Time :";
             // 
             // LCCLoadingTimeTxt
             // 
@@ -244,6 +256,12 @@
             // 
             // LCCSpeedTxt
             // 
+            this.LCCSpeedTxt.DecimalPlaces = 5;
+            this.LCCSpeedTxt.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            196608});
             this.LCCSpeedTxt.Location = new System.Drawing.Point(186, 222);
             this.LCCSpeedTxt.Maximum = new decimal(new int[] {
             100000,
@@ -260,9 +278,9 @@
             this.label9.Location = new System.Drawing.Point(24, 291);
             this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(124, 16);
+            this.label9.Size = new System.Drawing.Size(105, 16);
             this.label9.TabIndex = 0;
-            this.label9.Text = "LCC Drop Time(M) :";
+            this.label9.Text = "LCC Drop Time :";
             // 
             // LCCDropTimeTxt
             // 
@@ -298,11 +316,71 @@
             this.LCCCountsTxt.Size = new System.Drawing.Size(141, 22);
             this.LCCCountsTxt.TabIndex = 9;
             // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(327, 126);
+            this.label11.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(40, 16);
+            this.label11.TabIndex = 0;
+            this.label11.Text = "hours";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(327, 159);
+            this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(35, 16);
+            this.label12.TabIndex = 0;
+            this.label12.Text = "mins";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(327, 257);
+            this.label13.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(35, 16);
+            this.label13.TabIndex = 0;
+            this.label13.Text = "mins";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(327, 291);
+            this.label14.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(35, 16);
+            this.label14.TabIndex = 0;
+            this.label14.Text = "mins";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(327, 191);
+            this.label15.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(36, 16);
+            this.label15.TabIndex = 0;
+            this.label15.Text = "km/h";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(327, 225);
+            this.label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(36, 16);
+            this.label16.TabIndex = 0;
+            this.label16.Text = "km/h";
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(350, 401);
+            this.ClientSize = new System.Drawing.Size(378, 401);
             this.Controls.Add(this.CancelBtn);
             this.Controls.Add(this.OKBtn);
             this.Controls.Add(this.LCCSpeedTxt);
@@ -321,6 +399,12 @@
             this.Controls.Add(this.SimulationSpeedTxt);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.SimulationTimeTxt);
+            this.Controls.Add(this.label14);
+            this.Controls.Add(this.label16);
+            this.Controls.Add(this.label15);
+            this.Controls.Add(this.label13);
+            this.Controls.Add(this.label12);
+            this.Controls.Add(this.label11);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -372,5 +456,11 @@
         private System.Windows.Forms.NumericUpDown LCCDropTimeTxt;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.NumericUpDown LCCCountsTxt;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label label16;
     }
 }

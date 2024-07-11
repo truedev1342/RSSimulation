@@ -126,6 +126,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Main.ico" />
+    <None Include="res\btn_routeSurfaceB.png" />
+    <None Include="res\btn_routeSurfaceA.png" />
+    <None Include="res\btn_routeSurface.png" />
+    <None Include="res\btn_surface.png" />
     <None Include="res\btn_shunt.png" />
     <None Include="res\btn_routeD.png" />
     <None Include="res\btn_storageB.png" />

@@ -320,6 +320,34 @@ namespace RSSimulation
             }
             return result;
         }
+        public static float calcShuntDisAndPos(PointF shuntPos, List<PointF> routePoints, out int idx, out PointF interPos)
+        {
+            if (routePoints.Count == 0)
+            {
+                idx = 0;
+                interPos = PointF.Empty;
+                return 0.0f;
+            }
+            float minD = float.MaxValue;
+            float totLen = 0.0f;
+            float result = 0.0f;
+            PointF cpos = PointF.Empty;
+            idx = 0;
+            interPos = PointF.Empty;
+            for (int i = 1; i < routePoints.Count; i++)
+            {
+                float d = calcDistancePointToLine(routePoints[i - 1], routePoints[i], shuntPos, out cpos);
+                if (d < minD)
+                {
+                    minD = d;
+                    result = totLen + CalcDistancePoints(routePoints[i - 1], cpos);
+                    idx = i - 1;
+                    interPos = cpos;
+                }
+                totLen += CalcDistancePoints(routePoints[i - 1], routePoints[i]);
+            }
+            return result;
+        }
 
         public static PointF movePointByDisAndAngle(PointF pos, float alpha, float dis)
         {

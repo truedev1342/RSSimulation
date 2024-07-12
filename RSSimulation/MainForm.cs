@@ -32,6 +32,7 @@ namespace RSSimulation
         private int LCCLoadingTime = 60;    //unit : min
         private int LCCDropTime = 60;       //unit : min
         private int LCCCounts = 3;
+        private int LCCWaitingTime = 3;     //unit : min
 
 
         private int _elapsed = 0;
@@ -338,7 +339,7 @@ namespace RSSimulation
         {
             if (_dozer.getStatus() == 1)
             {
-                if (waitingLCCId != -1 && _lcc[waitingLCCId].getCommand() == null)
+                if (waitingLCCId != -1 && _lcc[waitingLCCId].getStatus() == 0)
                 {
                     //_dozer.dequeueCommand();
                     loadRSToLCC(_dozer.getLoadedRS(), _elapsed);
@@ -674,33 +675,111 @@ namespace RSSimulation
             //processPassingLCCs(180);
             for (int i = 0; i < LCCCounts; i ++)
             {
-                if (_lcc[i].getStatus() == 1) // waiting to check shunt(before carry)
+                switch (_lcc[i].getStatus())
                 {
-                    if (checkStorage())
-                    {
-                        int routeNum = curStorage == 0 ? 11 : 21;
-                        if (checkRoute(routeNum))
+                    case 1:  // waiting to check shunt(before carry)
+                        if (checkStorage())
                         {
-                            if (curStorage == 0)
+                            int routeNum = curStorage == 0 ? 11 : 21;
+                            if (checkRoute(routeNum) && checkRoute(routeNum + 1) && checkRoute(routeNum + 2))
                             {
-                                carryRSToLocA(i, _lcc[i].getCenter(), _lcc[i].getAngle(), _elapsed, _lcc[i].getLoadedRS());
-                            } else
-                            {
-                                carryRSToLocB(i, _lcc[i].getCenter(), _lcc[i].getAngle(), _elapsed, _lcc[i].getLoadedRS());
+                                if (curStorage == 0)
+                                {
+                                    gotoShuntInA(i, _lcc[i].getCenter(), _lcc[i].getAngle(), _elapsed, _lcc[i].getLoadedRS());
+                                }
+                                else
+                                {
+                                    gotoShuntInB(i, _lcc[i].getCenter(), _lcc[i].getAngle(), _elapsed, _lcc[i].getLoadedRS());
+                                }
+                                waitingLCCId = (waitingLCCId + 1) % LCCCounts;
+                                _lcc[i].setStatus(routeNum);
+                                stockedRSinStorage++;
                             }
-                            waitingLCCId = (waitingLCCId + 1) % LCCCounts;
-                            _lcc[i].setStatus(routeNum);
-                            stockedRSinStorage++;
                         }
-                    }
-                    continue;
+                        break;
+                    case 2:  // wait to load new RS (after carry)
+                        gotoWaitingRoom(i);
+                        break;
+                    case 12:  // check on shunt on A 
+                        if (checkRoute(14))
+                        {
+                            gotoLocAandBackToShunt(i, _lcc[i].getCenter(), _lcc[i].getAngle(), _elapsed, _lcc[i].getLoadedRS(), false);
+                            _lcc[i].setStatus(14);
+                        }
+                        else
+                        {
+                            waitShuntInA(i, _lcc[i].getCenter(), _lcc[i].getAngle(), _elapsed, _lcc[i].getLoadedRS());
+                            _lcc[i].setStatus(11);
+                        }
+                        break;
+                    case 13:  // wait on shunt in A to prev pass
+                        if (checkRoute(14))
+                        {
+                            gotoLocAandBackToShunt(i, _lcc[i].getCenter(), _lcc[i].getAngle(), _elapsed, _lcc[i].getLoadedRS(), true);
+                            _lcc[i].setStatus(14);
+                        }
+                        break;
+                    case 15:  // check on shunt on A back
+                        if (checkRoute(11))
+                        {
+                            gotoDozerInA(i, _lcc[i].getCenter(), _lcc[i].getAngle(), _elapsed, _lcc[i].getLoadedRS(), false);
+                            _lcc[i].setStatus(11);
+                        }
+                        else
+                        {
+                            waitShuntInA(i, _lcc[i].getCenter(), _lcc[i].getAngle(), _elapsed, _lcc[i].getLoadedRS());
+                            _lcc[i].setStatus(14);
+                        }
+                        break;
+                    case 16:  // check on shunt on A back
+                        if (checkRoute(11))
+                        {
+                            gotoDozerInA(i, _lcc[i].getCenter(), _lcc[i].getAngle(), _elapsed, _lcc[i].getLoadedRS(), true);
+                            _lcc[i].setStatus(11);
+                        }
+                        break;
+                    case 22:  // check on shunt on B 
+                        if (checkRoute(24))
+                        {
+                            gotoLocBandBackToShunt(i, _lcc[i].getCenter(), _lcc[i].getAngle(), _elapsed, _lcc[i].getLoadedRS(), false);
+                            _lcc[i].setStatus(24);
+                        }
+                        else
+                        {
+                            waitShuntInB(i, _lcc[i].getCenter(), _lcc[i].getAngle(), _elapsed, _lcc[i].getLoadedRS());
+                            _lcc[i].setStatus(21);
+                        }
+                        break;
+                    case 23:  // wait on shunt in B to prev pass
+                        if (checkRoute(24))
+                        {
+                            gotoLocBandBackToShunt(i, _lcc[i].getCenter(), _lcc[i].getAngle(), _elapsed, _lcc[i].getLoadedRS(), true);
+                            _lcc[i].setStatus(24);
+                        }
+                        break;
+                    case 25:  // check on shunt on B back
+                        if (checkRoute(21))
+                        {
+                            gotoDozerInB(i, _lcc[i].getCenter(), _lcc[i].getAngle(), _elapsed, _lcc[i].getLoadedRS(), false);
+                            _lcc[i].setStatus(21);
+                        }
+                        else
+                        {
+                            waitShuntInB(i, _lcc[i].getCenter(), _lcc[i].getAngle(), _elapsed, _lcc[i].getLoadedRS());
+                            _lcc[i].setStatus(24);
+                        }
+                        break;
+                    case 26:  // check on shunt on B back
+                        if (checkRoute(21))
+                        {
+                            gotoDozerInB(i, _lcc[i].getCenter(), _lcc[i].getAngle(), _elapsed, _lcc[i].getLoadedRS(), true);
+                            _lcc[i].setStatus(21);
+                        }
+                        break;
+                    default:
+                        break;
                 }
-                else if (_lcc[i].getStatus() == 2) // wait to load new RS (after carry)
-                {
-                    gotoWaitingRoom(i);
-                    continue;
-                }
-
+                
                 int status = _lcc[i].runCommand(_elapsed, SimulationSpeed * timer1.Interval / 1000);
                 if (_lcc[i].getLoadedRS() != -1)
                 {
@@ -722,6 +801,286 @@ namespace RSSimulation
                     rsInLocB.Add(_lcc[i].getLoadedRS());
                     lastRSPosInB = HaDesMath.movePointByDisAndAngle(lastRSPosInB, HaDesMath.getAngleByPoints(locBPosEn, locBPosSt), 5.0f);
                 }
+                else if (status > 10)
+                {
+                    _lcc[i].setStatus(status);
+                }
+            }
+        }
+
+        private void gotoShuntInA(int id, PointF lastPos, float lastAng, int lastTime, int idRS)
+        {
+            int curTime = lastTime, step;
+            PointF curPos = lastPos;
+            float alpha, d;
+            Command _cmd;
+            int m;
+            PointF interPos;
+            float shunt = HaDesMath.calcShuntDisAndPos(locShuntPos, routeAPoints, out m, out interPos);
+
+            // move in route A: carry
+            for (int i = 1; i <= m; i++)
+            {
+                d = HaDesMath.CalcDistancePoints(curPos, routeAPoints[i]);
+                alpha = HaDesMath.getAngleByPoints(routeAPoints[i], curPos);
+
+                step = (int)(d * 3.6f / LCCSpeed);
+                _cmd = new Command(curTime, curTime + step, curPos, routeAPoints[i], alpha, alpha, 0, idRS);
+                _lcc[id].addCommand(_cmd);
+                curPos = routeAPoints[i];
+                curTime += step;
+            }
+            d = HaDesMath.CalcDistancePoints(curPos, interPos);
+            alpha = HaDesMath.getAngleByPoints(interPos, curPos);
+
+            step = (int)(d * 3.6f / LCCSpeed);
+            _cmd = new Command(curTime, curTime + step, curPos, interPos, alpha, alpha, 0, idRS, 12);
+            _lcc[id].addCommand(_cmd);
+        }
+        private void waitShuntInA(int id, PointF lastPos, float lastAng, int lastTime, int idRS)
+        {
+            int curTime = lastTime;
+            PointF curPos = lastPos;
+            float curAng = lastAng;
+            Command _cmd;
+            int type = _lcc[id].getStatus() + 1;
+            _cmd = new Command(curTime, curTime + LCCWaitingTime * 60, curPos, HaDesMath.movePointByDisAndAngle(curPos, curAng - 90, 8.0f), curAng + 90, curAng + 90, 0, idRS, type);
+            _lcc[id].addCommand(_cmd);
+        }
+        private void gotoLocAandBackToShunt(int id, PointF lastPos, float lastAng, int lastTime, int idRS, bool isWaiting)
+        {
+            int curTime = lastTime, step;
+            PointF curPos = lastPos;
+            float alpha, d, curAng = lastAng;
+            Command _cmd;
+            int m;
+            PointF interPos;
+            float shunt = HaDesMath.calcShuntDisAndPos(locShuntPos, routeAPoints, out m, out interPos);
+
+            if (isWaiting)
+            {
+                _cmd = new Command(curTime, curTime + LCCWaitingTime * 60, curPos, HaDesMath.movePointByDisAndAngle(curPos, curAng, 8.0f), curAng, curAng, 0, idRS);
+                _lcc[id].addCommand(_cmd);
+                curPos = HaDesMath.movePointByDisAndAngle(curPos, curAng, 8.0f);
+                curTime += LCCWaitingTime * 60;
+            }
+
+            // move in route A: carry
+            for (int i = m + 1; i < routeAPoints.Count; i++)
+            {
+                d = HaDesMath.CalcDistancePoints(curPos, routeAPoints[i]);
+                alpha = HaDesMath.getAngleByPoints(routeAPoints[i], curPos);
+
+                step = (int)(d * 3.6f / LCCSpeed);
+                _cmd = new Command(curTime, curTime + step, curPos, routeAPoints[i], alpha, alpha, 0, idRS);
+                _lcc[id].addCommand(_cmd);
+                curPos = routeAPoints[i];
+                curAng = alpha;
+                curTime += step;
+            }
+            // go to location A load pos
+            d = HaDesMath.CalcDistancePoints(curPos, lastRSPosInA);
+            alpha = HaDesMath.getAngleByPoints(lastRSPosInA, curPos);
+
+            step = (int)(d * 3.6f / LCCSpeed);
+            _cmd = new Command(curTime, curTime + step, curPos, lastRSPosInA, alpha, alpha, 0, idRS);
+            _lcc[id].addCommand(_cmd);
+            curPos = lastRSPosInA;
+            curAng = alpha;
+            curTime += step;
+
+            // drop RS
+            _cmd = new Command(curTime, curTime + LCCDropTime * 60, curPos, curPos, curAng, curAng + 180, 1, idRS, 4);
+            _lcc[id].addCommand(_cmd);
+            curAng = curAng + 180;
+            curTime += LCCDropTime * 60;
+            // move in route A: back
+            for (int i = routeAPoints.Count - 1; i > m; i--)
+            {
+                d = HaDesMath.CalcDistancePoints(curPos, routeAPoints[i]);
+                alpha = HaDesMath.getAngleByPoints(routeAPoints[i], curPos);
+                step = (int)(d * 3.6f / LCCSpeed);
+                _cmd = new Command(curTime, curTime + step, curPos, routeAPoints[i], alpha, alpha, 0, -1);
+                _lcc[id].addCommand(_cmd);
+                curPos = routeAPoints[i];
+                curAng = alpha;
+                curTime += step;
+            }
+            d = HaDesMath.CalcDistancePoints(curPos, interPos);
+            alpha = HaDesMath.getAngleByPoints(interPos, curPos);
+
+            step = (int)(d * 3.6f / LCCSpeed);
+            _cmd = new Command(curTime, curTime + step, curPos, interPos, alpha, alpha, 0, -1, 15);
+            _lcc[id].addCommand(_cmd);
+        }
+        private void gotoDozerInA(int id, PointF lastPos, float lastAng, int lastTime, int idRS, bool isWaiting)
+        {
+            int curTime = lastTime, step;
+            PointF curPos = lastPos;
+            float alpha, d, curAng = lastAng;
+            Command _cmd;
+            int m;
+            PointF interPos;
+            float shunt = HaDesMath.calcShuntDisAndPos(locShuntPos, routeAPoints, out m, out interPos);
+
+            if (isWaiting)
+            {
+                _cmd = new Command(curTime, curTime + LCCWaitingTime * 60, curPos, HaDesMath.movePointByDisAndAngle(curPos, curAng, 8.0f), curAng, curAng, 0, idRS);
+                _lcc[id].addCommand(_cmd);
+                curPos = HaDesMath.movePointByDisAndAngle(curPos, curAng, 8.0f);
+                curTime += LCCWaitingTime * 60;
+            }
+
+            // move in route A: carry
+            for (int i = m; i >= 0; i--)
+            {
+                d = HaDesMath.CalcDistancePoints(curPos, routeAPoints[i]);
+                alpha = HaDesMath.getAngleByPoints(routeAPoints[i], curPos);
+                int type = (i == 0) ? 2 : 0;
+                step = (int)(d * 3.6f / LCCSpeed);
+                _cmd = new Command(curTime, curTime + step, curPos, routeAPoints[i], alpha, alpha, 0, -1, type);
+                _lcc[id].addCommand(_cmd);
+                curPos = routeAPoints[i];
+                curAng = alpha;
+                curTime += step;
+            }
+        }
+
+        private void gotoShuntInB(int id, PointF lastPos, float lastAng, int lastTime, int idRS)
+        {
+            int curTime = lastTime, step;
+            PointF curPos = lastPos;
+            float alpha, d;
+            Command _cmd;
+            int m;
+            PointF interPos;
+            float shunt = HaDesMath.calcShuntDisAndPos(locShuntPos, routeBPoints, out m, out interPos);
+
+            // move in route A: carry
+            for (int i = 1; i <= m; i++)
+            {
+                d = HaDesMath.CalcDistancePoints(curPos, routeBPoints[i]);
+                alpha = HaDesMath.getAngleByPoints(routeBPoints[i], curPos);
+
+                step = (int)(d * 3.6f / LCCSpeed);
+                _cmd = new Command(curTime, curTime + step, curPos, routeBPoints[i], alpha, alpha, 0, idRS);
+                _lcc[id].addCommand(_cmd);
+                curPos = routeBPoints[i];
+                curTime += step;
+            }
+            d = HaDesMath.CalcDistancePoints(curPos, interPos);
+            alpha = HaDesMath.getAngleByPoints(interPos, curPos);
+
+            step = (int)(d * 3.6f / LCCSpeed);
+            _cmd = new Command(curTime, curTime + step, curPos, interPos, alpha, alpha, 0, idRS, 22);
+            _lcc[id].addCommand(_cmd);
+        }
+        private void waitShuntInB(int id, PointF lastPos, float lastAng, int lastTime, int idRS)
+        {
+            int curTime = lastTime;
+            PointF curPos = lastPos;
+            float curAng = lastAng;
+            Command _cmd;
+            int type = _lcc[id].getStatus() + 1;
+            _cmd = new Command(curTime, curTime + LCCWaitingTime * 60, curPos, HaDesMath.movePointByDisAndAngle(curPos, curAng - 90, 8.0f), curAng + 90, curAng + 90, 0, idRS, type);
+            _lcc[id].addCommand(_cmd);
+        }
+        private void gotoLocBandBackToShunt(int id, PointF lastPos, float lastAng, int lastTime, int idRS, bool isWaiting)
+        {
+            int curTime = lastTime, step;
+            PointF curPos = lastPos;
+            float alpha, d, curAng = lastAng;
+            Command _cmd;
+            int m;
+            PointF interPos;
+            float shunt = HaDesMath.calcShuntDisAndPos(locShuntPos, routeBPoints, out m, out interPos);
+
+            if (isWaiting)
+            {
+                _cmd = new Command(curTime, curTime + LCCWaitingTime * 60, curPos, HaDesMath.movePointByDisAndAngle(curPos, curAng, 8.0f), curAng, curAng, 0, idRS);
+                _lcc[id].addCommand(_cmd);
+                curPos = HaDesMath.movePointByDisAndAngle(curPos, curAng, 8.0f);
+                curTime += LCCWaitingTime * 60;
+            }
+
+            // move in route A: carry
+            for (int i = m + 1; i < routeBPoints.Count; i++)
+            {
+                d = HaDesMath.CalcDistancePoints(curPos, routeBPoints[i]);
+                alpha = HaDesMath.getAngleByPoints(routeBPoints[i], curPos);
+
+                step = (int)(d * 3.6f / LCCSpeed);
+                _cmd = new Command(curTime, curTime + step, curPos, routeBPoints[i], alpha, alpha, 0, idRS);
+                _lcc[id].addCommand(_cmd);
+                curPos = routeBPoints[i];
+                curAng = alpha;
+                curTime += step;
+            }
+            // go to location A load pos
+            d = HaDesMath.CalcDistancePoints(curPos, lastRSPosInB);
+            alpha = HaDesMath.getAngleByPoints(lastRSPosInB, curPos);
+
+            step = (int)(d * 3.6f / LCCSpeed);
+            _cmd = new Command(curTime, curTime + step, curPos, lastRSPosInB, alpha, alpha, 0, idRS);
+            _lcc[id].addCommand(_cmd);
+            curPos = lastRSPosInB;
+            curAng = alpha;
+            curTime += step;
+
+            // drop RS
+            _cmd = new Command(curTime, curTime + LCCDropTime * 60, curPos, curPos, curAng, curAng + 180, 1, idRS, 5);
+            _lcc[id].addCommand(_cmd);
+            curAng = curAng + 180;
+            curTime += LCCDropTime * 60;
+            // move in route A: back
+            for (int i = routeBPoints.Count - 1; i > m; i--)
+            {
+                d = HaDesMath.CalcDistancePoints(curPos, routeBPoints[i]);
+                alpha = HaDesMath.getAngleByPoints(routeBPoints[i], curPos);
+                step = (int)(d * 3.6f / LCCSpeed);
+                _cmd = new Command(curTime, curTime + step, curPos, routeBPoints[i], alpha, alpha, 0, -1);
+                _lcc[id].addCommand(_cmd);
+                curPos = routeBPoints[i];
+                curAng = alpha;
+                curTime += step;
+            }
+            d = HaDesMath.CalcDistancePoints(curPos, interPos);
+            alpha = HaDesMath.getAngleByPoints(interPos, curPos);
+
+            step = (int)(d * 3.6f / LCCSpeed);
+            _cmd = new Command(curTime, curTime + step, curPos, interPos, alpha, alpha, 0, -1, 25);
+            _lcc[id].addCommand(_cmd);
+        }
+        private void gotoDozerInB(int id, PointF lastPos, float lastAng, int lastTime, int idRS, bool isWaiting)
+        {
+            int curTime = lastTime, step;
+            PointF curPos = lastPos;
+            float alpha, d, curAng = lastAng;
+            Command _cmd;
+            int m;
+            PointF interPos;
+            float shunt = HaDesMath.calcShuntDisAndPos(locShuntPos, routeBPoints, out m, out interPos);
+
+            if (isWaiting)
+            {
+                _cmd = new Command(curTime, curTime + LCCWaitingTime * 60, curPos, HaDesMath.movePointByDisAndAngle(curPos, curAng, 8.0f), curAng, curAng, 0, idRS);
+                _lcc[id].addCommand(_cmd);
+                curPos = HaDesMath.movePointByDisAndAngle(curPos, curAng, 8.0f);
+                curTime += LCCWaitingTime * 60;
+            }
+
+            // move in route A: carry
+            for (int i = m; i >= 0; i--)
+            {
+                d = HaDesMath.CalcDistancePoints(curPos, routeBPoints[i]);
+                alpha = HaDesMath.getAngleByPoints(routeBPoints[i], curPos);
+                int type = (i == 0) ? 2 : 0;
+                step = (int)(d * 3.6f / LCCSpeed);
+                _cmd = new Command(curTime, curTime + step, curPos, routeBPoints[i], alpha, alpha, 0, -1, type);
+                _lcc[id].addCommand(_cmd);
+                curPos = routeBPoints[i];
+                curAng = alpha;
+                curTime += step;
             }
         }
 
@@ -847,6 +1206,7 @@ namespace RSSimulation
             _lcc[id].setCenter(curPos);
             _lcc[id].setAngle(-90);
             _lcc[id].setTelemeter(-1);
+            _lcc[id].setStatus(0);
         }
 
         // check storages are full or not t: 0, A, t: 1, B

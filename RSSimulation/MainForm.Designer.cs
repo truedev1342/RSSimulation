@@ -89,6 +89,8 @@
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.DrawPanel = new System.Windows.Forms.Panel();
             this.DrawArea = new System.Windows.Forms.PictureBox();
+            this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.MainMenu.SuspendLayout();
             this.StatusBar.SuspendLayout();
             this.toolBar.SuspendLayout();
@@ -373,23 +375,25 @@
             this.SalvageSequenceBtn,
             this.toolStripSeparator7,
             this.SetLocationEFrameBtn,
-            this.SetLocationShuntBtn,
-            this.SetLocationABtn,
-            this.SetLocationBBtn,
-            this.SetLocationSurfaceBtn,
-            this.toolStripSeparator4,
             this.SetRouteDozerBtn,
+            this.toolStripSeparator8,
             this.SetRouteABtn,
+            this.SetLocationABtn,
+            this.toolStripSeparator9,
             this.SetRouteBBtn,
+            this.SetLocationBBtn,
+            this.toolStripSeparator4,
+            this.SetLocationSurfaceBtn,
             this.SetRouteSurfaceABtn,
             this.SetRouteSurfaceBBtn,
+            this.SetLocationShuntBtn,
             this.toolStripSeparator5,
             this.StartSimulationBtn,
             this.StopSimulationBtn,
             this.toolStripSeparator2});
             this.toolBar.Location = new System.Drawing.Point(3, 0);
             this.toolBar.Name = "toolBar";
-            this.toolBar.Size = new System.Drawing.Size(441, 25);
+            this.toolBar.Size = new System.Drawing.Size(422, 25);
             this.toolBar.TabIndex = 5;
             this.toolBar.Text = "toolStrip1";
             // 
@@ -423,7 +427,7 @@
             // SimulationPropertiesBtn
             // 
             this.SimulationPropertiesBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.SimulationPropertiesBtn.Image = ((System.Drawing.Image)(resources.GetObject("SimulationPropertiesBtn.Image")));
+            this.SimulationPropertiesBtn.Image = global::RSSimulation.Properties.Resources.setting1;
             this.SimulationPropertiesBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.SimulationPropertiesBtn.Name = "SimulationPropertiesBtn";
             this.SimulationPropertiesBtn.Size = new System.Drawing.Size(23, 22);
@@ -434,7 +438,7 @@
             // SalvageSequenceBtn
             // 
             this.SalvageSequenceBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.SalvageSequenceBtn.Image = ((System.Drawing.Image)(resources.GetObject("SalvageSequenceBtn.Image")));
+            this.SalvageSequenceBtn.Image = global::RSSimulation.Properties.Resources.salvage;
             this.SalvageSequenceBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.SalvageSequenceBtn.Name = "SalvageSequenceBtn";
             this.SalvageSequenceBtn.Size = new System.Drawing.Size(23, 22);
@@ -647,6 +651,16 @@
             this.DrawArea.TabIndex = 1;
             this.DrawArea.TabStop = false;
             // 
+            // toolStripSeparator8
+            // 
+            this.toolStripSeparator8.Name = "toolStripSeparator8";
+            this.toolStripSeparator8.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripSeparator9
+            // 
+            this.toolStripSeparator9.Name = "toolStripSeparator9";
+            this.toolStripSeparator9.Size = new System.Drawing.Size(6, 25);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -741,6 +755,8 @@
         private System.Windows.Forms.ToolStripButton SetLocationSurfaceBtn;
         private System.Windows.Forms.ToolStripButton SetRouteSurfaceABtn;
         private System.Windows.Forms.ToolStripButton SetRouteSurfaceBBtn;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
     }
 }
 

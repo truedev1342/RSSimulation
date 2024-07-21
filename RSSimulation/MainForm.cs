@@ -77,7 +77,6 @@ namespace RSSimulation
         private PointF lastRSPosInB = PointF.Empty;
 
         private int movedSalvageRS = 0;
-        private int waitingLCCId = -1;
 
         //private Queue<Command> _cmdDozer = new Queue<Command>();
         //private Queue<Command>[] _cmdLCC = new Queue<Command>[3];
@@ -92,7 +91,9 @@ namespace RSSimulation
 
         private int curStorage = 0; // 0: carry to storage A, 1: carry to storage B
         private int stockedRSinStorage = 0; // number of RSs that carried to storage
+        private int curStorageInSurface = 0;  // 0: carry from storage A, 1: carry from storage B
 
+        private List<int> waitingRoom = new List<int>();
         public MainForm()
         {
             InitializeComponent();
@@ -161,17 +162,17 @@ namespace RSSimulation
             {
                 curPos = routeDozerPoints[routeDozerPoints.Count - 1];
             }
+            waitingRoom.Clear();
             for (int i = 0; i < LCCCounts; i ++)
             {
                 curPos.Y += 5;
                 _lcc[i].setCenter(curPos);
                 _lcc[i].setAngle(tempAng);
-                _lcc[i].setTelemeter(-1);
                 _lcc[i].clearCommand();
                 _lcc[i].setStatus(0);
                 _lcc[i].setLoadedRS(-1);
+                waitingRoom.Add(i);
             }
-            waitingLCCId = 0;
             rsInLocA.Clear();
             rsInLocB.Clear();
             lastRSPosInA = HaDesMath.movePointByDisAndAngle(locAPosEn, HaDesMath.getAngleByPoints(locAPosEn, locAPosSt), 5.0f);
@@ -187,6 +188,7 @@ namespace RSSimulation
 
             curStorage = 0;
             stockedRSinStorage = 0;
+            curStorageInSurface = 0;
         }
 
         private void InitializeRSandDozer()
@@ -238,7 +240,7 @@ namespace RSSimulation
 
             // draw surface point
             g.DrawEllipse(new Pen(Color.DarkBlue), new RectangleF(new PointF(locSurfacePos.X - 2, locSurfacePos.Y - 2), new Size(4, 4)));
-            g.FillEllipse(new SolidBrush(Color.Red), new RectangleF(new PointF(locSurfacePos.X - 2, locSurfacePos.Y - 2), new Size(4, 4)));
+            g.FillEllipse(new SolidBrush(Color.Green), new RectangleF(new PointF(locSurfacePos.X - 2, locSurfacePos.Y - 2), new Size(4, 4)));
 
             _haDesDxf.DrawDxf(g);
 
@@ -339,7 +341,7 @@ namespace RSSimulation
         {
             if (_dozer.getStatus() == 1)
             {
-                if (waitingLCCId != -1 && _lcc[waitingLCCId].getStatus() == 0)
+                if (waitingRoom.Count > 0)
                 {
                     //_dozer.dequeueCommand();
                     loadRSToLCC(_dozer.getLoadedRS(), _elapsed);
@@ -691,14 +693,25 @@ namespace RSSimulation
                                 {
                                     gotoShuntInB(i, _lcc[i].getCenter(), _lcc[i].getAngle(), _elapsed, _lcc[i].getLoadedRS());
                                 }
-                                waitingLCCId = (waitingLCCId + 1) % LCCCounts;
+                                waitingRoom.RemoveAt(0);
                                 _lcc[i].setStatus(routeNum);
                                 stockedRSinStorage++;
                             }
                         }
                         break;
                     case 2:  // wait to load new RS (after carry)
-                        gotoWaitingRoom(i);
+                        waitingRoom.Add(i);
+                        PointF curPos = PointF.Empty;
+                        float tempAng = -90;
+                        if (routeDozerPoints.Count > 0)
+                        {
+                            curPos = routeDozerPoints[routeDozerPoints.Count - 1];
+                        }
+                        curPos.Y += 5 * waitingRoom.Count;
+                        _lcc[i].setCenter(curPos);
+                        _lcc[i].setAngle(tempAng);
+                        _lcc[i].clearCommand();
+                        _lcc[i].setStatus(0);
                         break;
                     case 12:  // check on shunt on A 
                         if (checkRoute(14))
@@ -1194,46 +1207,18 @@ namespace RSSimulation
             }
         }
 
-        private void gotoWaitingRoom(int id)
-        {
-            int prev = (id + LCCCounts - 1) % LCCCounts;
-            PointF curPos = routeDozerPoints[routeDozerPoints.Count - 1];
-            if (_lcc[prev].getTelemeter() == -1)
-            {
-                curPos = _lcc[prev].getCenter();
-            }
-            curPos.Y += 5;
-            _lcc[id].setCenter(curPos);
-            _lcc[id].setAngle(-90);
-            _lcc[id].setTelemeter(-1);
-            _lcc[id].setStatus(0);
-        }
-
         // check storages are full or not t: 0, A, t: 1, B
         private bool checkStorage() 
         {
             int maxS;
-            bool isEmpty;
             if (curStorage == 0)
             {
                 maxS = (int)(HaDesMath.CalcDistancePoints(locAPosSt, locAPosEn) / 5.0f);
                 if (stockedRSinStorage < maxS) return true;
-                isEmpty = true;
-                for (int i = 0; i < rsInLocB.Count; i++)
+                if (checkRSinStorage(rsInLocB) == -1)
                 {
-                    if (rsInLocB[i] != -1)
-                    {
-                        isEmpty = false;
-                        break;
-                    }
-                }
-                if (isEmpty)
-                {
-                    if (rsInLocB.Count > 0)
-                    {
-                        rsInLocB.Clear();
-                        lastRSPosInB = HaDesMath.movePointByDisAndAngle(locBPosEn, HaDesMath.getAngleByPoints(locBPosEn, locBPosSt), 5.0f);
-                    }
+                    rsInLocB.Clear();
+                    lastRSPosInB = HaDesMath.movePointByDisAndAngle(locBPosEn, HaDesMath.getAngleByPoints(locBPosEn, locBPosSt), 5.0f);
                     curStorage = 1;
                     stockedRSinStorage = 0;
                     return true;
@@ -1242,24 +1227,12 @@ namespace RSSimulation
             }
             maxS = (int)(HaDesMath.CalcDistancePoints(locBPosSt, locBPosEn) / 5.0f);
             if (stockedRSinStorage < maxS) return true;
-            isEmpty = true;
-            for (int i = 0; i < rsInLocA.Count; i++)
+            if (checkRSinStorage(rsInLocA) == -1)
             {
-                if (rsInLocA[i] != -1)
-                {
-                    isEmpty = false;
-                    break;
-                }
-            }
-            if (isEmpty)
-            {
-                if (rsInLocA.Count > 0)
-                {
-                    rsInLocA.Clear();
-                    lastRSPosInA = HaDesMath.movePointByDisAndAngle(locAPosEn, HaDesMath.getAngleByPoints(locAPosEn, locAPosSt), 5.0f);
-                }
-                curStorage = 0;
+                rsInLocA.Clear();
+                lastRSPosInA = HaDesMath.movePointByDisAndAngle(locAPosEn, HaDesMath.getAngleByPoints(locAPosEn, locAPosSt), 5.0f);
                 stockedRSinStorage = 0;
+                curStorage = 0;
                 return true;
             }
             return false;
@@ -1276,19 +1249,17 @@ namespace RSSimulation
         private void loadRSToLCC(int idRS, int lastTime)
         {
             Command _cmd;
-            int idx;
             int step = (int)(5.0f * 3.6f / LCCSpeed);
+            foreach (int i in waitingRoom)
+            {
+                _cmd = new Command(lastTime, lastTime + step, _lcc[i].getCenter(), new PointF(_lcc[i].getCenter().X, _lcc[i].getCenter().Y - 5), _lcc[i].getAngle(), _lcc[i].getAngle(), 0, -1);
+                _lcc[i].addCommand(_cmd);
+            }
             for (int i = 0; i < LCCCounts; i ++)
             {
-                idx = (waitingLCCId + i) % LCCCounts;
-                if (_lcc[idx].getTelemeter() != -1)
-                {
-                    break;
-                }
-                _cmd = new Command(lastTime, lastTime + step, _lcc[idx].getCenter(), new PointF(_lcc[idx].getCenter().X, _lcc[idx].getCenter().Y - 5), _lcc[idx].getAngle(), _lcc[idx].getAngle(), 0, -1);
-                _lcc[idx].addCommand(_cmd);
+                
             }
-            idx = waitingLCCId;
+            int idx = waitingRoom[0];
 
             float alpha = HaDesMath.getAngleByPoints(routeDozerPoints[routeDozerPoints.Count - 1], routeDozerPoints[routeDozerPoints.Count - 2]);
             float beta = curStorage == 0 ? HaDesMath.getAngleByPoints(routeAPoints[0], routeAPoints[1]) - 180 : HaDesMath.getAngleByPoints(routeBPoints[0], routeBPoints[1]) - 180;
@@ -1418,23 +1389,148 @@ namespace RSSimulation
 
             rsInSurface.Add(rsInLocA[p]);
             rsInLocA[p] = -1;
+            _surfLcc.setStatus(0);
         }
 
         private void carryRSFromLocB(int p, PointF lastPos, float lastAng, int lastTime)
         {
-            //////todo
+            int curTime = lastTime, step;
+            PointF curPos = lastPos;
+            float curAngle = lastAng, alpha, d;
+            Command _cmd;
+
+            // move in surface route B
+            for (int i = routeSurfaceBPoints.Count - 1; i >= 0; i--)
+            {
+                PointF pos = i > 0 ? routeSurfaceBPoints[i - 1] : HaDesMath.movePointByDisAndAngle(locBPosEn, HaDesMath.getAngleByPoints(locBPosEn, locBPosSt), 5.0f * p);
+                d = HaDesMath.CalcDistancePoints(curPos, pos);
+                alpha = HaDesMath.getAngleByPoints(pos, curPos);
+
+                step = (int)(d * 3.6f / LCCSpeed);
+                _cmd = new Command(curTime, curTime + step, curPos, pos, alpha, alpha, 0, -1);
+                _surfLcc.addCommand(_cmd);
+                curPos = pos;
+                curAngle = alpha;
+                curTime += step;
+            }
+
+            // load RS
+            _cmd = new Command(curTime, curTime + LCCLoadingTime * 60, curPos, curPos, curAngle, curAngle + 180, 1, -1);
+            _surfLcc.addCommand(_cmd);
+            curAngle = curAngle + 180;
+            curTime += LCCLoadingTime * 60;
+
+
+            // move in surface route B: back(carrying)
+            for (int i = 0; i < routeSurfaceBPoints.Count; i++)
+            {
+                d = HaDesMath.CalcDistancePoints(curPos, routeSurfaceBPoints[i]);
+                alpha = HaDesMath.getAngleByPoints(routeSurfaceBPoints[i], curPos);
+
+                step = (int)(d * 3.6f / LCCSpeed);
+                _cmd = new Command(curTime, curTime + step, curPos, routeSurfaceBPoints[i], alpha, alpha, 0, rsInLocB[p]);
+                _surfLcc.addCommand(_cmd);
+                curPos = routeSurfaceBPoints[i];
+                curAngle = alpha;
+                curTime += step;
+            }
+
+            int r = (rsInSurface.Count / 15);
+            int c = (rsInSurface.Count % 15);
+
+            // move down.
+            d = 5.0f + 5.0f * r;
+            alpha = -90;
+            step = (int)(d * 3.6f / LCCSpeed);
+            _cmd = new Command(curTime, curTime + step, curPos, HaDesMath.movePointByDisAndAngle(curPos, alpha + 180, d), alpha, alpha, 0, rsInLocB[p]);
+            _surfLcc.addCommand(_cmd);
+            curPos = HaDesMath.movePointByDisAndAngle(curPos, alpha + 180, d);
+            curAngle = alpha;
+            curTime += step;
+
+            // move left
+            d = 5.0f + 2.0f * c;
+            alpha = 180;
+            step = (int)(d * 3.6f / LCCSpeed);
+            _cmd = new Command(curTime, curTime + step, curPos, HaDesMath.movePointByDisAndAngle(curPos, alpha + 180, d), alpha, alpha, 0, rsInLocB[p]);
+            _surfLcc.addCommand(_cmd);
+            curPos = HaDesMath.movePointByDisAndAngle(curPos, alpha + 180, d);
+            curAngle = alpha;
+            curTime += step;
+
+            // rotate 90 degree
+            _cmd = new Command(curTime, curTime + LCCDropTime * 30, curPos, curPos, curAngle, curAngle + 90, 1, rsInLocB[p]);
+            _surfLcc.addCommand(_cmd);
+            curAngle += 90;
+            curTime += LCCDropTime * 30;
+
+            // rotate 90 degree
+            _cmd = new Command(curTime, curTime + LCCDropTime * 30, curPos, curPos, curAngle, curAngle + 90, 1, -1);
+            _surfLcc.addCommand(_cmd);
+            curAngle += 90;
+            curTime += LCCDropTime * 30;
+
+
+            // move right
+            d = 5.0f + 2.0f * c;
+            alpha = 0;
+            step = (int)(d * 3.6f / LCCSpeed);
+            _cmd = new Command(curTime, curTime + step, curPos, HaDesMath.movePointByDisAndAngle(curPos, alpha + 180, d), alpha, alpha, 0, -1);
+            _surfLcc.addCommand(_cmd);
+            curPos = HaDesMath.movePointByDisAndAngle(curPos, alpha + 180, d);
+            curAngle = alpha;
+            curTime += step;
+
+            // move up.
+            d = 5.0f + 5.0f * r;
+            alpha = 90;
+            step = (int)(d * 3.6f / LCCSpeed);
+            _cmd = new Command(curTime, curTime + step, curPos, HaDesMath.movePointByDisAndAngle(curPos, alpha + 180, d), alpha, alpha, 0, -1, 3);
+            _surfLcc.addCommand(_cmd);
+            curPos = HaDesMath.movePointByDisAndAngle(curPos, alpha + 180, d);
+            curAngle = alpha;
+            curTime += step;
+
+            rsInSurface.Add(rsInLocA[p]);
+            rsInLocA[p] = -1;
+            _surfLcc.setStatus(0);
         }
 
         private void processSLCCSimulation() {
 
             if (_surfLcc.getStatus() == 3) // waiting to check there is RS in storage A or B
             {
-                if (checkRSinStorage(rsInLocA) != -1)
+                if (curStorageInSurface == 0)
                 {
-                    carryRSFromLocA(checkRSinStorage(rsInLocA), _surfLcc.getCenter(), _surfLcc.getAngle(), _elapsed);
-                } else if (checkRSinStorage(rsInLocB) != -1)
+                    int cSA = checkRSinStorage(rsInLocA);
+                    int cSB = checkRSinStorage(rsInLocB);
+                    if ( cSA != -1)
+                    {
+                        carryRSFromLocA(cSA, _surfLcc.getCenter(), _surfLcc.getAngle(), _elapsed);
+                    } else
+                    {
+                        if (cSB != -1)
+                        {
+                            curStorageInSurface = 1;
+                            carryRSFromLocB(cSB, _surfLcc.getCenter(), _surfLcc.getAngle(), _elapsed);
+                        }
+                    }
+                } else
                 {
-                    carryRSFromLocB(checkRSinStorage(rsInLocB), _surfLcc.getCenter(), _surfLcc.getAngle(), _elapsed);
+                    int cSA = checkRSinStorage(rsInLocA);
+                    int cSB = checkRSinStorage(rsInLocB);
+                    if (cSB != -1)
+                    {
+                        carryRSFromLocB(cSB, _surfLcc.getCenter(), _surfLcc.getAngle(), _elapsed);
+                    }
+                    else
+                    {
+                        if (cSA != -1)
+                        {
+                            curStorageInSurface = 0;
+                            carryRSFromLocA(cSA, _surfLcc.getCenter(), _surfLcc.getAngle(), _elapsed);
+                        }
+                    }
                 }
             }
 
@@ -1830,38 +1926,43 @@ namespace RSSimulation
             {
                 EFrameBuiltTime = sfrm.EFrameBuiltTime;
                 SimulationSpeed = sfrm.SimulationSpeed;
-                RSCounts = sfrm.RSCounts;
                 SimulationTime = sfrm.SimulationTime;
                 SalvageTime = sfrm.SalvageTime;
                 DozerSpeed = sfrm.DozerSpeed;
                 LCCSpeed = sfrm.LCCSpeed;
                 LCCLoadingTime = sfrm.LCCLoadingTime;
                 LCCDropTime = sfrm.LCCDropTime;
-                LCCCounts = sfrm.LCCCounts;
-
-                _lcc = new Carrier[LCCCounts];
-                for (int i = 0; i < LCCCounts; i ++)
+                if (LCCCounts != sfrm.LCCCounts)
                 {
-                    _lcc[i] = new Carrier();
-                }
-
-                if (RSCounts > 0 && RSCounts < 150)
-                {
-                    _available.Clear();
-                    _unavailable.Clear();
-                    for (int i = 1; i <= RSCounts; i ++)
+                    LCCCounts = sfrm.LCCCounts;
+                    _lcc = new Carrier[LCCCounts];
+                    for (int i = 0; i < LCCCounts; i++)
                     {
-                        _available.Add(i);
+                        _lcc[i] = new Carrier();
                     }
-                    SetLocationEFrameBtn.Enabled = true;
-                    SetLocationEFrameBtn.Checked = false;
+                    InitializeLCCs();
                 }
-                else
+                if (RSCounts != sfrm.RSCounts)
                 {
-                    SetLocationEFrameBtn.Enabled = false;
-                    SetLocationEFrameBtn.Checked = false;
+                    RSCounts = sfrm.RSCounts;
+                    if (RSCounts > 0 && RSCounts < 150)
+                    {
+                        _available.Clear();
+                        _unavailable.Clear();
+                        for (int i = 1; i <= RSCounts; i++)
+                        {
+                            _available.Add(i);
+                        }
+                        SetLocationEFrameBtn.Enabled = true;
+                        SetLocationEFrameBtn.Checked = false;
+                    }
+                    else
+                    {
+                        SetLocationEFrameBtn.Enabled = false;
+                        SetLocationEFrameBtn.Checked = false;
+                    }
+                    InitializeRSandDozer();
                 }
-                InitializeRSandDozer();
                 DrawArea.Invalidate();
             }
 
@@ -1897,8 +1998,7 @@ namespace RSSimulation
             if (SetLocationABtn.Checked)
             {
                 setUncheckRest(1);
-                locAPosSt = routeAPoints[routeAPoints.Count - 1];
-                locAPosEn = PointF.Empty;
+                initializePointsAndLine(4);
                 DrawArea.Invalidate();
             } else
             {
@@ -1915,8 +2015,7 @@ namespace RSSimulation
             if (SetLocationBBtn.Checked)
             {
                 setUncheckRest(2);
-                locBPosSt = routeBPoints[routeBPoints.Count - 1];
-                locBPosEn = PointF.Empty;
+                initializePointsAndLine(6);
                 DrawArea.Invalidate();
             } else
             {
@@ -1946,11 +2045,108 @@ namespace RSSimulation
                 DrawArea.Cursor = Cursors.Cross;
             }
         }
+
+        private void initializePointsAndLine(int opt)
+        {
+            switch (opt)
+            {
+                case 1:     // Press eframe
+                    eFramePoint = PointF.Empty;
+                    routeDozerPoints.Clear();
+                    routeDozercurPos = PointF.Empty;
+                    routeAPoints.Clear();
+                    routeAcurPos = PointF.Empty;
+                    locAPosSt = locAPosEn = PointF.Empty;
+                    routeSurfaceAPoints.Clear();
+                    routeSurfaceAcurPos = PointF.Empty;
+                    routeBPoints.Clear();
+                    routeBcurPos = PointF.Empty;
+                    locBPosSt = locBPosEn = PointF.Empty;
+                    routeSurfaceBPoints.Clear();
+                    routeSurfaceBcurPos = PointF.Empty;
+                    break;
+                case 2:     // Press dozer route
+                    routeDozerPoints.Clear();
+                    float alpha = HaDesMath.getAngleByPoints(initRSPos.StartPos, initRSPos.EndPos);
+                    PointF pos = HaDesMath.movePointByDisAndAngle(_basePoint, alpha - 90, 3.0f);
+
+                    routeDozerPoints.Add(pos);
+
+                    pos = HaDesMath.movePointByDisAndAngle(pos, alpha - 180, 2.0f * RSCounts + 3.0f);
+
+                    routeDozerPoints.Add(pos);
+                    routeDozercurPos = pos;
+
+                    routeDozercurPos = PointF.Empty;
+
+                    routeAPoints.Clear();
+                    routeAcurPos = PointF.Empty;
+                    locAPosSt = locAPosEn = PointF.Empty;
+                    routeSurfaceAPoints.Clear();
+                    routeSurfaceAcurPos = PointF.Empty;
+                    routeBPoints.Clear();
+                    routeBcurPos = PointF.Empty;
+                    locBPosSt = locBPosEn = PointF.Empty;
+                    routeSurfaceBPoints.Clear();
+                    routeSurfaceBcurPos = PointF.Empty;
+                    break;
+                case 3:     // Press route A
+                    routeAPoints.Clear();
+                    routeAPoints.Add(routeDozerPoints[routeDozerPoints.Count - 1]);
+
+                    locAPosSt = locAPosEn = PointF.Empty;
+                    routeSurfaceAPoints.Clear();
+                    routeSurfaceAcurPos = PointF.Empty;
+                    break;
+                case 4:     // Press location A
+                    locAPosSt = routeAPoints[routeAPoints.Count - 1];
+                    locAPosEn = PointF.Empty;
+                    routeSurfaceAPoints.Clear();
+                    routeSurfaceAcurPos = PointF.Empty;
+                    break;
+                case 5:     // Press route B
+                    routeBPoints.Clear();
+                    routeBPoints.Add(routeDozerPoints[routeDozerPoints.Count - 1]);
+
+                    locBPosSt = locBPosEn = PointF.Empty;
+                    routeSurfaceBPoints.Clear();
+                    routeSurfaceBcurPos = PointF.Empty;
+                    break;
+                case 6:     // Press location B
+                    locBPosSt = routeBPoints[routeBPoints.Count - 1];
+                    locBPosEn = PointF.Empty;
+
+                    routeSurfaceBPoints.Clear();
+                    routeSurfaceBcurPos = PointF.Empty;
+                    break;
+                case 7:     // Press surface point
+                    locSurfacePos = PointF.Empty;
+                    routeSurfaceAPoints.Clear();
+                    routeSurfaceAcurPos = PointF.Empty;
+                    routeSurfaceBPoints.Clear();
+                    routeSurfaceBcurPos = PointF.Empty;
+                    break;
+                case 8:     // Press surface route A
+                    routeSurfaceAPoints.Clear();
+                    routeSurfaceAPoints.Add(locAPosEn);
+                    routeSurfaceAcurPos = routeSurfaceAPoints[0];
+                    break;
+                case 9:     // Press surface route B
+                    routeSurfaceBPoints.Clear();
+                    routeSurfaceBPoints.Add(locBPosEn);
+                    routeSurfaceBcurPos = routeSurfaceBPoints[0];
+                    break;
+                default:
+                    break;
+            }
+        }
+
         private void onSetLocationEFrameBtn(object sender, EventArgs e)
         {
             if (SetLocationEFrameBtn.Checked)
             {
                 setUncheckRest(0);
+                initializePointsAndLine(1);
             }
             else
             {
@@ -1967,10 +2163,8 @@ namespace RSSimulation
                     setUncheckRest(-1);
                     return;
                 }
-                routeAPoints.Clear();
-                locAPosSt = PointF.Empty;
-                routeAPoints.Add(routeDozerPoints[routeDozerPoints.Count - 1]);
-                routeAcurPos = routeAPoints[0];
+
+                initializePointsAndLine(3);
                 DrawArea.Invalidate();
                 setUncheckRest(3);
             } else
@@ -1991,10 +2185,7 @@ namespace RSSimulation
                     setUncheckRest(-1);
                     return;
                 }
-                routeBPoints.Clear();
-                locBPosSt = PointF.Empty;
-                routeBPoints.Add(routeDozerPoints[routeDozerPoints.Count - 1]);
-                routeBcurPos = routeBPoints[0];
+                initializePointsAndLine(5);
                 DrawArea.Invalidate();
                 setUncheckRest(4);
             } else
@@ -2009,18 +2200,13 @@ namespace RSSimulation
         {
             if (SetRouteDozerBtn.Checked)
             {
-                routeDozerPoints.Clear();
-                float alpha = HaDesMath.getAngleByPoints(initRSPos.StartPos, initRSPos.EndPos);
-                PointF pos = HaDesMath.movePointByDisAndAngle(_basePoint, alpha - 90, 3.0f);
-
-                routeDozerPoints.Add(pos);
-
-                pos = HaDesMath.movePointByDisAndAngle(pos, alpha - 180, 2.0f * RSCounts + 3.0f);
-
-                routeDozerPoints.Add(pos);
-                routeDozercurPos = pos;
-
-                routeDozercurPos = PointF.Empty;
+                if (eFramePoint == PointF.Empty)
+                {
+                    MessageBox.Show("Please set e-frame point.");
+                    setUncheckRest(-1);
+                    return;
+                }
+                initializePointsAndLine(2);
                 DrawArea.Invalidate();
                 setUncheckRest(5);
             } else
@@ -2034,6 +2220,17 @@ namespace RSSimulation
 
         private bool checkAllParameter()
         {
+            if (eFramePoint == Point.Empty)
+            {
+                MessageBox.Show("Please set e-frame point.");
+                return false;
+            }
+            if (SimulationSpeed <= 0)
+            {
+                MessageBox.Show("Simulation Speed can't be zero.");
+                return false;
+            }
+
             if (routeDozerPoints.Count == 0)
             {
                 MessageBox.Show("Please set Dozer route.");
@@ -2049,12 +2246,30 @@ namespace RSSimulation
                 MessageBox.Show("Please set route B.");
                 return false;
             }
+            if (locSurfacePos == PointF.Empty)
+            {
+                MessageBox.Show("Please set surface point.");
+                return false;
+            }
+            if (routeSurfaceAPoints.Count == 0)
+            {
+                MessageBox.Show("Please set surface route A.");
+                return false;
+            }
+            if (routeSurfaceBPoints.Count == 0)
+            {
+                MessageBox.Show("Please set surface route B.");
+                return false;
+            }
+            if (locShuntPos == PointF.Empty)
+            {
+                MessageBox.Show("Please set shunt point.");
+                return false;
+            }
             return true;
         }
         private void onStartSimulationBtn(object sender, EventArgs e)
         {
-            if (eFramePoint == Point.Empty) return;
-            if (SimulationSpeed <= 0) return;
             if (!checkAllParameter())
             {
                 return;
@@ -2093,6 +2308,7 @@ namespace RSSimulation
         {
             if (SetLocationSurfaceBtn.Checked)
             {
+                initializePointsAndLine(7);
                 setUncheckRest(7);
             }
             else
@@ -2111,9 +2327,7 @@ namespace RSSimulation
                     setUncheckRest(-1);
                     return;
                 }
-                routeSurfaceAPoints.Clear();
-                routeSurfaceAPoints.Add(locAPosEn);
-                routeSurfaceAcurPos = routeSurfaceAPoints[0];
+                initializePointsAndLine(8);
                 DrawArea.Invalidate();
                 setUncheckRest(8);
             }
@@ -2136,9 +2350,7 @@ namespace RSSimulation
                     setUncheckRest(-1);
                     return;
                 }
-                routeSurfaceBPoints.Clear();
-                routeSurfaceBPoints.Add(locBPosEn);
-                routeSurfaceBcurPos = routeSurfaceBPoints[0];
+                initializePointsAndLine(9);
                 DrawArea.Invalidate();
                 setUncheckRest(9);
             }

@@ -104,7 +104,7 @@ namespace RSSimulation
             int c = (Global.rsInSurface.Count % 15);
 
             // move down.
-            d = 5.0f + 5.0f * r;
+            d = 15.0f + 5.0f * r;
             alpha = -90;
             step = (int)(d * 3.6f / Global.LCCSpeed);
             _cmd = new Command(curTime, curTime + step, curPos, HaDesMath.movePointByDisAndAngle(curPos, alpha + 180, d), alpha, alpha, 0, Global.rsInLocA[p]);
@@ -114,7 +114,7 @@ namespace RSSimulation
             curTime += step;
 
             // move left
-            d = 5.0f + 2.0f * c;
+            d = 15.0f + 2.0f * c;
             alpha = 180;
             step = (int)(d * 3.6f / Global.LCCSpeed);
             _cmd = new Command(curTime, curTime + step, curPos, HaDesMath.movePointByDisAndAngle(curPos, alpha + 180, d), alpha, alpha, 0, Global.rsInLocA[p]);
@@ -137,7 +137,7 @@ namespace RSSimulation
 
 
             // move right
-            d = 5.0f + 2.0f * c;
+            d = 15.0f + 2.0f * c;
             alpha = 0;
             step = (int)(d * 3.6f / Global.LCCSpeed);
             _cmd = new Command(curTime, curTime + step, curPos, HaDesMath.movePointByDisAndAngle(curPos, alpha + 180, d), alpha, alpha, 0, -1);
@@ -147,7 +147,7 @@ namespace RSSimulation
             curTime += step;
 
             // move up.
-            d = 5.0f + 5.0f * r;
+            d = 15.0f + 5.0f * r;
             alpha = 90;
             step = (int)(d * 3.6f / Global.LCCSpeed);
             _cmd = new Command(curTime, curTime + step, curPos, HaDesMath.movePointByDisAndAngle(curPos, alpha + 180, d), alpha, alpha, 0, -1, 3);
@@ -208,7 +208,7 @@ namespace RSSimulation
             int c = (Global.rsInSurface.Count % 15);
 
             // move down.
-            d = 5.0f + 5.0f * r;
+            d = 15.0f + 5.0f * r;
             alpha = -90;
             step = (int)(d * 3.6f / Global.LCCSpeed);
             _cmd = new Command(curTime, curTime + step, curPos, HaDesMath.movePointByDisAndAngle(curPos, alpha + 180, d), alpha, alpha, 0, Global.rsInLocB[p]);
@@ -218,7 +218,7 @@ namespace RSSimulation
             curTime += step;
 
             // move left
-            d = 5.0f + 2.0f * c;
+            d = 15.0f + 2.0f * c;
             alpha = 180;
             step = (int)(d * 3.6f / Global.LCCSpeed);
             _cmd = new Command(curTime, curTime + step, curPos, HaDesMath.movePointByDisAndAngle(curPos, alpha + 180, d), alpha, alpha, 0, Global.rsInLocB[p]);
@@ -241,7 +241,7 @@ namespace RSSimulation
 
 
             // move right
-            d = 5.0f + 2.0f * c;
+            d = 15.0f + 2.0f * c;
             alpha = 0;
             step = (int)(d * 3.6f / Global.LCCSpeed);
             _cmd = new Command(curTime, curTime + step, curPos, HaDesMath.movePointByDisAndAngle(curPos, alpha + 180, d), alpha, alpha, 0, -1);
@@ -251,7 +251,7 @@ namespace RSSimulation
             curTime += step;
 
             // move up.
-            d = 5.0f + 5.0f * r;
+            d = 15.0f + 5.0f * r;
             alpha = 90;
             step = (int)(d * 3.6f / Global.LCCSpeed);
             _cmd = new Command(curTime, curTime + step, curPos, HaDesMath.movePointByDisAndAngle(curPos, alpha + 180, d), alpha, alpha, 0, -1, 3);
@@ -260,8 +260,8 @@ namespace RSSimulation
             curAngle = alpha;
             curTime += step;
 
-            Global.rsInSurface.Add(Global.rsInLocA[p]);
-            Global.rsInLocA[p] = -1;
+            Global.rsInSurface.Add(Global.rsInLocB[p]);
+            Global.rsInLocB[p] = -1;
             Global._surfLcc.setStatus(0);
         }
     }

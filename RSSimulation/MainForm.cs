@@ -22,6 +22,7 @@ namespace RSSimulation
         private Point moveStartPoint = new Point();
 
         private DateTime _curTime = DateTime.Now;
+        private int _totMiliSec = 0;
         private int _elapsed = 0;
         private int setPosBtnId = -1;
 
@@ -207,13 +208,17 @@ namespace RSSimulation
 
         private void mainTimer_Tick(object sender, EventArgs e)
         {
-            _elapsed += Global.SimulationSpeed * mainTimer.Interval / 1000;
-            _curTime = _curTime + TimeSpan.FromSeconds(Global.SimulationSpeed * mainTimer.Interval / 1000);
-            SimulationTimeSB.Text = _curTime.ToString();
-            ElapsedTimeSB.Text = HaDesMath.ConvertSecToTimeStr(_elapsed);
-            processDozer.run(_elapsed);
-            processCarryLCC.run(_elapsed);
-            processSurfaceLCC.run(_elapsed);
+            //for (int i = 0; i < 10; i ++)
+            //{
+                _totMiliSec += mainTimer.Interval;
+                _elapsed = Global.SimulationSpeed * _totMiliSec / 1000;
+                _curTime = _curTime + TimeSpan.FromSeconds(Global.SimulationSpeed * mainTimer.Interval / 1000);
+                SimulationTimeSB.Text = _curTime.ToString();
+                ElapsedTimeSB.Text = HaDesMath.ConvertSecToTimeStr(_elapsed);
+                processDozer.run(_elapsed);
+                processCarryLCC.run(_elapsed);
+                processSurfaceLCC.run(_elapsed);
+            //}
             DrawArea.Invalidate();
         }
         //
@@ -246,6 +251,7 @@ namespace RSSimulation
                     Global.eFramePoint = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
                     setUncheckRest(-1);
                     _elapsed = 0;
+                    _totMiliSec = 0;
                     _curTime = Global.SimulationTime;
                     Global.InitializeRSandDozer();
                     DrawArea.Invalidate();
@@ -890,6 +896,7 @@ namespace RSSimulation
                 return;
             }
             _elapsed = 0;
+            _totMiliSec = 0;
             _curTime = Global.SimulationTime;
             StartSimulationBtn.Enabled = false;
             StopSimulationBtn.Enabled = true;

@@ -8,7 +8,7 @@ namespace RSSimulation
         {
             if (Global._dozer.getStatus() == 1)
             {
-                if (Global.waitingRoom.Count > 0)
+                if (Global.waitingRoom.Count > 0 && Global._lcc[Global.waitingRoom[0]].getStatus() != 1)
                 {
                     //Global._dozer.dequeueCommand();
                     loadRSToLCC(Global._dozer.getLoadedRS(), _elapsed);

@@ -25,7 +25,10 @@ namespace RSSimulation
                                 {
                                     gotoShuntInB(i, Global._lcc[i].getCenter(), Global._lcc[i].getAngle(), _elapsed, Global._lcc[i].getLoadedRS());
                                 }
-                                Global.waitingRoom.RemoveAt(0);
+                                if (Global.waitingRoom.Count > 0)
+                                {
+                                    Global.waitingRoom.RemoveAt(0);
+                                }
                                 Global._lcc[i].setStatus(routeNum);
                                 Global.stockedRSinStorage++;
                             }
@@ -169,6 +172,7 @@ namespace RSSimulation
                     Global.stockedRSinStorage = 0;
                     return true;
                 }
+                Global.curStorage = 1;
                 return false;
             }
             maxS = (int)(HaDesMath.CalcDistancePoints(Global.locBPosSt, Global.locBPosEn) / 5.0f);
@@ -181,6 +185,7 @@ namespace RSSimulation
                 Global.curStorage = 0;
                 return true;
             }
+            Global.curStorage = 0;
             return false;
         }
 

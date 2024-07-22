@@ -1,36 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace RSSimulation
 {
     public partial class SalvageForm : Form
     {
-
-        public List<int> _available = new List<int>();
-        public List<int> _unavailable = new List<int>();
-        public int RSCounts = 0;
+        public bool needReDraw = false;
         private bool _isLoading = false;
         public SalvageForm()
         {
-            List<int> _available = new List<int>();
-            List<int> _unavailable = new List<int>();
             InitializeComponent();
         }
         private void SalvageForm_Load(object sender, EventArgs e)
         {
             _isLoading = true;
-            RSCountsTxt.Value = RSCounts;
+            RSCountsTxt.Value = Global.RSCounts;
             listBoxAvailable.Items.Clear();
             listBoxUnavailable.Items.Clear();
-            for (int i = 0; i < _available.Count; i++)
+            for (int i = 0; i < Global._normalRSList.Count; i++)
             {
-                listBoxAvailable.Items.Add("Roof Support #" + _available[i].ToString());
+                listBoxAvailable.Items.Add("Roof Support #" + Global._normalRSList[i].ToString());
             }
 
-            for (int i = 0; i < _unavailable.Count; i++)
+            for (int i = 0; i < Global._salvageRSList.Count; i++)
             {
-                listBoxUnavailable.Items.Add("Roof Support #" + _unavailable[i].ToString());
+                listBoxUnavailable.Items.Add("Roof Support #" + Global._salvageRSList[i].ToString());
             }
             _isLoading = false;
         }
@@ -60,16 +54,16 @@ namespace RSSimulation
         }
         private void btnOK_Click(object sender, EventArgs e)
         {
-            _available.Clear();
-            _unavailable.Clear();
+            Global._normalRSList.Clear();
+            Global._salvageRSList.Clear();
             for (int i = 0; i < listBoxAvailable.Items.Count; i ++)
             {
-                _available.Add(int.Parse(listBoxAvailable.Items[i].ToString().Substring(14)));
+                Global._normalRSList.Add(int.Parse(listBoxAvailable.Items[i].ToString().Substring(14)));
             }
 
             for (int i = 0; i < listBoxUnavailable.Items.Count; i++)
             {
-                _unavailable.Add(int.Parse(listBoxUnavailable.Items[i].ToString().Substring(14)));
+                Global._salvageRSList.Add(int.Parse(listBoxUnavailable.Items[i].ToString().Substring(14)));
             }
             this.DialogResult = DialogResult.OK;
             this.Close();
@@ -83,16 +77,17 @@ namespace RSSimulation
         private void RSCountsTxt_ValueChanged(object sender, EventArgs e)
         {
             if (_isLoading) return;
-            RSCounts = (int)RSCountsTxt.Value;
-            _available.Clear();
-            _unavailable.Clear();
+            Global.RSCounts = (int)RSCountsTxt.Value;
+            Global._normalRSList.Clear();
+            Global._salvageRSList.Clear();
             listBoxAvailable.Items.Clear();
             listBoxUnavailable.Items.Clear();
-            for (int i = 1; i <= RSCounts; i++)
+            for (int i = 1; i <= Global.RSCounts; i++)
             {
-                _available.Add(i);
+                Global._normalRSList.Add(i);
                 listBoxAvailable.Items.Add("Roof Support #" + i.ToString());
             }
+            needReDraw = true;
         }
 
         private void btnMoveUp_Click(object sender, EventArgs e)

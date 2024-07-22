@@ -64,6 +64,7 @@
   <ItemGroup>
     <Compile Include="Carrier.cs" />
     <Compile Include="Dozer.cs" />
+    <Compile Include="Global.cs" />
     <Compile Include="HaDesDxf.cs" />
     <Compile Include="HaDesGraphics.cs" />
     <Compile Include="HaDesMath.cs" />
@@ -73,6 +74,9 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="processCarryLCC.cs" />
+    <Compile Include="processDozer.cs" />
+    <Compile Include="processSurfaceLCC.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoofSupport.cs" />

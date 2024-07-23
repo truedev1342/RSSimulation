@@ -26,9 +26,6 @@ namespace RSSimulation
         private int _elapsed = 0;
         private int setPosBtnId = -1;
 
-//        private float shuntDistanceA = 50.0f;
-//        private float shuntDistanceB = 50.0f;
-
         public MainForm()
         {
             InitializeComponent();
@@ -66,7 +63,7 @@ namespace RSSimulation
             }
             for (int i = 0; i < Global._lcc.Length; i ++)
             {
-                Global._lcc[i] = new Carrier();
+                Global._lcc[i] = new Carrier(i);
             }
             DrawArea.Invalidate();
         }
@@ -208,17 +205,12 @@ namespace RSSimulation
 
         private void mainTimer_Tick(object sender, EventArgs e)
         {
-            //for (int i = 0; i < 10; i ++)
-            //{
-                _totMiliSec += mainTimer.Interval;
-                _elapsed = Global.SimulationSpeed * _totMiliSec / 1000;
-                _curTime = _curTime + TimeSpan.FromSeconds(Global.SimulationSpeed * mainTimer.Interval / 1000);
-                SimulationTimeSB.Text = _curTime.ToString();
-                ElapsedTimeSB.Text = HaDesMath.ConvertSecToTimeStr(_elapsed);
-                processDozer.run(_elapsed);
-                processCarryLCC.run(_elapsed);
-                processSurfaceLCC.run(_elapsed);
-            //}
+            _totMiliSec += mainTimer.Interval;
+            _elapsed = Global.SimulationSpeed * _totMiliSec / 1000;
+            _curTime = _curTime + TimeSpan.FromSeconds(Global.SimulationSpeed * mainTimer.Interval / 1000);
+            SimulationTimeSB.Text = _curTime.ToString();
+            ElapsedTimeSB.Text = HaDesMath.ConvertSecToTimeStr(_elapsed);
+            Global.run(_elapsed);
             DrawArea.Invalidate();
         }
         //

@@ -11,9 +11,7 @@ namespace RSSimulation
         private int num { get; set; }
         private PointF center { get; set; }
         private float angle { get; set; }
-
-        private Image RS = Properties.Resources.RS;
-
+        private Image imgV = Properties.Resources.RS;
         public int getNum()
         {
             return num;
@@ -52,16 +50,6 @@ namespace RSSimulation
 
         public void draw(Graphics g)
         {
-            /*// Set the scale factor for the image
-            float scaleFactor = 70.0f;
-
-            float scaledWidth = RS.Width / scaleFactor;
-            float scaledHeight = RS.Height / scaleFactor;
-
-            // Calculate the rotation point
-            float centerX = scaledWidth / 2.0f;
-            float centerY = scaledHeight / 2.0f;*/
-
             var state = g.Save();
 
             // Apply the transformations
@@ -70,7 +58,7 @@ namespace RSSimulation
             g.TranslateTransform(-RSCenter.X, -RSCenter.Y); // Move back by the rotation point offsets
 
             // Draw the image at the translated and rotated position
-            g.DrawImage(RS, 0, 0, RSWidth, RSHeight);
+            g.DrawImage(imgV, 0, 0, RSWidth, RSHeight);
 
             // Restore the graphics object state
             g.Restore(state);

@@ -164,6 +164,16 @@ namespace RSSimulation
             }
             return -1;
         }
+
+        public static void run(int _elapsed)
+        {
+            _dozer.run(_elapsed);
+            for (int i = 0; i < LCCCounts; i++)
+            {
+                _lcc[i].run(_elapsed);
+            }
+            _surfLcc.run(_elapsed);
+        }
     }
 
     public class Command

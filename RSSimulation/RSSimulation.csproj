@@ -83,6 +83,12 @@
     <Compile Include="SalvageForm.Designer.cs">
       <DependentUpon>SalvageForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="SetTimeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SetTimeForm.Designer.cs">
+      <DependentUpon>SetTimeForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -107,6 +113,9 @@
     <EmbeddedResource Include="SalvageForm.resx">
       <DependentUpon>SalvageForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="SetTimeForm.resx">
+      <DependentUpon>SetTimeForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SettingsForm.resx">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -129,6 +138,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Main.ico" />
+    <None Include="res\btn_pause.png" />
+    <None Include="res\estimate.png" />
     <None Include="res\salvage.png" />
     <None Include="res\setting.png" />
     <None Include="res\btn_routeSurfaceB.png" />

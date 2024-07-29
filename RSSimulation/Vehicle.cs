@@ -53,6 +53,43 @@ namespace RSSimulation
         {
             _cmdList.Enqueue(new Command(_stTime, _enTime, _stPos, _enPos, _stAngle, _enAngle, _direction, _loadedRS, _type));
         }
+        public int runCommand(int _curTime)
+        {
+            if (getCommand() == null || getCommand().stTime >= _curTime)
+            {
+                return -1;
+            }
+            Command _cmd = getCommand();
+            setLoadedRS(_cmd.loadedRS);
+            if (_curTime >= _cmd.enTime)
+            {
+                setCenter(_cmd.enPos);
+                setAngle(_cmd.enAngle);
+                setStatus(_cmd.type);
+                return _cmd.enTime;
+            }
+            else
+            {
+                if (_cmd.direction == 0) // moving...
+                {
+                    float x = _cmd.stPos.X + (_cmd.enPos.X - _cmd.stPos.X) * (_curTime - _cmd.stTime) / (_cmd.enTime - _cmd.stTime);
+                    float y = _cmd.stPos.Y + (_cmd.enPos.Y - _cmd.stPos.Y) * (_curTime - _cmd.stTime) / (_cmd.enTime - _cmd.stTime);
+                    setAngle(_cmd.enAngle);
+                    setCenter(new PointF(x, y));
+                }
+                else // rotating...
+                {
+                    float _ang = _cmd.stAngle + (_cmd.enAngle - _cmd.stAngle) * (_curTime - _cmd.stTime) / (_cmd.enTime - _cmd.stTime);
+                    setAngle(_ang);
+                    setCenter(_cmd.enPos);
+                }
+                if (_cmd.type > 100)
+                {
+                    setStatus(_cmd.type);
+                }
+            }
+            return _curTime;
+        }
         public void rotate(float _angle)
         {
             angle += _angle;

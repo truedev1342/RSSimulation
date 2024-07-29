@@ -12,67 +12,44 @@ namespace RSSimulation
             imgV = Properties.Resources.Dozer;
         }
 
-        public int runCommand(int _curTime, int dt)
+        protected void moveRS()
         {
-            while(getCommand() != null && getCommand().enTime <= _curTime)
-            {
-                dequeueCommand();
-            }
-            if (getCommand() == null || getCommand().stTime > _curTime)
-            {
-                return 0;
-            }
-            Command _cmd = getCommand();
-            setLoadedRS(_cmd.loadedRS);
-            if (_curTime + dt >= _cmd.enTime)
-            {
-                setCenter(_cmd.enPos);
-                setAngle(_cmd.enAngle);
-                dequeueCommand();
-                return _cmd.type;
-            }
-            else
-            {
-                int cmdLeft = (_cmd.enTime - _curTime) / dt;
-                if (_cmd.direction == 0) // moving...
-                {
-                    float dx = (_cmd.enPos.X - getCenter().X) / cmdLeft;
-                    float dy = (_cmd.enPos.Y - getCenter().Y) / cmdLeft;
-                    setAngle(_cmd.enAngle);
-                    move(dx, dy);
-                }
-                else // rotating...
-                {
-                    float _ang = Math.Abs(_cmd.enAngle - getAngle());
-                    rotate((float)_cmd.direction * _ang / cmdLeft);
-                    setCenter(_cmd.enPos);
-                }
-            }
-            return 0;
+            if (loadedRS == -1) return;
+            Global._rsData[loadedRS].setCenter(HaDesMath.movePointByDisAndAngle(center, angle, 3.5f));
+            Global._rsData[loadedRS].setAngle(angle);
         }
-
         public void run(int _elapsed)
         {
-            if (Global._dozer.getStatus() == 1)
+
+            while (true)
             {
-                if (Global.waitingRoom.Count > 0 && Global._lcc[Global.waitingRoom[0]].getStatus() != 1)
+                processBreaking(_elapsed);
+                int lastTime = runCommand(_elapsed);
+                moveRS();
+                if (status == Constants.cmdWaiting)
                 {
-                    //Global._dozer.dequeueCommand();
-                    loadRSToLCC(Global._dozer.getLoadedRS(), _elapsed);
-                    Global.movedSalvageRS++;
-                    salvageNextRS(Global._dozer.getCenter(), Global._dozer.getAngle(), _elapsed);
+                    processBreaking(lastTime);
+                    dequeueCommand();
+                    runCommand(_elapsed);
                 }
+                if (getCommand() == null || getCommand().enTime > _elapsed)
+                {
+                    break;
+                }
+                dequeueCommand();
             }
-            int status = Global._dozer.runCommand(_elapsed, Global.SimulationSpeed * Global.timerInterval / 1000);
-            if (Global._dozer.getLoadedRS() != -1)
+        }
+
+        protected void processBreaking(int _curTime)
+        {
+            if (status == Constants.cmdWaiting)
             {
-                int id = Global._dozer.getLoadedRS();
-                Global._rsData[id].setCenter(HaDesMath.movePointByDisAndAngle(Global._dozer.getCenter(), Global._dozer.getAngle(), 3.5f));
-                Global._rsData[id].setAngle(Global._dozer.getAngle());
-            }
-            if (status == 1)
-            {
-                Global._dozer.setStatus(1);
+                if (Global.waitingRoom.Count > 0 && Global._lcc[Global.waitingRoom[0]].getStatus() != Constants.cmdWaiting)
+                {
+                    loadRSToLCC(_curTime);
+                    Global.movedSalvageRS++;
+                    salvageNextRS(center, angle, _curTime + Global.LCCLoadingTime * 60);
+                }
             }
         }
 
@@ -83,8 +60,8 @@ namespace RSSimulation
             Command _cmd;
             int carried = 0;
             float c = HaDesMath.CalcDistancePoints(Global.initRSPos.StartPos, Global.initRSPos.EndPos);
-            PointF curPos = Global._dozer.getCenter(), pos;
-            float curAngle = Global._dozer.getAngle();
+            PointF curPos = center, pos;
+            float curAngle = angle;
             float alpha = HaDesMath.getAngleByPoints(Global.initRSPos.StartPos, Global.initRSPos.EndPos);
             int nextId;
             for (int i = Global.RSCounts; i > 0; i--)
@@ -100,7 +77,7 @@ namespace RSSimulation
                     // move up
                     pos = HaDesMath.movePointByDisAndAngle(curPos, curAngle, 2.5f);
                     _cmd = new Command(curTime, curTime + step, curPos, pos, curAngle, curAngle, 0, -1);
-                    Global._dozer.addCommand(_cmd);
+                    addCommand(_cmd);
                     curPos = pos;
                     curTime += step;
                 }
@@ -108,13 +85,13 @@ namespace RSSimulation
                 // move down
                 pos = HaDesMath.movePointByDisAndAngle(curPos, curAngle, 2.0f * carried - 4.0f);
                 _cmd = new Command(curTime, curTime + step, curPos, pos, curAngle, curAngle, 0, i);
-                Global._dozer.addCommand(_cmd);
+                addCommand(_cmd);
                 curPos = pos;
                 curTime += step;
 
                 // rotate 90 degree
                 _cmd = new Command(curTime, curTime + step, curPos, curPos, curAngle, curAngle + 90, 1, i);
-                Global._dozer.addCommand(_cmd);
+                addCommand(_cmd);
                 curAngle += 90;
                 curTime += step;
 
@@ -122,7 +99,7 @@ namespace RSSimulation
                 pos = HaDesMath.movePointByDisAndAngle(Global._basePoint, alpha - 90, 1.0f + carried * 2.0f);
                 pos = HaDesMath.movePointByDisAndAngle(pos, alpha - 180, 6.0f);
                 _cmd = new Command(curTime, curTime + step, curPos, pos, curAngle, curAngle, 0, i);
-                Global._dozer.addCommand(_cmd);
+                addCommand(_cmd);
                 curPos = pos;
                 curTime += step;
 
@@ -132,7 +109,7 @@ namespace RSSimulation
                     pos = HaDesMath.movePointByDisAndAngle(Global._basePoint, alpha - 90, 5.0f);
                     pos = HaDesMath.movePointByDisAndAngle(pos, alpha - 180, 10.0f);
                     _cmd = new Command(curTime, Global.EFrameBuiltTime * 3600, curPos, pos, curAngle, curAngle, 0, -1);
-                    Global._dozer.addCommand(_cmd);
+                    addCommand(_cmd);
                     curPos = pos;
                     curTime = Global.EFrameBuiltTime * 3600;
 
@@ -144,20 +121,20 @@ namespace RSSimulation
                     pos = HaDesMath.movePointByDisAndAngle(Global._basePoint, alpha - 90, 1.0f + carried * 2.0f);
                     pos = HaDesMath.movePointByDisAndAngle(pos, alpha - 180, 1.7f + 2.0f * (Global.RSCounts - nextId));
                     _cmd = new Command(curTime, curTime + step, curPos, pos, curAngle, curAngle, 0, -1);
-                    Global._dozer.addCommand(_cmd);
+                    addCommand(_cmd);
                     curPos = pos;
                     curTime += step;
 
                     // rotate 90 degree
                     _cmd = new Command(curTime, curTime + step, curPos, curPos, curAngle, curAngle - 90, -1, -1);
-                    Global._dozer.addCommand(_cmd);
+                    addCommand(_cmd);
                     curAngle -= 90;
                     curTime += step;
 
                     // move up
                     pos = HaDesMath.movePointByDisAndAngle(curPos, curAngle, 4.0f - 2.0f * carried);
                     _cmd = new Command(curTime, curTime + step, curPos, pos, curAngle, curAngle, 0, -1);
-                    Global._dozer.addCommand(_cmd);
+                    addCommand(_cmd);
                     curPos = pos;
                     curTime += step;
                 }
@@ -181,13 +158,13 @@ namespace RSSimulation
             d = HaDesMath.CalcDistancePoints(pos, curPos);
             int step = (int)(d * 3.6f / Global.DozerSpeed);
             _cmd = new Command(curTime, curTime + step, curPos, pos, curAngle, curAngle, 0, -1);
-            Global._dozer.addCommand(_cmd);
+            addCommand(_cmd);
             curPos = pos;
             curTime += step;
 
             // rotate 90 degree
             _cmd = new Command(curTime, curTime + Global.SalvageTime * 20, curPos, curPos, curAngle, curAngle - 90, -1, -1);
-            Global._dozer.addCommand(_cmd);
+            addCommand(_cmd);
             curAngle -= 90;
             curTime += Global.SalvageTime * 20;
 
@@ -195,20 +172,20 @@ namespace RSSimulation
 
             pos = HaDesMath.movePointByDisAndAngle(curPos, alpha - 90, -2);
             _cmd = new Command(curTime, curTime + Global.SalvageTime * 20, curPos, pos, curAngle, curAngle, 0, idx);
-            Global._dozer.addCommand(_cmd);
+            addCommand(_cmd);
             curPos = pos;
             curTime += Global.SalvageTime * 20;
 
             // rotate 90 degree
             _cmd = new Command(curTime, curTime + Global.SalvageTime * 20, curPos, curPos, curAngle, curAngle + 90, 1, idx);
-            Global._dozer.addCommand(_cmd);
+            addCommand(_cmd);
             curAngle += 90;
             curTime += Global.SalvageTime * 20;
 
             gotoLCCStartPos(curPos, curAngle, curTime, idx);
         }
 
-        private void loadRSToLCC(int idRS, int lastTime)
+        private void loadRSToLCC(int lastTime)
         {
             Command _cmd;
             int step = (int)(5.0f * 3.6f / Global.LCCSpeed);
@@ -216,10 +193,6 @@ namespace RSSimulation
             {
                 _cmd = new Command(lastTime, lastTime + step, Global._lcc[i].getCenter(), new PointF(Global._lcc[i].getCenter().X, Global._lcc[i].getCenter().Y - 5), Global._lcc[i].getAngle(), Global._lcc[i].getAngle(), 0, -1);
                 Global._lcc[i].addCommand(_cmd);
-            }
-            for (int i = 0; i < Global.LCCCounts; i++)
-            {
-
             }
             int idx = Global.waitingRoom[0];
 
@@ -233,27 +206,21 @@ namespace RSSimulation
             Global._lcc[idx].addCommand(_cmd);
             if (alpha < beta) { dir = 1; }
             else { dir = -1; }
-            _cmd = new Command(lastTime + step + Global.LCCLoadingTime * 30, lastTime + step + Global.LCCLoadingTime * 60, pos, pos, alpha, beta, dir, idRS, 1);
+            _cmd = new Command(lastTime + step + Global.LCCLoadingTime * 30, lastTime + step + Global.LCCLoadingTime * 60, pos, pos, alpha, beta, dir, loadedRS, Constants.cmdWaiting);
             Global._lcc[idx].addCommand(_cmd);
-            Global._dozer.setStatus(0);
+            setStatus(0);
         }
 
         private void salvageNextRS(PointF lastPos, float lastAng, int lastTime)
         {
-            if (Global.movedSalvageRS >= Global._salvageRSList.Count)
-            {
-                return;
-            }
-
-            // move to next RS
-            int idx = Global._salvageRSList[Global.movedSalvageRS];
-
             int curTime = lastTime;
             PointF curPos = lastPos, pos;
             float curAngle = lastAng;
             Command _cmd;
             float d, alpha;
             int step;
+
+            // move to next RS
             for (int i = Global.routeDozerPoints.Count - 2; i > 0; i--)
             {
                 d = HaDesMath.CalcDistancePoints(curPos, Global.routeDozerPoints[i]);
@@ -261,11 +228,19 @@ namespace RSSimulation
 
                 step = (int)(d * 3.6f / Global.DozerSpeed);
                 _cmd = new Command(curTime, curTime + step, curPos, Global.routeDozerPoints[i], alpha, alpha, 0, -1);
-                Global._dozer.addCommand(_cmd);
+                addCommand(_cmd);
                 curPos = Global.routeDozerPoints[i];
                 curAngle = alpha;
                 curTime += step;
             }
+            if (Global.movedSalvageRS >= Global._salvageRSList.Count)
+            {
+                alpha = HaDesMath.getAngleByPoints(Global.initRSPos.StartPos, Global.initRSPos.EndPos);
+                _cmd = new Command(curTime, curTime + 10, curPos, curPos, alpha, alpha, 0, -1);
+                addCommand(_cmd);
+                return;
+            }
+            int idx = Global._salvageRSList[Global.movedSalvageRS];
 
             pos = HaDesMath.movePointByDisAndAngle(Global._basePoint, HaDesMath.getAngleByPoints(Global.initRSPos.StartPos, Global.initRSPos.EndPos) - 90, 3.0f);
             pos = HaDesMath.movePointByDisAndAngle(pos, HaDesMath.getAngleByPoints(Global.initRSPos.StartPos, Global.initRSPos.EndPos) - 180, 1.7f + (Global.RSCounts - idx) * 2.0f);
@@ -274,34 +249,34 @@ namespace RSSimulation
             alpha = HaDesMath.getAngleByPoints(curPos, pos);
             step = (int)(d * 3.6f / Global.DozerSpeed);
             _cmd = new Command(curTime, curTime + step, curPos, pos, alpha, alpha, 0, -1);
-            Global._dozer.addCommand(_cmd);
+            addCommand(_cmd);
             curPos = pos;
             curAngle = alpha;
             curTime += step;
 
             // rotate 90 degree
             _cmd = new Command(curTime, curTime + Global.SalvageTime * 15, curPos, curPos, curAngle, curAngle - 90, -1, -1);
-            Global._dozer.addCommand(_cmd);
+            addCommand(_cmd);
             curAngle -= 90;
             curTime += Global.SalvageTime * 15;
 
             // move up
             pos = HaDesMath.movePointByDisAndAngle(curPos, curAngle, 2.0f);
             _cmd = new Command(curTime, curTime + Global.SalvageTime * 15, curPos, pos, curAngle, curAngle, 0, -1);
-            Global._dozer.addCommand(_cmd);
+            addCommand(_cmd);
             curPos = pos;
             curTime += Global.SalvageTime * 15;
 
             // move down
             pos = HaDesMath.movePointByDisAndAngle(curPos, curAngle, -2.0f);
             _cmd = new Command(curTime, curTime + Global.SalvageTime * 15, curPos, pos, curAngle, curAngle, 0, idx);
-            Global._dozer.addCommand(_cmd);
+            addCommand(_cmd);
             curPos = pos;
             curTime += Global.SalvageTime * 15;
 
             // rotate 90 degree
             _cmd = new Command(curTime, curTime + Global.SalvageTime * 15, curPos, curPos, curAngle, curAngle + 90, 1, idx);
-            Global._dozer.addCommand(_cmd);
+            addCommand(_cmd);
             curAngle += 90;
             curTime += Global.SalvageTime * 15;
 
@@ -323,18 +298,18 @@ namespace RSSimulation
 
             int step = (int)(d * 3.6f / Global.DozerSpeed);
             _cmd = new Command(curTime, curTime + step, curPos, Global.routeDozerPoints[1], alpha, alpha, 0, idx);
-            Global._dozer.addCommand(_cmd);
+            addCommand(_cmd);
             curPos = Global.routeDozerPoints[1];
             curTime += step;
 
             for (int i = 2; i < Global.routeDozerPoints.Count; i++)
             {
-                int type = (i == Global.routeDozerPoints.Count - 1) ? 1 : 0;
+                int type = (i == Global.routeDozerPoints.Count - 1) ? Constants.cmdWaiting : 0;
                 d = HaDesMath.CalcDistancePoints(curPos, Global.routeDozerPoints[i]);
                 alpha = HaDesMath.getAngleByPoints(Global.routeDozerPoints[i], curPos);
                 step = (int)(d * 3.6f / Global.DozerSpeed);
                 _cmd = new Command(curTime, curTime + step, curPos, Global.routeDozerPoints[i], alpha, alpha, 0, idx, type);
-                Global._dozer.addCommand(_cmd);
+                addCommand(_cmd);
                 curPos = Global.routeDozerPoints[i];
                 curTime += step;
             }

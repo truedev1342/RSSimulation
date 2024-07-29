@@ -130,6 +130,9 @@
   <data name="btn_routeD" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\res\btn_routeD.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Dozer" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\res\Dozer.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="btn_routeA" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\res\btn_routeA.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -154,17 +157,14 @@
   <data name="RS" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\res\RS.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="btn_location" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\res\btn_location.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="setting" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\res\setting.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="btn_routeB" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\res\btn_routeB.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="btn_routeSurface" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\res\btn_routeSurface.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="LCC" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\res\LCC.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="btn_routeSurfaceB" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\res\btn_routeSurfaceB.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -172,16 +172,22 @@
   <data name="salvage" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\res\salvage.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="LCC" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\res\LCC.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="btn_location" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\res\btn_location.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Dozer" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\res\Dozer.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="setting1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\res\setting.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btn_routeSurface" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\res\btn_routeSurface.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="btn_storageA" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\res\btn_storageA.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="setting1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\res\setting.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="estimate" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\res\estimate.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btn_pause" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\res\btn_pause.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

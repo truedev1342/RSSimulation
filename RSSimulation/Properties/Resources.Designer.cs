@@ -93,6 +93,16 @@ namespace RSSimulation.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap btn_pause {
+            get {
+                object obj = ResourceManager.GetObject("btn_pause", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap btn_routeA {
             get {
                 object obj = ResourceManager.GetObject("btn_routeA", resourceCulture);
@@ -216,6 +226,16 @@ namespace RSSimulation.Properties {
         internal static System.Drawing.Bitmap Dozer {
             get {
                 object obj = ResourceManager.GetObject("Dozer", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap estimate {
+            get {
+                object obj = ResourceManager.GetObject("estimate", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

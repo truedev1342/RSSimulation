@@ -86,6 +86,7 @@
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.StartSimulationBtn = new System.Windows.Forms.ToolStripButton();
             this.StopSimulationBtn = new System.Windows.Forms.ToolStripButton();
+            this.EstimateBtn = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.mainTimer = new System.Windows.Forms.Timer(this.components);
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
@@ -390,10 +391,11 @@
             this.toolStripSeparator5,
             this.StartSimulationBtn,
             this.StopSimulationBtn,
+            this.EstimateBtn,
             this.toolStripSeparator2});
             this.toolBar.Location = new System.Drawing.Point(3, 0);
             this.toolBar.Name = "toolBar";
-            this.toolBar.Size = new System.Drawing.Size(422, 25);
+            this.toolBar.Size = new System.Drawing.Size(476, 25);
             this.toolBar.TabIndex = 5;
             this.toolBar.Text = "toolStrip1";
             // 
@@ -610,6 +612,16 @@
             this.StopSimulationBtn.ToolTipText = "Stop Simulation";
             this.StopSimulationBtn.Click += new System.EventHandler(this.onStopSimulationBtn);
             // 
+            // EstimateBtn
+            // 
+            this.EstimateBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.EstimateBtn.Image = global::RSSimulation.Properties.Resources.estimate;
+            this.EstimateBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.EstimateBtn.Name = "EstimateBtn";
+            this.EstimateBtn.Size = new System.Drawing.Size(23, 22);
+            this.EstimateBtn.Text = "Estimate Simulation";
+            this.EstimateBtn.Click += new System.EventHandler(this.EstimateBtn_Click);
+            // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
@@ -757,6 +769,7 @@
         private System.Windows.Forms.ToolStripButton SetRouteSurfaceBBtn;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
+        private System.Windows.Forms.ToolStripButton EstimateBtn;
     }
 }
 

@@ -25,6 +25,8 @@ namespace RSSimulation
         private int _totMiliSec = 0;
         private int _elapsed = 0;
         private int setPosBtnId = -1;
+        private int _estimateTime = 0;
+        private int started = 0;
 
         public MainForm()
         {
@@ -202,17 +204,6 @@ namespace RSSimulation
                 Global._rsData[i].draw(g);
             }
         }
-
-        private void mainTimer_Tick(object sender, EventArgs e)
-        {
-            _totMiliSec += mainTimer.Interval;
-            _elapsed = Global.SimulationSpeed * _totMiliSec / 1000;
-            _curTime = _curTime + TimeSpan.FromSeconds(Global.SimulationSpeed * mainTimer.Interval / 1000);
-            SimulationTimeSB.Text = _curTime.ToString();
-            ElapsedTimeSB.Text = HaDesMath.ConvertSecToTimeStr(_elapsed);
-            Global.run(_elapsed);
-            DrawArea.Invalidate();
-        }
         //
         private void enableSimulation(bool state = true)
         {
@@ -232,8 +223,10 @@ namespace RSSimulation
             SetLocationSurfaceBtn.Enabled = state;
             SetRouteSurfaceABtn.Enabled = state;
             SetRouteSurfaceBBtn.Enabled = state;
+            EstimateBtn.Enabled = state;
         }
 
+        ///Mouse Event process Start
         private void DrawArea_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left) return;
@@ -352,7 +345,6 @@ namespace RSSimulation
             }
         }
 
-        ///Mouse Event process Start
         private void DrawArea_MouseDown(object sender, MouseEventArgs e)
         {
             Point currentPoint = DrawPanel.PointToClient(DrawArea.PointToScreen(e.Location));
@@ -484,6 +476,8 @@ namespace RSSimulation
             return;
         }
         ///Mouse Event Process End
+        
+
         /// Menubar Event Process Start
         private void onNewSMenu(object sender, EventArgs e)
         {
@@ -601,41 +595,6 @@ namespace RSSimulation
         }
         /// Menubar Event Process End
         /// Toolbar Event process Start
-        private void onSetLocationABtn(object sender, EventArgs e)
-        {
-            if (Global.routeAPoints.Count == 0)
-            {
-                MessageBox.Show("Please set route A first.");
-                return;
-            }
-            if (SetLocationABtn.Checked)
-            {
-                setUncheckRest(1);
-                initializePointsAndLine(4);
-                DrawArea.Invalidate();
-            } else
-            {
-                setUncheckRest(-1);
-            }
-        }
-        private void onSetLocationBBtn(object sender, EventArgs e)
-        {
-            if (Global.routeBPoints.Count == 0)
-            {
-                MessageBox.Show("Please set route B first.");
-                return;
-            }
-            if (SetLocationBBtn.Checked)
-            {
-                setUncheckRest(2);
-                initializePointsAndLine(6);
-                DrawArea.Invalidate();
-            } else
-            {
-                setUncheckRest(-1);
-            }
-        }
-
         private void setUncheckRest(int id)
         {
             SetLocationEFrameBtn.Checked = (id == 0);
@@ -653,7 +612,8 @@ namespace RSSimulation
             if (id == -1)
             {
                 DrawArea.Cursor = Cursors.Default;
-            } else
+            }
+            else
             {
                 DrawArea.Cursor = Cursors.Cross;
             }
@@ -766,6 +726,62 @@ namespace RSSimulation
                 setUncheckRest(-1);
             }
         }
+        private void onSetRouteDozerBtn(object sender, EventArgs e)
+        {
+            if (SetRouteDozerBtn.Checked)
+            {
+                if (Global.eFramePoint == PointF.Empty)
+                {
+                    MessageBox.Show("Please set e-frame point.");
+                    setUncheckRest(-1);
+                    return;
+                }
+                initializePointsAndLine(2);
+                DrawArea.Invalidate();
+                setUncheckRest(5);
+            }
+            else
+            {
+                Global.routeDozercurPos = Global.routeDozerPoints[Global.routeDozerPoints.Count - 1];
+                Global.InitializeLCCs();
+                DrawArea.Invalidate();
+                setUncheckRest(-1);
+            }
+        }
+        private void onSetLocationABtn(object sender, EventArgs e)
+        {
+            if (Global.routeAPoints.Count == 0)
+            {
+                MessageBox.Show("Please set route A first.");
+                return;
+            }
+            if (SetLocationABtn.Checked)
+            {
+                setUncheckRest(1);
+                initializePointsAndLine(4);
+                DrawArea.Invalidate();
+            } else
+            {
+                setUncheckRest(-1);
+            }
+        }
+        private void onSetLocationBBtn(object sender, EventArgs e)
+        {
+            if (Global.routeBPoints.Count == 0)
+            {
+                MessageBox.Show("Please set route B first.");
+                return;
+            }
+            if (SetLocationBBtn.Checked)
+            {
+                setUncheckRest(2);
+                initializePointsAndLine(6);
+                DrawArea.Invalidate();
+            } else
+            {
+                setUncheckRest(-1);
+            }
+        }
         private void onSetRouteABtn(object sender, EventArgs e)
         {
             if (SetRouteABtn.Checked)
@@ -809,104 +825,6 @@ namespace RSSimulation
                 setUncheckRest(-1);
             }
         }
-        private void onSetRouteDozerBtn(object sender, EventArgs e)
-        {
-            if (SetRouteDozerBtn.Checked)
-            {
-                if (Global.eFramePoint == PointF.Empty)
-                {
-                    MessageBox.Show("Please set e-frame point.");
-                    setUncheckRest(-1);
-                    return;
-                }
-                initializePointsAndLine(2);
-                DrawArea.Invalidate();
-                setUncheckRest(5);
-            } else
-            {
-                Global.routeDozercurPos = Global.routeDozerPoints[Global.routeDozerPoints.Count - 1];
-                Global.InitializeLCCs();
-                DrawArea.Invalidate();
-                setUncheckRest(-1);
-            }
-        }
-
-        private bool checkAllParameter()
-        {
-            if (Global.eFramePoint == Point.Empty)
-            {
-                MessageBox.Show("Please set e-frame point.");
-                return false;
-            }
-            if (Global.SimulationSpeed <= 0)
-            {
-                MessageBox.Show("Simulation Speed can't be zero.");
-                return false;
-            }
-
-            if (Global.routeDozerPoints.Count == 0)
-            {
-                MessageBox.Show("Please set Dozer route.");
-                return false;
-            }
-            if (Global.routeAPoints.Count == 0)
-            {
-                MessageBox.Show("Please set route A.");
-                return false;
-            }
-            if (Global.routeBPoints.Count == 0)
-            {
-                MessageBox.Show("Please set route B.");
-                return false;
-            }
-            if (Global.locSurfacePos == PointF.Empty)
-            {
-                MessageBox.Show("Please set surface point.");
-                return false;
-            }
-            if (Global.routeSurfaceAPoints.Count == 0)
-            {
-                MessageBox.Show("Please set surface route A.");
-                return false;
-            }
-            if (Global.routeSurfaceBPoints.Count == 0)
-            {
-                MessageBox.Show("Please set surface route B.");
-                return false;
-            }
-            if (Global.locShuntPos == PointF.Empty)
-            {
-                MessageBox.Show("Please set shunt point.");
-                return false;
-            }
-            return true;
-        }
-        private void onStartSimulationBtn(object sender, EventArgs e)
-        {
-            if (!checkAllParameter())
-            {
-                return;
-            }
-            _elapsed = 0;
-            _totMiliSec = 0;
-            _curTime = Global.SimulationTime;
-            StartSimulationBtn.Enabled = false;
-            StopSimulationBtn.Enabled = true;
-            Global.movedSalvageRS = 0;
-            Global.InitializeRSandDozer();
-            Global.InitializeLCCs();
-            processDozer.prepareEFrameCommand();
-            mainTimer.Interval = 100;
-            Global.timerInterval = 100;
-            mainTimer.Enabled = true;
-        }
-        private void onStopSimulationBtn(object sender, EventArgs e)
-        {
-            mainTimer.Enabled = false;
-            StartSimulationBtn.Enabled = true;
-            StopSimulationBtn.Enabled = false;
-        }
-
         private void SetLocationShuntBtn_Click(object sender, EventArgs e)
         {
             if (SetLocationShuntBtn.Checked)
@@ -978,6 +896,169 @@ namespace RSSimulation
             }
         }
 
+        private bool checkAllParameter()
+        {
+            if (Global.eFramePoint == Point.Empty)
+            {
+                MessageBox.Show("Please set e-frame point.");
+                return false;
+            }
+            if (Global.SimulationSpeed <= 0)
+            {
+                MessageBox.Show("Simulation Speed can't be zero.");
+                return false;
+            }
+
+            if (Global.routeDozerPoints.Count == 0)
+            {
+                MessageBox.Show("Please set Dozer route.");
+                return false;
+            }
+            if (Global.routeAPoints.Count == 0)
+            {
+                MessageBox.Show("Please set route A.");
+                return false;
+            }
+            if (Global.routeBPoints.Count == 0)
+            {
+                MessageBox.Show("Please set route B.");
+                return false;
+            }
+            if (Global.locSurfacePos == PointF.Empty)
+            {
+                MessageBox.Show("Please set surface point.");
+                return false;
+            }
+            if (Global.routeSurfaceAPoints.Count == 0)
+            {
+                MessageBox.Show("Please set surface route A.");
+                return false;
+            }
+            if (Global.routeSurfaceBPoints.Count == 0)
+            {
+                MessageBox.Show("Please set surface route B.");
+                return false;
+            }
+            if (Global.locShuntPos == PointF.Empty)
+            {
+                MessageBox.Show("Please set shunt point.");
+                return false;
+            }
+            return true;
+        }
+        private void mainTimer_Tick(object sender, EventArgs e)
+        {
+            _totMiliSec += mainTimer.Interval;
+            _elapsed = Global.SimulationSpeed * _totMiliSec / 1000;
+            _curTime = _curTime + TimeSpan.FromSeconds(Global.SimulationSpeed * mainTimer.Interval / 1000);
+            SimulationTimeSB.Text = _curTime.ToString();
+            ElapsedTimeSB.Text = HaDesMath.ConvertSecToTimeStr(_elapsed);
+            Global.run(_elapsed);
+            DrawArea.Invalidate();
+            if (Global.simulationCompleted)
+            {
+                mainTimer.Enabled = false;
+                StartSimulationBtn.Image = Properties.Resources.btn_start;
+                StopSimulationBtn.Enabled = false;
+                started = 0;
+            }
+        }
+        private void onStartSimulationBtn(object sender, EventArgs e)
+        {
+            if (started == 1)
+            {
+                mainTimer.Enabled = false;
+                started = 2;
+                StartSimulationBtn.Image = Properties.Resources.btn_start;
+                return;
+            } 
+            else if (started == 2)
+            {
+                mainTimer.Enabled = true;
+                started = 1;
+                StartSimulationBtn.Image = Properties.Resources.btn_pause;
+                return;
+            }
+            if (!checkAllParameter())
+            {
+                return;
+            }
+            _elapsed = 0;
+            _totMiliSec = 0;
+            _curTime = Global.SimulationTime;
+            StartSimulationBtn.Image = Properties.Resources.btn_pause;
+            StopSimulationBtn.Enabled = true;
+            Global.movedSalvageRS = 0;
+            Global.InitializeRSandDozer();
+            Global.InitializeLCCs();
+            Global._dozer.prepareEFrameCommand();
+            mainTimer.Interval = 100;
+            Global.timerInterval = 100;
+            mainTimer.Enabled = true;
+            started = 1;
+            Global.simulationCompleted = false;
+        }
+        private void onStopSimulationBtn(object sender, EventArgs e)
+        {
+            _elapsed = 0;
+            _totMiliSec = 0;
+            _curTime = Global.SimulationTime;
+            Global.movedSalvageRS = 0;
+            Global.InitializeRSandDozer();
+            Global.InitializeLCCs();
+            Global._dozer.prepareEFrameCommand();
+            mainTimer.Enabled = false;
+            StartSimulationBtn.Image= Properties.Resources.btn_start;
+            StopSimulationBtn.Enabled = false;
+            started = 0;
+            DrawArea.Invalidate();
+        }
+        private void EstimateBtn_Click(object sender, EventArgs e)
+        {
+            if (started == 1) // now simulating...
+            {
+                MessageBox.Show("Please stop simulation before estimate");
+                return;
+            }
+            if (!checkAllParameter())
+            {
+                return;
+            }
+            SetTimeForm sfrm = new SetTimeForm();
+
+            if (sfrm.ShowDialog() == DialogResult.OK)
+            {
+                _estimateTime = sfrm.estimateTime;
+
+                _elapsed = 0;
+                _totMiliSec = 0;
+                _curTime = Global.SimulationTime;
+                Global.movedSalvageRS = 0;
+                Global.InitializeRSandDozer();
+                Global.InitializeLCCs();
+                Global._dozer.prepareEFrameCommand();
+                mainTimer.Interval = 100;
+                Global.timerInterval = 100;
+
+                while (_elapsed < _estimateTime)
+                {
+                    _totMiliSec += mainTimer.Interval;
+                    _elapsed = Global.SimulationSpeed * _totMiliSec / 1000;
+                    if (_elapsed > _estimateTime)
+                    {
+                        _elapsed = _estimateTime;
+                    }
+                    _curTime = _curTime + TimeSpan.FromSeconds(Global.SimulationSpeed * mainTimer.Interval / 1000);
+                    SimulationTimeSB.Text = _curTime.ToString();
+                    ElapsedTimeSB.Text = HaDesMath.ConvertSecToTimeStr(_elapsed);
+                    Global.run(_elapsed);
+                }
+                DrawArea.Invalidate();
+                mainTimer.Enabled = false;
+                started = 2;
+            }
+            
+        }
         /// Toolbar Event process End
     }
 }

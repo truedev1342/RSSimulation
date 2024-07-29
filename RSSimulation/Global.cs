@@ -22,7 +22,7 @@ namespace RSSimulation
         public static RoofSupport[] _rsData = new RoofSupport[202];
         public static Dozer _dozer = new Dozer();
         public static Carrier[] _lcc = new Carrier[3];
-        public static Carrier _surfLcc = new Carrier();
+        public static SurfaceCarrier _surfLcc = new SurfaceCarrier();
 
         public static LinePos initRSPos = new LinePos();
         public static PointF eFramePoint = PointF.Empty;
@@ -65,6 +65,8 @@ namespace RSSimulation
         public static List<int> waitingRoom = new List<int>();
 
         public static int timerInterval = 100;
+
+        public static bool simulationCompleted = false;
         public static void InitializeLCCs()
         {
             PointF curPos = PointF.Empty;
@@ -92,7 +94,7 @@ namespace RSSimulation
             _surfLcc.setCenter(locSurfacePos);
             _surfLcc.setAngle(90);
             _surfLcc.setTelemeter(0);
-            _surfLcc.setStatus(3);
+            _surfLcc.setStatus(Constants.cmdSurfaceWaiting);
             _surfLcc.setLoadedRS(-1);
             _surfLcc.clearCommand();
             rsInSurface.Clear();
@@ -220,5 +222,34 @@ namespace RSSimulation
         {
             this.DoubleBuffered = true;
         }
+    }
+
+    public class Constants
+    {
+        public const int cmdWaiting = 1;
+        public const int cmdCarried = 2;
+        public const int cmdSurfaceWaiting = 3;
+        public const int cmdDrapLocA = 4;
+        public const int cmdDrapLocB = 5;
+        public const int cmdLoadFromlocA = 6;
+        public const int cmdLoadFromlocB = 7;
+        public const int cmdCheckOnShuntA = 11;
+        public const int cmdCheckOnShuntAWaiting = 12;
+        public const int cmdCheckOnLocA = 13;
+        public const int cmdCheckOnShuntABack = 14;
+        public const int cmdCheckOnShuntAWaitingBack = 15;
+        public const int cmdCheckOnShuntB = 21;
+        public const int cmdCheckOnShuntBWaiting = 22;
+        public const int cmdCheckOnLocB = 23;
+        public const int cmdCheckOnShuntBBack = 24;
+        public const int cmdCheckOnShuntBWaitingBack = 25;
+        public const int cmdMovingOnAPart1 = 116;
+        public const int cmdMovingOnAPart2 = 117;
+        public const int cmdMovingOnAPart3 = 118;
+        public const int cmdMovingOnAPart4 = 119;
+        public const int cmdMovingOnBPart1 = 126;
+        public const int cmdMovingOnBPart2 = 127;
+        public const int cmdMovingOnBPart3 = 128;
+        public const int cmdMovingOnBPart4 = 129;
     }
 }

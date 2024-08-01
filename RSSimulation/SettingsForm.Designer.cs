@@ -34,7 +34,6 @@
             this.label4 = new System.Windows.Forms.Label();
             this.SimulationTimeTxt = new System.Windows.Forms.DateTimePicker();
             this.SimulationSpeedTxt = new System.Windows.Forms.NumericUpDown();
-            this.RSCountsTxt = new System.Windows.Forms.NumericUpDown();
             this.EFrameTimeTxt = new System.Windows.Forms.NumericUpDown();
             this.OKBtn = new System.Windows.Forms.Button();
             this.CancelBtn = new System.Windows.Forms.Button();
@@ -56,8 +55,8 @@
             this.label14 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
+            this.RSCountsTxt = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.SimulationSpeedTxt)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.RSCountsTxt)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.EFrameTimeTxt)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SalvageTimeTxt)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DozerSpeedTxt)).BeginInit();
@@ -127,18 +126,6 @@
             this.SimulationSpeedTxt.Name = "SimulationSpeedTxt";
             this.SimulationSpeedTxt.Size = new System.Drawing.Size(141, 22);
             this.SimulationSpeedTxt.TabIndex = 1;
-            // 
-            // RSCountsTxt
-            // 
-            this.RSCountsTxt.Location = new System.Drawing.Point(186, 90);
-            this.RSCountsTxt.Maximum = new decimal(new int[] {
-            149,
-            0,
-            0,
-            0});
-            this.RSCountsTxt.Name = "RSCountsTxt";
-            this.RSCountsTxt.Size = new System.Drawing.Size(141, 22);
-            this.RSCountsTxt.TabIndex = 2;
             // 
             // EFrameTimeTxt
             // 
@@ -376,11 +363,20 @@
             this.label16.TabIndex = 0;
             this.label16.Text = "km/h";
             // 
+            // RSCountsTxt
+            // 
+            this.RSCountsTxt.Location = new System.Drawing.Point(186, 91);
+            this.RSCountsTxt.Name = "RSCountsTxt";
+            this.RSCountsTxt.ReadOnly = true;
+            this.RSCountsTxt.Size = new System.Drawing.Size(141, 22);
+            this.RSCountsTxt.TabIndex = 13;
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(378, 401);
+            this.Controls.Add(this.RSCountsTxt);
             this.Controls.Add(this.CancelBtn);
             this.Controls.Add(this.OKBtn);
             this.Controls.Add(this.LCCSpeedTxt);
@@ -394,7 +390,6 @@
             this.Controls.Add(this.label9);
             this.Controls.Add(this.EFrameTimeTxt);
             this.Controls.Add(this.label7);
-            this.Controls.Add(this.RSCountsTxt);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.SimulationSpeedTxt);
             this.Controls.Add(this.label5);
@@ -419,7 +414,6 @@
             this.Text = "Setting Simulation Properties";
             this.Load += new System.EventHandler(this.SettingsForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.SimulationSpeedTxt)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.RSCountsTxt)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.EFrameTimeTxt)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.SalvageTimeTxt)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DozerSpeedTxt)).EndInit();
@@ -440,7 +434,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.DateTimePicker SimulationTimeTxt;
         private System.Windows.Forms.NumericUpDown SimulationSpeedTxt;
-        private System.Windows.Forms.NumericUpDown RSCountsTxt;
         private System.Windows.Forms.NumericUpDown EFrameTimeTxt;
         private System.Windows.Forms.Button OKBtn;
         private System.Windows.Forms.Button CancelBtn;
@@ -462,5 +455,6 @@
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.TextBox RSCountsTxt;
     }
 }

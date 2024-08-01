@@ -81,24 +81,25 @@ namespace RSSimulation
                     }
                     break;
                 case Constants.cmdCarried:  // wait to load new RS (after carry)
-                    Global.waitingRoom.Add(id);
                     PointF curPos = PointF.Empty;
                     float tempAng = -90;
-                    if (Global.routeDozerPoints.Count > 0)
+                    if (Global.waitingRoom.Count > 0)
                     {
-                        curPos = Global.routeDozerPoints[Global.routeDozerPoints.Count - 1];
-                    }
-                    if (Global.waitingRoom.Count > 0 && Global._lcc[Global.waitingRoom[0]].getStatus() == 1)
-                    {
-                        curPos.Y += 5 * (Global.waitingRoom.Count - 1);
+                        curPos = Global._lcc[Global.waitingRoom[Global.waitingRoom.Count - 1]].center;
+                        curPos.Y += 5.0f;
                     } else
                     {
-                        curPos.Y += 5 * Global.waitingRoom.Count;
+                        if (Global.routeDozerPoints.Count > 0)
+                        {
+                            curPos = Global.routeDozerPoints[Global.routeDozerPoints.Count - 1];
+                        }
+                        curPos.Y += 5.0f;
                     }
                     setCenter(curPos);
                     setAngle(tempAng);
                     clearCommand();
                     setStatus(0);
+                    Global.waitingRoom.Add(id);
                     break;
                 case Constants.cmdDrapLocA:
                     Global.rsInLocA.Add(loadedRS);

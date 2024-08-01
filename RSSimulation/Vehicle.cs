@@ -55,7 +55,7 @@ namespace RSSimulation
         }
         public int runCommand(int _curTime)
         {
-            if (getCommand() == null || getCommand().stTime >= _curTime)
+            if (getCommand() == null || getCommand().stTime > _curTime)
             {
                 return -1;
             }

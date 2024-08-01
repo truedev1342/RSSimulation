@@ -78,11 +78,11 @@
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.SetRouteBBtn = new System.Windows.Forms.ToolStripButton();
             this.SetLocationBBtn = new System.Windows.Forms.ToolStripButton();
+            this.SetLocationShuntBtn = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.SetLocationSurfaceBtn = new System.Windows.Forms.ToolStripButton();
             this.SetRouteSurfaceABtn = new System.Windows.Forms.ToolStripButton();
             this.SetRouteSurfaceBBtn = new System.Windows.Forms.ToolStripButton();
-            this.SetLocationShuntBtn = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.StartSimulationBtn = new System.Windows.Forms.ToolStripButton();
             this.StopSimulationBtn = new System.Windows.Forms.ToolStripButton();
@@ -383,11 +383,11 @@
             this.toolStripSeparator9,
             this.SetRouteBBtn,
             this.SetLocationBBtn,
+            this.SetLocationShuntBtn,
             this.toolStripSeparator4,
             this.SetLocationSurfaceBtn,
             this.SetRouteSurfaceABtn,
             this.SetRouteSurfaceBBtn,
-            this.SetLocationShuntBtn,
             this.toolStripSeparator5,
             this.StartSimulationBtn,
             this.StopSimulationBtn,
@@ -429,7 +429,7 @@
             // SimulationPropertiesBtn
             // 
             this.SimulationPropertiesBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.SimulationPropertiesBtn.Image = global::RSSimulation.Properties.Resources.setting1;
+            this.SimulationPropertiesBtn.Image = global::RSSimulation.Properties.Resources.setting;
             this.SimulationPropertiesBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.SimulationPropertiesBtn.Name = "SimulationPropertiesBtn";
             this.SimulationPropertiesBtn.Size = new System.Drawing.Size(23, 22);
@@ -535,6 +535,18 @@
             this.SetLocationBBtn.ToolTipText = "Set B Storage Location";
             this.SetLocationBBtn.Click += new System.EventHandler(this.onSetLocationBBtn);
             // 
+            // SetLocationShuntBtn
+            // 
+            this.SetLocationShuntBtn.CheckOnClick = true;
+            this.SetLocationShuntBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.SetLocationShuntBtn.Image = global::RSSimulation.Properties.Resources.btn_shunt;
+            this.SetLocationShuntBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SetLocationShuntBtn.Name = "SetLocationShuntBtn";
+            this.SetLocationShuntBtn.Size = new System.Drawing.Size(23, 22);
+            this.SetLocationShuntBtn.Text = "Set Shunt Location";
+            this.SetLocationShuntBtn.ToolTipText = "Set Shunt Location";
+            this.SetLocationShuntBtn.Click += new System.EventHandler(this.SetLocationShuntBtn_Click);
+            // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
@@ -572,18 +584,6 @@
             this.SetRouteSurfaceBBtn.Size = new System.Drawing.Size(23, 22);
             this.SetRouteSurfaceBBtn.Text = "Set Route B Storage to Surface";
             this.SetRouteSurfaceBBtn.Click += new System.EventHandler(this.SetRouteSurfaceBBtn_Click);
-            // 
-            // SetLocationShuntBtn
-            // 
-            this.SetLocationShuntBtn.CheckOnClick = true;
-            this.SetLocationShuntBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.SetLocationShuntBtn.Image = global::RSSimulation.Properties.Resources.btn_shunt;
-            this.SetLocationShuntBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.SetLocationShuntBtn.Name = "SetLocationShuntBtn";
-            this.SetLocationShuntBtn.Size = new System.Drawing.Size(23, 22);
-            this.SetLocationShuntBtn.Text = "Set Shunt Location";
-            this.SetLocationShuntBtn.ToolTipText = "Set Shunt Location";
-            this.SetLocationShuntBtn.Click += new System.EventHandler(this.SetLocationShuntBtn_Click);
             // 
             // toolStripSeparator5
             // 

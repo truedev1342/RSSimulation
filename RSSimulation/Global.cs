@@ -8,14 +8,14 @@ namespace RSSimulation
     class Global
     {
         public static DateTime SimulationTime = DateTime.Now;
-        public static int SimulationSpeed = 3600;
+        public static int SimulationSpeed = 1;
         public static int RSCounts = 149;
-        public static int EFrameBuiltTime = 48;   //unit : hour
-        public static int SalvageTime = 60;       //unit : min
-        public static float DozerSpeed = 0.12f;        //unit : km/h
-        public static float LCCSpeed = 0.06f;          //unit : km/h
-        public static int LCCLoadingTime = 60;    //unit : min
-        public static int LCCDropTime = 60;       //unit : min
+        public static int EFrameBuiltTime = 1;   //unit : hour
+        public static int SalvageTime = 10;       //unit : min
+        public static float DozerSpeed = 20.0f;        //unit : km/h
+        public static float LCCSpeed = 25.0f;          //unit : km/h
+        public static int LCCLoadingTime = 10;    //unit : min
+        public static int LCCDropTime = 10;       //unit : min
         public static int LCCCounts = 3;
         public static int LCCWaitingTime = 3;     //unit : min
 

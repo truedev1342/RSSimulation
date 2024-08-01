@@ -102,12 +102,12 @@ namespace RSSimulation
 
 
             // draw shunt point
-            g.DrawEllipse(new Pen(Color.DarkBlue), new RectangleF(new PointF(Global.locShuntPos.X - 10, Global.locShuntPos.Y - 10), new Size(20, 20)));
-            g.FillEllipse(new SolidBrush(Color.Red), new RectangleF(new PointF(Global.locShuntPos.X - 10, Global.locShuntPos.Y - 10), new Size(20, 20)));
+            g.DrawEllipse(new Pen(Color.SkyBlue), new RectangleF(new PointF(Global.locShuntPos.X - 5, Global.locShuntPos.Y - 5), new Size(10, 10)));
+            g.FillEllipse(new SolidBrush(Color.Red), new RectangleF(new PointF(Global.locShuntPos.X - 5, Global.locShuntPos.Y - 5), new Size(10, 10)));
 
             // draw surface point
-            g.DrawEllipse(new Pen(Color.DarkBlue), new RectangleF(new PointF(Global.locSurfacePos.X - 2, Global.locSurfacePos.Y - 2), new Size(4, 4)));
-            g.FillEllipse(new SolidBrush(Color.Green), new RectangleF(new PointF(Global.locSurfacePos.X - 2, Global.locSurfacePos.Y - 2), new Size(4, 4)));
+            g.DrawEllipse(new Pen(Color.SkyBlue), new RectangleF(new PointF(Global.locSurfacePos.X - 2, Global.locSurfacePos.Y - 2), new Size(4, 4)));
+            g.FillEllipse(new SolidBrush(Color.YellowGreen), new RectangleF(new PointF(Global.locSurfacePos.X - 2, Global.locSurfacePos.Y - 2), new Size(4, 4)));
 
             _haDesDxf.DrawDxf(g);
 
@@ -119,7 +119,7 @@ namespace RSSimulation
                     g.DrawLine(new Pen(Color.Yellow, 0.1f), Global.routeDozerPoints[i], Global.routeDozerPoints[i + 1]);
                 } else
                 {
-                    g.DrawLine(new Pen(Color.Yellow, 0.1f), Global.routeDozerPoints[i], Global.routeDozercurPos);
+                    g.DrawLine(new Pen(Color.White, 0.1f), Global.routeDozerPoints[i], Global.routeDozercurPos);
                 }
             }
 
@@ -128,19 +128,19 @@ namespace RSSimulation
             {
                 if (i < Global.routeAPoints.Count - 1)
                 {
-                    g.DrawLine(new Pen(Color.Red, 0.1f), Global.routeAPoints[i], Global.routeAPoints[i + 1]);
+                    g.DrawLine(new Pen(Color.Orange, 0.1f), Global.routeAPoints[i], Global.routeAPoints[i + 1]);
                 }
                 else
                 {
-                    g.DrawLine(new Pen(Color.Red, 0.1f), Global.routeAPoints[i], Global.routeAcurPos);
+                    g.DrawLine(new Pen(Color.White, 0.1f), Global.routeAPoints[i], Global.routeAcurPos);
                 }
             }
 
             // draw storage A
-            g.DrawLine(new Pen(Color.Green, 0.2f), Global.locAPosSt, Global.locAPosEn);
+            g.DrawLine(new Pen(Color.Green, 1.5f), Global.locAPosSt, Global.locAPosEn);
             float alpha = HaDesMath.getAngleByPoints(Global.locAPosSt, Global.locAPosEn);
-            g.DrawLine(new Pen(Color.Green, 0.1f), HaDesMath.movePointByDisAndAngle(Global.locAPosSt, alpha - 90, 1.5f), HaDesMath.movePointByDisAndAngle(Global.locAPosSt, alpha + 90, 1.5f));
-            g.DrawLine(new Pen(Color.Green, 0.1f), HaDesMath.movePointByDisAndAngle(Global.locAPosEn, alpha - 90, 1.5f), HaDesMath.movePointByDisAndAngle(Global.locAPosEn, alpha + 90, 1.5f));
+            g.DrawLine(new Pen(Color.YellowGreen, 0.1f), HaDesMath.movePointByDisAndAngle(Global.locAPosSt, alpha - 90, 1.5f), HaDesMath.movePointByDisAndAngle(Global.locAPosSt, alpha + 90, 1.5f));
+            g.DrawLine(new Pen(Color.YellowGreen, 0.1f), HaDesMath.movePointByDisAndAngle(Global.locAPosEn, alpha - 90, 1.5f), HaDesMath.movePointByDisAndAngle(Global.locAPosEn, alpha + 90, 1.5f));
 
 
             // draw route B
@@ -148,30 +148,30 @@ namespace RSSimulation
             {
                 if (i < Global.routeBPoints.Count - 1)
                 {
-                    g.DrawLine(new Pen(Color.Blue, 0.1f), Global.routeBPoints[i], Global.routeBPoints[i + 1]);
+                    g.DrawLine(new Pen(Color.SkyBlue, 0.1f), Global.routeBPoints[i], Global.routeBPoints[i + 1]);
                 }
                 else
                 {
-                    g.DrawLine(new Pen(Color.Blue, 0.1f), Global.routeBPoints[i], Global.routeBcurPos);
+                    g.DrawLine(new Pen(Color.White, 0.1f), Global.routeBPoints[i], Global.routeBcurPos);
                 }
             }
 
             // draw storage B
-            g.DrawLine(new Pen(Color.Green, 0.2f), Global.locBPosSt, Global.locBPosEn);
+            g.DrawLine(new Pen(Color.Green, 1.5f), Global.locBPosSt, Global.locBPosEn);
             alpha = HaDesMath.getAngleByPoints(Global.locBPosSt, Global.locBPosEn);
-            g.DrawLine(new Pen(Color.Green, 0.1f), HaDesMath.movePointByDisAndAngle(Global.locBPosSt, alpha - 90, 1.5f), HaDesMath.movePointByDisAndAngle(Global.locBPosSt, alpha + 90, 1.5f));
-            g.DrawLine(new Pen(Color.Green, 0.1f), HaDesMath.movePointByDisAndAngle(Global.locBPosEn, alpha - 90, 1.5f), HaDesMath.movePointByDisAndAngle(Global.locBPosEn, alpha + 90, 1.5f));
+            g.DrawLine(new Pen(Color.YellowGreen, 0.1f), HaDesMath.movePointByDisAndAngle(Global.locBPosSt, alpha - 90, 1.5f), HaDesMath.movePointByDisAndAngle(Global.locBPosSt, alpha + 90, 1.5f));
+            g.DrawLine(new Pen(Color.YellowGreen, 0.1f), HaDesMath.movePointByDisAndAngle(Global.locBPosEn, alpha - 90, 1.5f), HaDesMath.movePointByDisAndAngle(Global.locBPosEn, alpha + 90, 1.5f));
 
             // draw route A to Surface
             for (int i = 0; i < Global.routeSurfaceAPoints.Count; i++)
             {
                 if (i < Global.routeSurfaceAPoints.Count - 1)
                 {
-                    g.DrawLine(new Pen(Color.Red, 0.1f), Global.routeSurfaceAPoints[i], Global.routeSurfaceAPoints[i + 1]);
+                    g.DrawLine(new Pen(Color.Orange, 0.1f), Global.routeSurfaceAPoints[i], Global.routeSurfaceAPoints[i + 1]);
                 }
                 else
                 {
-                    g.DrawLine(new Pen(Color.Red, 0.1f), Global.routeSurfaceAPoints[i], Global.routeSurfaceAcurPos);
+                    g.DrawLine(new Pen(Color.White, 0.1f), Global.routeSurfaceAPoints[i], Global.routeSurfaceAcurPos);
                 }
             }
 
@@ -180,11 +180,11 @@ namespace RSSimulation
             {
                 if (i < Global.routeSurfaceBPoints.Count - 1)
                 {
-                    g.DrawLine(new Pen(Color.Blue, 0.1f), Global.routeSurfaceBPoints[i], Global.routeSurfaceBPoints[i + 1]);
+                    g.DrawLine(new Pen(Color.SkyBlue, 0.1f), Global.routeSurfaceBPoints[i], Global.routeSurfaceBPoints[i + 1]);
                 }
                 else
                 {
-                    g.DrawLine(new Pen(Color.Blue, 0.1f), Global.routeSurfaceBPoints[i], Global.routeSurfaceBcurPos);
+                    g.DrawLine(new Pen(Color.White, 0.1f), Global.routeSurfaceBPoints[i], Global.routeSurfaceBcurPos);
                 }
             }
 
@@ -225,7 +225,6 @@ namespace RSSimulation
             SetRouteSurfaceBBtn.Enabled = state;
             EstimateBtn.Enabled = state;
         }
-
         ///Mouse Event process Start
         private void DrawArea_MouseClick(object sender, MouseEventArgs e)
         {
@@ -301,7 +300,6 @@ namespace RSSimulation
                     break;
             }
         }
-
         private void DrawArea_MouseDblClick(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left) return;
@@ -344,7 +342,6 @@ namespace RSSimulation
                     break;
             }
         }
-
         private void DrawArea_MouseDown(object sender, MouseEventArgs e)
         {
             Point currentPoint = DrawPanel.PointToClient(DrawArea.PointToScreen(e.Location));
@@ -374,9 +371,6 @@ namespace RSSimulation
                 HaDesDxf.UpdateOffsetPos(ref offsetPos, DrawArea, DrawAreaSize, new Point(deltaX, deltaY), zoomFactor.Value);
                 // Update moveStartPoint for the next calculation
                 moveStartPoint = currentPoint;
-
-                MousePositionSB.Text = $"Offset:({offsetPos.X}, {offsetPos.Y}), " +
-                    $"AreaSize:({DrawAreaSize.Width},{DrawAreaSize.Height})";
                 DrawArea.Invalidate();
             }
             if (setPosBtnId == -1)
@@ -390,6 +384,8 @@ namespace RSSimulation
         }
         private void DrawArea_MouseMove(object sender, MouseEventArgs e)
         {
+            PointF currentPos = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
+            MousePositionSB.Text = $"Currnt Position:({currentPos.X}, {currentPos.Y})";
             if (e.Button == MouseButtons.Right)
             {
                 Point currentPoint = e.Location;
@@ -401,9 +397,6 @@ namespace RSSimulation
                 HaDesDxf.UpdateOffsetPos(ref offsetPos, DrawArea, DrawAreaSize, new Point(deltaX, deltaY), zoomFactor.Value);
                 // Update moveStartPoint for the next calculation
                 moveStartPoint = currentPoint;
-
-                MousePositionSB.Text = $"Offset:({offsetPos.X}, {offsetPos.Y}), " +
-                    $"AreaSize:({DrawAreaSize.Width},{DrawAreaSize.Height})";
                 DrawArea.Invalidate();
             }
             switch (setPosBtnId)
@@ -411,35 +404,35 @@ namespace RSSimulation
                 case 1: // set location A
                     if (Global.locAPosSt != PointF.Empty)
                     {
-                        Global.locAPosEn = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
+                        Global.locAPosEn = currentPos;
                         DrawArea.Invalidate();
                     }
                     break;
                 case 2: // set location B
                     if (Global.locBPosSt != PointF.Empty)
                     {
-                        Global.locBPosEn = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
+                        Global.locBPosEn = currentPos;
                         DrawArea.Invalidate();
                     }
                     break;
                 case 3: // set route A
-                    Global.routeAcurPos = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
+                    Global.routeAcurPos = currentPos;
                     DrawArea.Invalidate();
                     break;
                 case 4: // set route B
-                    Global.routeBcurPos = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
+                    Global.routeBcurPos = currentPos;
                     DrawArea.Invalidate();
                     break;
                 case 5: // set dozer route
-                    Global.routeDozercurPos = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
+                    Global.routeDozercurPos = currentPos;
                     DrawArea.Invalidate();
                     break;
                 case 8: // set route A to surface
-                    Global.routeSurfaceAcurPos = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
+                    Global.routeSurfaceAcurPos = currentPos;
                     DrawArea.Invalidate();
                     break;
                 case 9: // set route B to surface
-                    Global.routeSurfaceBcurPos = HaDesDxf.GetDxfPosF(e.Location, offsetPos, zoomFactor);
+                    Global.routeSurfaceBcurPos = currentPos;
                     DrawArea.Invalidate();
                     break;
                 default:
@@ -476,8 +469,6 @@ namespace RSSimulation
             return;
         }
         ///Mouse Event Process End
-        
-
         /// Menubar Event Process Start
         private void onNewSMenu(object sender, EventArgs e)
         {
@@ -533,29 +524,21 @@ namespace RSSimulation
         private void onMoveLeftSMenu(object sender, EventArgs e)
         {
             HaDesGraphics.UpdateOffsetPos(ref offsetPos, DrawArea, DrawAreaSize, new Point(10, 0), zoomFactor.Value);
-            MousePositionSB.Text = $"Offset:({offsetPos.X}, {offsetPos.Y}), " +
-                $"AreaSize:({DrawAreaSize.Width},{DrawAreaSize.Height})";
             DrawArea.Invalidate();
         }
         private void onMoveRightsMenu(object sender, EventArgs e)
         {
             HaDesGraphics.UpdateOffsetPos(ref offsetPos, DrawArea, DrawAreaSize, new Point(-10, 0), zoomFactor.Value);
-            MousePositionSB.Text = $"Offset:({offsetPos.X}, {offsetPos.Y}), " +
-                $"AreaSize:({DrawAreaSize.Width},{DrawAreaSize.Height})";
             DrawArea.Invalidate();
         }
         private void onMoveUpSMenu(object sender, EventArgs e)
         {
             HaDesGraphics.UpdateOffsetPos(ref offsetPos, DrawArea, DrawAreaSize, new Point(0, 10), zoomFactor.Value);
-            MousePositionSB.Text = $"Offset:({offsetPos.X}, {offsetPos.Y}), " +
-                $"AreaSize:({DrawAreaSize.Width},{DrawAreaSize.Height})";
             DrawArea.Invalidate();
         }
         private void onMoveDownSMenu(object sender, EventArgs e)
         {
             HaDesGraphics.UpdateOffsetPos(ref offsetPos, DrawArea, DrawAreaSize, new Point(0, -10), zoomFactor.Value);
-            MousePositionSB.Text = $"Offset:({offsetPos.X}, {offsetPos.Y}), " +
-                $"AreaSize:({DrawAreaSize.Width},{DrawAreaSize.Height})";
             DrawArea.Invalidate();
         }
         private void onSimulationProperiesSMenu(object sender, EventArgs e)
@@ -577,6 +560,7 @@ namespace RSSimulation
                     SetLocationEFrameBtn.Enabled = false;
                     SetLocationEFrameBtn.Checked = false;
                 }
+                TimeSpeedSB.Text = Global.SimulationSpeed.ToString();
             }
 
         }
@@ -618,7 +602,6 @@ namespace RSSimulation
                 DrawArea.Cursor = Cursors.Cross;
             }
         }
-
         private void initializePointsAndLine(int opt)
         {
             switch (opt)
@@ -713,7 +696,6 @@ namespace RSSimulation
                     break;
             }
         }
-
         private void onSetLocationEFrameBtn(object sender, EventArgs e)
         {
             if (SetLocationEFrameBtn.Checked)
@@ -836,7 +818,6 @@ namespace RSSimulation
                 setUncheckRest(-1);
             }
         }
-
         private void SetLocationSurfaceBtn_Click(object sender, EventArgs e)
         {
             if (SetLocationSurfaceBtn.Checked)
@@ -849,7 +830,6 @@ namespace RSSimulation
                 setUncheckRest(-1);
             }
         }
-
         private void SetRouteSurfaceABtn_Click(object sender, EventArgs e)
         {
             if (SetRouteSurfaceABtn.Checked)
@@ -872,7 +852,6 @@ namespace RSSimulation
                 setUncheckRest(-1);
             }
         }
-
         private void SetRouteSurfaceBBtn_Click(object sender, EventArgs e)
         {
             if (SetRouteSurfaceBBtn.Checked)
@@ -895,7 +874,6 @@ namespace RSSimulation
                 setUncheckRest(-1);
             }
         }
-
         private bool checkAllParameter()
         {
             if (Global.eFramePoint == Point.Empty)

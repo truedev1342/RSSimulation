@@ -14,7 +14,7 @@ namespace RSSimulation
         {
             SimulationTimeTxt.Value = Global.SimulationTime;
             SimulationSpeedTxt.Value = Global.SimulationSpeed;
-            RSCountsTxt.Value = Global.RSCounts;
+            RSCountsTxt.Text = Global.RSCounts.ToString();
             EFrameTimeTxt.Value = Global.EFrameBuiltTime;
             SalvageTimeTxt.Value =Global.SalvageTime;
             DozerSpeedTxt.Value = Convert.ToDecimal(Global.DozerSpeed);
@@ -45,7 +45,7 @@ namespace RSSimulation
                 }
                 Global.InitializeLCCs();
             }
-            if (Global.RSCounts != (int)RSCountsTxt.Value)
+            /*if (Global.RSCounts != (int)RSCountsTxt.Value)
             {
                 Global.RSCounts = (int)RSCountsTxt.Value;
                 if (Global.RSCounts > 0 && Global.RSCounts < 150)
@@ -58,7 +58,7 @@ namespace RSSimulation
                     }
                 }
                 Global.InitializeRSandDozer();
-            }
+            }*/
 
             this.DialogResult = DialogResult.OK;
             this.Close();

@@ -45,7 +45,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(126, 18);
+            this.label1.Location = new System.Drawing.Point(86, 9);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(93, 16);
@@ -54,7 +54,7 @@
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(174, 122);
+            this.btnCancel.Location = new System.Drawing.Point(138, 75);
             this.btnCancel.Margin = new System.Windows.Forms.Padding(4);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(100, 28);
@@ -65,7 +65,7 @@
             // 
             // btnOK
             // 
-            this.btnOK.Location = new System.Drawing.Point(48, 122);
+            this.btnOK.Location = new System.Drawing.Point(30, 75);
             this.btnOK.Margin = new System.Windows.Forms.Padding(4);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(100, 28);
@@ -77,26 +77,26 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(191, 64);
+            this.label2.Location = new System.Drawing.Point(173, 40);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(28, 16);
+            this.label2.Size = new System.Drawing.Size(13, 16);
             this.label2.TabIndex = 1;
-            this.label2.Text = "Min";
+            this.label2.Text = " :";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(80, 64);
+            this.label3.Location = new System.Drawing.Point(80, 40);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(36, 16);
+            this.label3.Size = new System.Drawing.Size(13, 16);
             this.label3.TabIndex = 1;
-            this.label3.Text = "Hour";
+            this.label3.Text = " :";
             // 
             // txtHour
             // 
-            this.txtHour.Location = new System.Drawing.Point(11, 62);
+            this.txtHour.Location = new System.Drawing.Point(11, 37);
             this.txtHour.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -108,7 +108,7 @@
             // 
             // txtMin
             // 
-            this.txtMin.Location = new System.Drawing.Point(118, 62);
+            this.txtMin.Location = new System.Drawing.Point(100, 37);
             this.txtMin.Maximum = new decimal(new int[] {
             59,
             0,
@@ -121,16 +121,16 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(296, 64);
+            this.label4.Location = new System.Drawing.Point(264, 40);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(28, 16);
+            this.label4.Size = new System.Drawing.Size(10, 16);
             this.label4.TabIndex = 1;
-            this.label4.Text = "Min";
+            this.label4.Text = " ";
             // 
             // txtSec
             // 
-            this.txtSec.Location = new System.Drawing.Point(223, 62);
+            this.txtSec.Location = new System.Drawing.Point(193, 37);
             this.txtSec.Maximum = new decimal(new int[] {
             59,
             0,
@@ -144,7 +144,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(336, 178);
+            this.ClientSize = new System.Drawing.Size(273, 117);
             this.Controls.Add(this.txtSec);
             this.Controls.Add(this.txtMin);
             this.Controls.Add(this.txtHour);
@@ -161,7 +161,7 @@
             this.MinimizeBox = false;
             this.Name = "SetTimeForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "SetTimeForm";
+            this.Text = "Set Estimate Time Dialog";
             this.Load += new System.EventHandler(this.SetTimeForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.txtHour)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtMin)).EndInit();

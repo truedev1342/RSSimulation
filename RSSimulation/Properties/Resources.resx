@@ -175,9 +175,6 @@
   <data name="btn_location" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\res\btn_location.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="setting1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\res\setting.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="btn_routeSurface" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\res\btn_routeSurface.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
